@@ -1,5 +1,9 @@
 # PinMe - Core App
 
+## Description
+
+This is a React Native app created with the Expo CLI to display a simple map view (Google Maps API).
+
 ## Requirements
 * NodeJS & NPM - [Link](https://nodejs.org/en/)
 * Expo - [Link](https://expo.io/)
