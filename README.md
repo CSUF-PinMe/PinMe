@@ -11,7 +11,7 @@ This is a React Native app created with the Expo CLI to display a simple map vie
   
 ### Optional
 * Android Studio 
-  - Android Emulator
+  - Android Emulator - [Link](https://developer.android.com/studio/run/managing-avds)
   
   
 ## How To Run:
