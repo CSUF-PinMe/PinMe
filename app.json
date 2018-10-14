@@ -22,6 +22,14 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "android": {
+      "package": "com.pinme.core",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCA3xZkHjuIT7TZZvc7cT2k2IGi2ZF-Voc"
+          }
+        }
+      }
   }
 }
