@@ -1,5 +1,10 @@
 # PinMe - Core App
 
+## Current App State
+- Map with coordinate values shown at the bottom of the screen.
+- Coordinates are also printed in the console as you move around the map.
+- API key has been added so we can build apks and the map will continue to work.
+
 ## Description
 
 This is a React Native app created with the Expo CLI to display a simple map view (Google Maps API).
