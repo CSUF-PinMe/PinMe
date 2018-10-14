@@ -1,0 +1,33 @@
+var mapStyle_custom = [
+  {
+    "featureType": "poi",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#6aff55"
+      }
+    ]
+  },
+  {
+    "featureType": "road",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#c0c0c0"
+      }
+    ]
+  },
+  {
+    "featureType": "water",
+    "elementType": "geometry",
+    "stylers": [
+      {
+        "color": "#03a9f4"
+      }
+    ]
+  }
+<MapView
+  initialRegion = {region}
+  customMapStyle = {mapStyle_custom}
+  />
+]
