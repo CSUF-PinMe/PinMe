@@ -24,7 +24,7 @@ This is a React Native app created with the Expo CLI to display a simple map vie
   - Should print something like `6.4.1`
 
 **3. Install Dependencies**
-* `npm install`
+* Navigate to project folder and run: `npm install`
 
 **4. Run Expo App**
 * `expo start`  
