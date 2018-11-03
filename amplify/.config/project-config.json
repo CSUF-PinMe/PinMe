@@ -1,0 +1,20 @@
+{
+    "projectName": "PinMe",
+    "projectPath": "/Users/erickcastro/GitHub/PinMe",
+    "defaultEditor": "atom",
+    "frontendHandler": {
+        "javascript": "/Users/erickcastro/.nvm/versions/node/v10.9.0/lib/node_modules/@aws-amplify/cli/node_modules/amplify-frontend-javascript"
+    },
+    "javascript": {
+        "framework": "react-native",
+        "config": {
+            "SourceDir": "/",
+            "DistributionDir": "/",
+            "BuildCommand": "npm run-script build",
+            "StartCommand": "npm run-script start"
+        }
+    },
+    "providers": {
+        "awscloudformation": "/Users/erickcastro/.nvm/versions/node/v10.9.0/lib/node_modules/@aws-amplify/cli/node_modules/amplify-provider-awscloudformation"
+    }
+}
