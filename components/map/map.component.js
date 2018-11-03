@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
-import { Container, Header, Content, Button, Text} from 'native-base';
+import {Button} from 'react-native-elements';
+import { Container, Header, Content, Text} from 'native-base';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
+import { DrawerNavigator, DrawerItems } from 'react-navigation';
+
 
 import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
@@ -109,18 +112,28 @@ class Map extends Component {
         </MapView>
 
         <View style={styles.buttonContainer}>
-          <Button rounded light
+          <Button 
+            raised
+            
+            backgroundColor='red'
             onPress={this.testAPI}
+            title= 'Test API'
             >
-            <Text>API Test</Text>
           </Button>
 
-          <Button rounded light
-            style={{top: 20}}
-            onPress={this._getLocationAsync}
+          <Button 
+             raise
+             backgroundColor='red'
+             onPress={this._getLocationAsync}
+             title= 'Recenter on User'
             >
-            <Text
-              >Re-center on User</Text>
+          </Button>
+      
+          <Button
+            raised
+            backgroundColor='red'
+            title= 'MENU'
+            >
           </Button>
         </View>
 

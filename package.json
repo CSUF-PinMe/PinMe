@@ -14,7 +14,11 @@
     "expo": "^30.0.1",
     "native-base": "^2.8.1",
     "react": "16.3.1",
+    "react-element": "^0.1.4",
     "react-native": "https://github.com/expo/react-native/archive/sdk-30.0.0.tar.gz",
-    "react-native-maps": "^0.21.0"
+    "react-native-elements": "^0.19.1",
+    "react-native-maps": "^0.21.0",
+    "react-navigation": "^2.18.2",
+    "react-navigator": "0.0.0-0"
   }
 }
