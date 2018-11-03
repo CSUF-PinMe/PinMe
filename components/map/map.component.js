@@ -114,7 +114,6 @@ class Map extends Component {
         <View style={styles.buttonContainer}>
           <Button 
             raised
-            
             backgroundColor='red'
             onPress={this.testAPI}
             title= 'Test API'
@@ -123,6 +122,7 @@ class Map extends Component {
 
           <Button 
              raise
+             
              backgroundColor='red'
              onPress={this._getLocationAsync}
              title= 'Recenter on User'
