@@ -127,6 +127,19 @@
 					"authSelections": "identityPoolAndUserPool"
 				}
 			}
+		},
+		"apipinmeapp": {
+			"Type": "AWS::CloudFormation::Stack",
+			"Properties": {
+				"TemplateURL": "https://s3.amazonaws.com/ine-20181103124101-deployment/amplify-cfn-templates/api/cloudformation-template.json",
+				"Parameters": {
+					"AppSyncApiName": "pinmeapp",
+					"schemaGraphql": "s3://ine-20181103124101-deployment/amplify-appsync-files/schema.graphql.1541283369827",
+					"ResolverBucket": "ine-20181103124101-deployment",
+					"ResolverRootKey": "amplify-appsync-files",
+					"DeploymentTimestamp": "1541283369827"
+				}
+			}
 		}
 	},
 	"Outputs": {

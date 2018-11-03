@@ -3,13 +3,25 @@ import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from
 import { Container, Header, Content, Button, Text} from 'native-base';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
-
+import API, { graphqlOperation } from '@aws-amplify/api'
+import * as queries from '../../graphql/queries';
+import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
 
 var _mapView: MapView;
 
-const url = "https://okuncased2.execute-api.us-west-2.amazonaws.com/testing/addPin";
+const pinDetails = {
+  userId: "321",
+  eventName: "Test Pin",
+  eventType: "Test Type",
+  timeStamp: "Sat 2:23PM",
+  startTime: "Sat 2:25PM",
+  endTime: "Sat 2:30PM",
+  description: "This is a test pin description",
+  latitude: "36.81261365334545",
+  longitude: "-119.74580140784383"
+}
 
 class Map extends Component {
   constructor(props){
@@ -31,7 +43,6 @@ class Map extends Component {
       loading: true,
     };
 
-    this.testAPI.bind(this);
     this.getInitialState.bind(this);
     this._getLocationAsync.bind(this);
   }
@@ -44,27 +55,6 @@ class Map extends Component {
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
     });
     this.setState({ loading: false });
-  }
-
-  testAPI(){
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: 'React Native Test',
-      }),
-    }).then((response) => response.json())
-    .then((responseJson) => {
-      console.log('API Response: ');
-      console.log(responseJson);
-      return (Alert.alert('API Response', responseJson.body))
-    })
-    .catch((error) => {
-      console.error('Error: ' + error);
-    });
   }
 
   getInitialState() {
@@ -86,6 +76,25 @@ class Map extends Component {
     console.log(JSON.stringify(userLocation));
     _mapView.animateToCoordinate(userLocation, 1000);
   };
+
+  // Adds new pin with info in pinDetails
+  testAddPin = async () => {
+    const newPin = API.graphql(graphqlOperation(mutations.createPin, {input: pinDetails}));
+    console.log(newPin);
+    Alert.alert('PinMe', "Pin successfully added!");
+  }
+
+  // Queries and returns all entries
+  testGetPin = async () => {
+    const allPins = await API.graphql(graphqlOperation(queries.listPins));
+    console.log(allPins);
+  }
+
+  // Queries for entry with matching id
+  testGetOnePin = async () => {
+    const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
+    console.log(onePin);
+  }
 
   render() {
     if (this.state.loading) {
@@ -110,18 +119,32 @@ class Map extends Component {
 
         <View style={styles.buttonContainer}>
           <Button rounded light
-            onPress={this.testAPI}
+            onPress={this.testAddPin}
             >
-            <Text>API Test</Text>
+            <Text>Add Pin</Text>
+          </Button>
+
+          <Button rounded light
+            style={{top: 10}}
+            onPress={this.testGetPin}
+            >
+            <Text>Get All Pins</Text>
           </Button>
 
           <Button rounded light
             style={{top: 20}}
+            onPress={this.testGetOnePin}
+            >
+            <Text>Get One Pin</Text>
+          </Button>
+
+          <Button rounded light
+            style={{top: 30}}
             onPress={this._getLocationAsync}
             >
-            <Text
-              >Re-center on User</Text>
+            <Text>Re-center on User</Text>
           </Button>
+
         </View>
 
         <View style={[styles.bubble, styles.latlng, {bottom: 10}]}>
