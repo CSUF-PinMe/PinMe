@@ -3,8 +3,12 @@ import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
 import Map from './components/map/map.component';
+import { withAuthenticator } from 'aws-amplify-react-native'
+import Amplify from '@aws-amplify/core'
+import config from './aws-exports'
+Amplify.configure(config)
 
-export default class App extends Component {
+class App extends Component {
   constructor(props){
     super(props);
 
@@ -38,6 +42,8 @@ export default class App extends Component {
     );
   }
 }
+
+export default withAuthenticator(App, { includeGreetings: true })
 
 const styles = StyleSheet.create({
   container: {
