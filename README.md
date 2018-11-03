@@ -1,9 +1,20 @@
 # PinMe - Core App
 
 ## Current App State
-- Map with coordinate values shown at the bottom of the screen.
-- Coordinates are also printed in the console as you move around the map.
-- API key has been added so we can build apks and the map will continue to work.
+ - Same as previous state
+ - Added custom map style (Credits to Heather!)
+ - Moved stylesheets associated with component into the same folder
+ - Added access to user/device location (asks for permission first)
+ - Added two buttons at the top left of the screen
+   - Button 1: Tests POST API call with backend (AWS API Gateway & Lambda)
+   - Button 2: Re-centers map on user location (also prints user location in the console)
+ - Added a draggable marker to test interactions
+   - When marker is moved, marker location is printed in the console
+
+> ## Previous App State
+> - Map with coordinate values shown at the bottom of the screen.
+> - Coordinates are also printed in the console as you move around the map.
+> - API key has been added so we can build apks and the map will continue to work.
 
 ## Description
 
@@ -13,12 +24,12 @@ This is a React Native app created with the Expo CLI to display a simple map vie
 * NodeJS & NPM - [Link](https://nodejs.org/en/)
 * Expo - [Link](https://expo.io/)
   - Install with NPM: `npm install -g expo-cli`
-  
+
 ### Optional
-* Android Studio 
+* Android Studio
   - Android Emulator - [Link](https://developer.android.com/studio/run/managing-avds)
-  
-  
+
+
 ## How To Run:
 **1. Open terminal (Mac OS) or cmd (Windows)**  
 
