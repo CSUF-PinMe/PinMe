@@ -1,9 +1,16 @@
 # PinMe - Core App
 
-## Current App State (v1.3)
- - Configured app with AWS Amplify
- - Added default Amplify sign-in screen for testing
-   - Includes sign-out button at the top of the screen after signing in
+## Current App State (v1.4)
+ - Added GraphQL functionality
+   - Three new functions:
+     1. testAddPin: Makes a new entry in the database
+     2. testGetPin: Returns all pin data in the database
+     3. testGetOnePin: Returns pin data matching id passed in
+
+> ## Previous App State (v1.3)
+> - Configured app with AWS Amplify
+> - Added default Amplify sign-in screen for testing
+>   - Includes sign-out button at the top of the screen after signing in
 
 > ## Previous App State (v1.2)
 > - Added custom map style (Credits to Heather!)
