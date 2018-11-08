@@ -1,0 +1,12 @@
+type Pin @model {
+  id: ID!
+  userId: String!
+  eventName: String!
+  eventType: String
+  timeStamp: String
+  startTime: String
+  endTime: String
+  description: String
+  latitude: String
+  longitude: String
+}
