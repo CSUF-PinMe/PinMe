@@ -7,7 +7,6 @@ export const getPin = `query GetPin($id: ID!) {
     userId
     eventName
     eventType
-    timeStamp
     startTime
     endTime
     description
@@ -23,7 +22,6 @@ export const listPins = `query ListPins($filter: ModelPinFilterInput, $limit: In
       userId
       eventName
       eventType
-      timeStamp
       startTime
       endTime
       description
