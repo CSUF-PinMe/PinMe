@@ -3,7 +3,6 @@ type Pin @model {
   userId: String!
   eventName: String!
   eventType: String
-  timeStamp: String
   startTime: String
   endTime: String
   description: String

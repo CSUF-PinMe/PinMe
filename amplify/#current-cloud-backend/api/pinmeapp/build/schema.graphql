@@ -3,7 +3,6 @@ type Pin {
   userId: String!
   eventName: String!
   eventType: String
-  timeStamp: String
   startTime: String
   endTime: String
   description: String
@@ -81,7 +80,6 @@ input ModelPinFilterInput {
   userId: ModelStringFilterInput
   eventName: ModelStringFilterInput
   eventType: ModelStringFilterInput
-  timeStamp: ModelStringFilterInput
   startTime: ModelStringFilterInput
   endTime: ModelStringFilterInput
   description: ModelStringFilterInput
@@ -101,7 +99,6 @@ input CreatePinInput {
   userId: String!
   eventName: String!
   eventType: String
-  timeStamp: String
   startTime: String
   endTime: String
   description: String
@@ -114,7 +111,6 @@ input UpdatePinInput {
   userId: String
   eventName: String
   eventType: String
-  timeStamp: String
   startTime: String
   endTime: String
   description: String

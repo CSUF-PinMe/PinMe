@@ -2,7 +2,10 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
-import Map from './src/components/map/map.component';
+import { createStackNavigator } from 'react-navigation'
+
+import MapScreen from './src/components/map/map.component';
+
 import { withAuthenticator } from 'aws-amplify-react-native'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
@@ -38,7 +41,7 @@ class App extends Component {
 
   render() {
     return (
-      <Map location={this.state.location}/>
+      <MapScreen location={this.state.location}/>
     );
   }
 }
