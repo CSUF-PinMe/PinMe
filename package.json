@@ -12,6 +12,7 @@
     "aws-amplify": "^1.1.9",
     "aws-amplify-react-native": "^2.0.8",
     "expo": "^30.0.1",
+    "expo-localization": "^1.0.0",
     "native-base": "^2.8.1",
     "react": "16.3.1",
     "react-element": "^0.1.4",

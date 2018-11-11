@@ -3,7 +3,7 @@
   "expoServerPort": null,
   "packagerPort": null,
   "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerNgrokUrl": "https://sz-jwk.ecast96.pinme.exp.direct",
+  "packagerNgrokUrl": "https://packager.sz-jwk.ecast96.pinme.exp.direct",
+  "ngrokPid": 7058
 }

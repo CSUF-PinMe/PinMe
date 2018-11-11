@@ -7,7 +7,6 @@ export const createPin = `mutation CreatePin($input: CreatePinInput!) {
     userId
     eventName
     eventType
-    timeStamp
     startTime
     endTime
     description
@@ -22,7 +21,6 @@ export const updatePin = `mutation UpdatePin($input: UpdatePinInput!) {
     userId
     eventName
     eventType
-    timeStamp
     startTime
     endTime
     description
@@ -37,7 +35,6 @@ export const deletePin = `mutation DeletePin($input: DeletePinInput!) {
     userId
     eventName
     eventType
-    timeStamp
     startTime
     endTime
     description

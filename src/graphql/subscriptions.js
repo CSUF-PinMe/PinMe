@@ -7,7 +7,6 @@ export const onCreatePin = `subscription OnCreatePin {
     userId
     eventName
     eventType
-    timeStamp
     startTime
     endTime
     description
@@ -22,7 +21,6 @@ export const onUpdatePin = `subscription OnUpdatePin {
     userId
     eventName
     eventType
-    timeStamp
     startTime
     endTime
     description
@@ -37,7 +35,6 @@ export const onDeletePin = `subscription OnDeletePin {
     userId
     eventName
     eventType
-    timeStamp
     startTime
     endTime
     description

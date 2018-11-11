@@ -1,7 +1,7 @@
 {
     "AppSyncApiName": "pinmeapp",
-    "schemaGraphql": "s3://ine-20181103124101-deployment/amplify-appsync-files/schema.graphql.1541283369827",
+    "schemaGraphql": "s3://ine-20181103124101-deployment/amplify-appsync-files/schema.graphql.1541635960273",
     "ResolverBucket": "ine-20181103124101-deployment",
     "ResolverRootKey": "amplify-appsync-files",
-    "DeploymentTimestamp": "1541283369827"
+    "DeploymentTimestamp": "1541635960273"
 }
