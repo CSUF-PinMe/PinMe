@@ -1,14 +1,38 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
-import Expo, { Constants, Location, Permissions } from 'expo';
-import MapView from 'react-native-maps';
-import { createStackNavigator } from 'react-navigation'
-
-import MapScreen from './src/components/map/map.component';
-
+import { 
+  View,
+  StyleSheet, 
+  Text,
+  ScrollView,
+  Image,
+ } from 'react-native'
+import Expo, { 
+  Constants, 
+  Location, 
+  Permissions 
+} from 'expo'
+import {
+  createDrawerNavigator,
+  StackNavigator, 
+  DrawerItems, 
+  SafeAreaView
+} from 'react-navigation'
+import {
+  Container, 
+  Content, 
+  Icon, 
+  Header, 
+  Body
+} from 'native-base'
+import MapView from 'react-native-maps'
 import { withAuthenticator } from 'aws-amplify-react-native'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
+import SettingsScreen from './src/components/menu/SettingsScreen'
+import ProfileScreen from './src/components/menu/ProfileScreen'
+import { FormValidationMessage } from 'react-native-elements';
+import MapScreen from './src/components/map/map.component'
+import SearchScreen from './src/components/menu/SearchScreen'
 Amplify.configure(config)
 
 class App extends Component {
@@ -21,8 +45,8 @@ class App extends Component {
     }
   }
 
-  async componentWillMount() {
-    this._getLocationAsync();
+async componentWillMount() {
+this._getLocationAsync();
   }
 
   _getLocationAsync = async () => {
@@ -40,18 +64,67 @@ class App extends Component {
   };
 
   render() {
-    return (
-      <MapScreen location={this.state.location}/>
+        return (
+          <MyApp/>
     );
   }
 }
 
-export default withAuthenticator(App, { includeGreetings: true })
+const CustomDrawerContentComponent = (props) => (
+
+  <Container>
+    <Header style={styles.drawerHeader}>
+      <Body>
+        <Image
+          style={styles.drawerImage}
+          source={require('./assets/icon.png')} />
+      </Body>
+    </Header>
+    <Content>
+      <DrawerItems {...props} />
+    </Content>
+
+  </Container>
+
+);
+
+const MyApp = createDrawerNavigator({
+    Profile: {
+        screen: ProfileScreen
+    },
+    Search: {
+        screen: SearchScreen
+    },
+    Settings: {
+        screen: SettingsScreen
+    },
+    Map: {
+        screen: MapScreen
+    }
+},
+{
+  initialRouteName: 'Map',
+  drawerPosition: 'left',
+  contentComponent: CustomDrawerContentComponent,
+});
+
+export default withAuthenticator(App /*, { includeGreetings: true }*/)
 
 const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  }
-});
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    drawerHeader: {
+      height: 200,
+      backgroundColor: 'white',
+      alignItems: 'center'
+    },
+    drawerImage: {
+      height: 150,
+      width: 150,
+      borderRadius: 75,
+    }
+  
+  });

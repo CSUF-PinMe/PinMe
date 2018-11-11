@@ -1,9 +1,24 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
-import { Container, Header, Content, Button, Text} from 'native-base';
-import { Navigation } from 'react-native-navigation';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import { 
+  StyleSheet, 
+  View, 
+  Dimensions, 
+  TouchableOpacity, 
+  StatusBar, 
+  Alert 
+} from 'react-native';
+import { 
+  Container, 
+  Header, 
+  Content, 
+  Text, 
+  Icon,
+  Button,
+  Left
+} from 'native-base';
+import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
+import { DrawerNavigator, DrawerItems } from 'react-navigation';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
@@ -155,20 +170,33 @@ export default class MapScreen extends Component {
     const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
     console.log(onePin);
   }
-
+  
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
     return (
-      <View style ={styles.container}>
+      <Container>
         <StatusBar hidden/>
-
+          <Header>
+          <View style={{ width: Dimensions.get('window').width * 0.9 }}>
+              <Icon name="ios-menu" onPress={
+                ()=>
+                this.props.navigation.openDrawer()}/>
+            </View>
+          </Header>
+          <Content contentContainerSyle={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+          </Content>
+      <View style={styles.Mapcontainer}>
         <MapView
           // provider={PROVIDER_GOOGLE}
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
-          style={styles.map}
+          style={styles.mapContainer}
           onRegionChange={(region) => {this.setState({region}); console.log(region);}}
           initialRegion={this.getInitialState()}
           onPress={(e) => this.onMapPress(e)}
@@ -197,21 +225,18 @@ export default class MapScreen extends Component {
             style={{top: 10}}
             onPress={this.getAllPins}
             >
-            <Text>Get All Pins</Text>
           </Button>
-
           <Button rounded light
             style={{top: 20}}
             onPress={this.getOnePin}
             >
-            <Text>Get One Pin</Text>
           </Button>
-
-          <Button rounded light
-            style={{top: 30}}
-            onPress={this._getLocationAsync}
+      
+          <Button
+            raised
+            backgroundColor='red'
+            title= 'MENU'
             >
-            <Text>Re-center on User</Text>
           </Button>
 
           <Button rounded light
@@ -232,9 +257,8 @@ export default class MapScreen extends Component {
             {this.state.region.longitude.toPrecision(7)}
           </Text>
         </View>
-
-
-      </View>
+    </Container>
     );
   }
 }
+
