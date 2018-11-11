@@ -25,13 +25,14 @@ import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
 
+let id = 0;
 var _mapView: MapView;
+var myTimestamp = new Date();
 
 const pinDetails = {
   userId: "321",
   eventName: "Test Pin",
   eventType: "Test Type",
-  timeStamp: "Sat 2:23PM",
   startTime: "Sat 2:25PM",
   endTime: "Sat 2:30PM",
   description: "This is a test pin description",
@@ -39,17 +40,17 @@ const pinDetails = {
   longitude: "-119.74580140784383"
 }
 
-class MapScreen extends Component {
+function randomColor() {
+  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+}
+
+const initialMarkers = [];
+
+export default class MapScreen extends Component {
   constructor(props){
     super(props);
 
     this.state = {
-      x: {
-        latitude: 36.812617,
-        longitude: -119.745802,
-        latitudeDelta: 0.0422,
-        longitudeDelta: 0.0221,
-      },
       region: {
         latitude: 36.812617,
         longitude: -119.745802,
@@ -57,6 +58,7 @@ class MapScreen extends Component {
         longitudeDelta: 0.0221,
       },
       loading: true,
+      markers: initialMarkers
     };
 
     this.getInitialState.bind(this);
@@ -64,13 +66,46 @@ class MapScreen extends Component {
   }
 
   // Needed for Native-Base Buttons
-  async componentWillMount() {
+  async componentDidMount() {
     await Expo.Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
     });
     this.setState({ loading: false });
+    this.loadPins();
+  }
+
+  // Creates pin on DynamoDB on map press
+  onMapPress(e) {
+    // console.log(e.nativeEvent.coordinate);
+    const newPin = API.graphql(graphqlOperation(mutations.createPin,
+      {
+        input:
+        {
+          userId: '123',
+          eventName: 'new pin',
+          eventType: pinDetails.eventType,
+          description: 'my description',
+          latitude: e.nativeEvent.coordinate.latitude,
+          longitude: e.nativeEvent.coordinate.longitude
+        }
+      }
+    ));
+
+    console.log(newPin);
+    this.setState({
+      markers: [
+        ...this.state.markers,
+        {
+          name: 'new pin',
+          description: 'my description',
+          key: id++,
+          coordinate: e.nativeEvent.coordinate,
+          color: randomColor(),
+        },
+      ],
+    });
   }
 
   getInitialState() {
@@ -94,20 +129,44 @@ class MapScreen extends Component {
   };
 
   // Adds new pin with info in pinDetails
-  testAddPin = async () => {
+  addPin = async () => {
     const newPin = API.graphql(graphqlOperation(mutations.createPin, {input: pinDetails}));
-    console.log(newPin);
+    // console.log(newPin);
     Alert.alert('PinMe', "Pin successfully added!");
   }
 
   // Queries and returns all entries
-  testGetPin = async () => {
-    const allPins = await API.graphql(graphqlOperation(queries.listPins));
+  getAllPins = async () => {
+    const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
     console.log(allPins);
   }
 
+  loadPins = async () => {
+    this.setState({markers: []});
+    const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
+    allPins.data.listPins.items.map(pin => (
+      // console.log()
+      this.setState({
+        markers: [
+          ...this.state.markers,
+          {
+            name: pin.eventName,
+            description: pin.description,
+            key: pin.id,
+            coordinate: {
+              latitude: Number(pin.latitude),
+              longitude: Number(pin.longitude)
+            },
+            color: randomColor(),
+          }
+        ]
+      })
+    ))
+    console.log('All pins loaded!');
+  }
+
   // Queries for entry with matching id
-  testGetOnePin = async () => {
+  getOnePin = async () => {
     const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
     console.log(onePin);
   }
@@ -117,10 +176,10 @@ class MapScreen extends Component {
       return <Expo.AppLoading />;
     }
     return (
-      <Container>
+    <Container>
         <StatusBar hidden/>
           <Header>
-          <View style={{ width: Dimensions.get('window').width * 0.9 }}>
+          <View style={{ paddingRight:350, paddingTop:15}}>
               <Icon name="ios-menu" onPress={
                 ()=>
                 this.props.navigation.openDrawer()}/>
@@ -134,46 +193,55 @@ class MapScreen extends Component {
           </Content>
       <View style={styles.Mapcontainer}>
         <MapView
+          // provider={PROVIDER_GOOGLE}
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
           style={styles.mapContainer}
           onRegionChange={(region) => {this.setState({region}); console.log(region);}}
           initialRegion={this.getInitialState()}
+          onPress={(e) => this.onMapPress(e)}
         >
+
+        {this.state.markers.map((marker, index) => (
           <Marker draggable
-            coordinate={this.state.x}
-            onDragEnd={(e) => {this.setState({ x: e.nativeEvent.coordinate }); console.log('Marker location: ' + JSON.stringify(this.state.x.latitude) + ', ' + JSON.stringify(this.state.x.longitude));}}
+            key={marker.key}
+            title={marker.name}
+            description={marker.description}
+            coordinate={marker.coordinate}
+            pinColor={marker.color}
           />
-      
+        ))}
+          
         </MapView>
-        <View style={styles.mapDrawerOverlay} />
-        <View style={styles.buttonContainer} />
-
-          <Button 
-            raised
-            backgroundColor='red'
-            onPress={this.testAPI}
-            title= 'Test API'
+        <View style = {styles.mapDrawerOverlay} />
+       
+        <View style={styles.buttonContainer}>
+          <Button rounded light
+            onPress={this.addPin}
             >
+            <Text>Add Pin</Text>
           </Button>
 
-          <Button 
-             raised
-             backgroundColor='red'
-             onPress={this._getLocationAsync}
-             title= 'Recenter on User'
+          <Button rounded light
+            style={{top: 10}}
+            onPress={this.getAllPins}
             >
+            <Text>Get all Pins</Text>
           </Button>
-      
-          <Button
-            raised
-            backgroundColor='red'
-            title= 'MENU'
+          <Button rounded light
+            style={{top: 20}}
+            onPress={this.getOnePin}
             >
+            <Text>Get one Pin</Text>
           </Button>
 
-        </View>
-
+          <Button rounded light
+            style={{top: 30}}
+            onPress={this.loadPins}
+            >
+            <Text>Load Pins</Text>
+          </Button>
+       </View>
         <View style={[styles.bubble, styles.latlng, {bottom: 10}]}>
           <Text style={{ textAlign: 'center'}}
             onPress = {() => _mapView.animateToCoordinate(this.getInitialState(), 1000)}
@@ -182,9 +250,9 @@ class MapScreen extends Component {
             {this.state.region.longitude.toPrecision(7)}
           </Text>
         </View>
-        </Container>
+        </View>
+    </Container>
     );
   }
 }
 
-export default MapScreen;
