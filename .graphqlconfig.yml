@@ -1,0 +1,16 @@
+projects:
+  pinmeapp:
+    schemaPath: src/graphql/schema.json
+    includes:
+      - src/graphql/**/*.js
+    excludes:
+      - amplify/**
+    extensions:
+      amplify:
+        codeGenTarget: javascript
+        generatedFileName: ''
+        docsFilePath: src/graphql
+        graphQLApiId: xwvabtlc5fdypa5rusa7gbva2e
+      endpoints:
+        prod: >-
+          https://vccj4wen2nhjje7ed7pwgn5zs4.appsync-api.us-west-2.amazonaws.com/graphql
