@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { Container, Header, Content, Button, Text} from 'native-base';
-import { Navigation } from 'react-native-navigation';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api'

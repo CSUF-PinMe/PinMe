@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
-import { createStackNavigator } from 'react-navigation'
 
+import FormPage from './src/components/pin_info/form_page.component';
 import MapScreen from './src/components/map/map.component';
 
 import { withAuthenticator } from 'aws-amplify-react-native'
@@ -41,12 +41,13 @@ class App extends Component {
 
   render() {
     return (
-      <MapScreen location={this.state.location}/>
+      <FormPage/>
     );
   }
 }
 
-export default withAuthenticator(App, { includeGreetings: true })
+// export default withAuthenticator(App, { includeGreetings: true })
+export default App;
 
 const styles = StyleSheet.create({
   container: {
