@@ -176,10 +176,10 @@ export default class MapScreen extends Component {
       return <Expo.AppLoading />;
     }
     return (
-      <Container>
+    <Container>
         <StatusBar hidden/>
           <Header>
-          <View style={{ width: Dimensions.get('window').width * 0.9 }}>
+          <View style={{ paddingRight:350, paddingTop:15}}>
               <Icon name="ios-menu" onPress={
                 ()=>
                 this.props.navigation.openDrawer()}/>
@@ -211,9 +211,10 @@ export default class MapScreen extends Component {
             pinColor={marker.color}
           />
         ))}
-
+          
         </MapView>
-
+        <View style = {styles.mapDrawerOverlay} />
+       
         <View style={styles.buttonContainer}>
           <Button rounded light
             onPress={this.addPin}
@@ -225,30 +226,22 @@ export default class MapScreen extends Component {
             style={{top: 10}}
             onPress={this.getAllPins}
             >
+            <Text>Get all Pins</Text>
           </Button>
           <Button rounded light
             style={{top: 20}}
             onPress={this.getOnePin}
             >
-          </Button>
-      
-          <Button
-            raised
-            backgroundColor='red'
-            title= 'MENU'
-            >
+            <Text>Get one Pin</Text>
           </Button>
 
           <Button rounded light
-            style={{top: 40}}
+            style={{top: 30}}
             onPress={this.loadPins}
             >
             <Text>Load Pins</Text>
           </Button>
-
-
-        </View>
-
+       </View>
         <View style={[styles.bubble, styles.latlng, {bottom: 10}]}>
           <Text style={{ textAlign: 'center'}}
             onPress = {() => _mapView.animateToCoordinate(this.getInitialState(), 1000)}
@@ -256,6 +249,7 @@ export default class MapScreen extends Component {
             {this.state.region.latitude.toPrecision(7)},
             {this.state.region.longitude.toPrecision(7)}
           </Text>
+        </View>
         </View>
     </Container>
     );

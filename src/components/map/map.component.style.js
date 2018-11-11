@@ -44,6 +44,7 @@ export default StyleSheet.create({
     marginHorizontal: 5,
   },
   buttonContainer: {
+    position: 'absolute',
     flex: 1,
     justifyContent: 'flex-start',
     flexDirection: 'column',
@@ -54,6 +55,7 @@ export default StyleSheet.create({
   },
   buttonText: {
     textAlign: 'center',
+    position: 'absolute'
   },
   mapDrawerOverlay: {
     position: 'absolute',
