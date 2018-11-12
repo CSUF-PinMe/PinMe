@@ -1,9 +1,10 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": null,
   "packagerPort": null,
-  "packagerPid": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19004,
+  "packagerPid": 14649,
   "expoServerNgrokUrl": "https://sz-jwk.ecast96.pinme.exp.direct",
   "packagerNgrokUrl": "https://packager.sz-jwk.ecast96.pinme.exp.direct",
-  "ngrokPid": 7058
+  "ngrokPid": 14667
 }

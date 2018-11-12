@@ -1,19 +1,12 @@
 # PinMe - Core App
 
-## Current App State (v1.3)
- - Configured app with AWS Amplify
- - Added default Amplify sign-in screen for testing
-   - Includes sign-out button at the top of the screen after signing in
-
-> ## Previous App State (v1.2)
-> - Added custom map style (Credits to Heather!)
-> - Moved stylesheets associated with component into the same folder
-> - Added access to user/device location (asks for permission first)
-> - Added two buttons at the top left of the screen
->   - Button 1: Tests POST API call with backend (AWS API Gateway & Lambda)
->   - Button 2: Re-centers map on user location (also prints user location in the console)
-> - Added a draggable marker to test interactions
->   - When marker is moved, marker location is printed in the console
+## Current App State (v1.6)
+ - React Navigation has been implemented for the switching of screens
+ - New screen "addPinMap" has been added.
+   - Renders a map and pin in center of the screen.
+   - Allows the user to place a pin on the map or cancel and go back to the main map view
+ - New pin images have been added (Thanks Heather!)
+ - Pins on the map can be deleted by touching them. (will be changed later)
 
 
 ## Description
