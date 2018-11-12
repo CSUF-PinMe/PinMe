@@ -3,7 +3,8 @@ import {
     View,
     StyleSheet, 
     Dimensions,
-    StatusBar
+    StatusBar,
+    ScrollView,
  } from 'react-native';
 import { 
         Container, 
@@ -12,30 +13,54 @@ import {
         Text, 
         Icon,
         Button,
-        Left
+        Left,
+        Card,
+        CardItem,
+        Body,
+        Item,
+        Input
 } from 'native-base';
 
-class SearchScreen extends Component {
+export default class SearchScreen extends Component {
   render() {
     return (
-      <Container>
+      <ScrollView>
       <StatusBar hidden/>
-
-      <Header>
-      <View style={{ width: Dimensions.get('window').width * 0.9 }}>
-          <Icon name="ios-menu" onPress={
-            ()=>
-            this.props.navigation.openDrawer()}/>
-            </View>
-      </Header>
-        <Content>
-          <Text>Search</Text>
-        </Content>
-      </Container>
+      <Header searchBar rounded>
+          <Item>
+            <Icon name="ios-search" />
+            <Input 
+            placeholder="Search"/>
+            <Icon name="ios-people" />
+          </Item>
+          <Button transparent>
+            <Text>Search</Text>
+          </Button>
+        </Header>
+      <Content padder>
+        <Card>
+          <CardItem header bordered >
+            <Text>NativeBase</Text>
+          </CardItem>
+          <CardItem bordered>
+            <Body>
+              <Text>
+                PinMe!
+              </Text>
+            </Body>
+          </CardItem>
+          <CardItem footer bordered>
+            <Text>GeekyAnts</Text>
+          </CardItem>
+        </Card>
+      </Content>
+      </ScrollView>
     );
   }
 }
 
-export default SearchScreen;
-
-
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingVertical: 20
+  }
+});

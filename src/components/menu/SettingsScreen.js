@@ -3,7 +3,8 @@ import {
     View,
     StyleSheet, 
     Dimensions,
-    StatusBar
+    StatusBar,
+    ScrollView
  } from 'react-native';
 import { 
         Container, 
@@ -12,7 +13,14 @@ import {
         Text, 
         Icon,
         Button,
-        Left
+        Left,
+        Card,
+        CardItem,
+        Body, 
+        List,
+        Item,
+        Input
+
 } from 'native-base';
 
 class SettingsScreen extends Component {
@@ -29,13 +37,18 @@ class SettingsScreen extends Component {
             </View>
       </Header>
         <Content>
-          <Text>Settings</Text>
+          <Text>Search</Text>
         </Content>
       </Container>
     );
   }
 }
 
-export default SettingsScreen;
+const styles = StyleSheet.create({
+  contentContainer: {
+    paddingVertical: 20
+  }
+});
 
+export default SettingsScreen;
 

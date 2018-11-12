@@ -14,7 +14,6 @@ import Expo, {
 import {
   createDrawerNavigator,
   createStackNavigator,
-  StackNavigator, 
   DrawerItems, 
   SafeAreaView
 } from 'react-navigation'
@@ -31,11 +30,13 @@ import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
 import SettingsScreen from './src/components/menu/SettingsScreen'
 import ProfileScreen from './src/components/menu/ProfileScreen'
+import SearchScreen from './src/components/menu/SearchScreen'
 import { FormValidationMessage } from 'react-native-elements';
 import MapScreen from './src/components/map/map.component'
-import SearchScreen from './src/components/menu/SearchScreen'
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
-import { fadeIn, zoomIn } from 'react-navigation-transitions';
+//import { fadeIn, zoomIn } from 'react-navigation-transitions';
+import { Route53Domains } from 'aws-sdk/clients/all';
+import mapComponentStyle from './src/components/map/map.component.style';
 
 Amplify.configure(config)
 
@@ -66,20 +67,21 @@ this._getLocationAsync();
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ location });
   };
-
   render() {
-    return <RootStack />;
-  }
+    return (
+      <MyApp/>
+);
+}
+}
 
 const RootStack = createStackNavigator(
   {
     // Login: LoginScreen,
-    MainMap: MapScreen,
     AddPin: AddPinMap
   },
   {
-    initialRouteName: 'MainMap',
-    transitionConfig: () => fadeIn(),
+    initialRouteName: 'MainMap'
+  //  transitionConfig: () => fadeIn(),
   }
 );
 
@@ -113,6 +115,9 @@ const MyApp = createDrawerNavigator({
     },
     Map: {
         screen: MapScreen
+    },
+    AddPin:{
+      screen: AddPinMap
     }
 },
 {

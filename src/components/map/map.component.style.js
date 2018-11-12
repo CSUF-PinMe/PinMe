@@ -7,7 +7,6 @@ const Screen = {
 };
 
 export default StyleSheet.create({
-  },
   mapContainer: {
     width: Screen.width,
     height: Screen.height,
