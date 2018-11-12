@@ -1,0 +1,135 @@
+type Pin {
+  id: ID!
+  userId: String!
+  eventName: String!
+  eventType: String
+  startTime: String
+  endTime: String
+  description: String
+  latitude: String
+  longitude: String
+}
+
+enum ModelSortDirection {
+  ASC
+  DESC
+}
+
+type ModelPinConnection {
+  items: [Pin]
+  nextToken: String
+}
+
+input ModelStringFilterInput {
+  ne: String
+  eq: String
+  le: String
+  lt: String
+  ge: String
+  gt: String
+  contains: String
+  notContains: String
+  between: [String]
+  beginsWith: String
+}
+
+input ModelIDFilterInput {
+  ne: ID
+  eq: ID
+  le: ID
+  lt: ID
+  ge: ID
+  gt: ID
+  contains: ID
+  notContains: ID
+  between: [ID]
+  beginsWith: ID
+}
+
+input ModelIntFilterInput {
+  ne: Int
+  eq: Int
+  le: Int
+  lt: Int
+  ge: Int
+  gt: Int
+  contains: Int
+  notContains: Int
+  between: [Int]
+}
+
+input ModelFloatFilterInput {
+  ne: Float
+  eq: Float
+  le: Float
+  lt: Float
+  ge: Float
+  gt: Float
+  contains: Float
+  notContains: Float
+  between: [Float]
+}
+
+input ModelBooleanFilterInput {
+  ne: Boolean
+  eq: Boolean
+}
+
+input ModelPinFilterInput {
+  id: ModelIDFilterInput
+  userId: ModelStringFilterInput
+  eventName: ModelStringFilterInput
+  eventType: ModelStringFilterInput
+  startTime: ModelStringFilterInput
+  endTime: ModelStringFilterInput
+  description: ModelStringFilterInput
+  latitude: ModelStringFilterInput
+  longitude: ModelStringFilterInput
+  and: [ModelPinFilterInput]
+  or: [ModelPinFilterInput]
+  not: ModelPinFilterInput
+}
+
+type Query {
+  getPin(id: ID!): Pin
+  listPins(filter: ModelPinFilterInput, limit: Int, nextToken: String): ModelPinConnection
+}
+
+input CreatePinInput {
+  userId: String!
+  eventName: String!
+  eventType: String
+  startTime: String
+  endTime: String
+  description: String
+  latitude: String
+  longitude: String
+}
+
+input UpdatePinInput {
+  id: ID!
+  userId: String
+  eventName: String
+  eventType: String
+  startTime: String
+  endTime: String
+  description: String
+  latitude: String
+  longitude: String
+}
+
+input DeletePinInput {
+  id: ID
+}
+
+type Mutation {
+  createPin(input: CreatePinInput!): Pin
+  updatePin(input: UpdatePinInput!): Pin
+  deletePin(input: DeletePinInput!): Pin
+}
+
+type Subscription {
+  onCreatePin: Pin @aws_subscribe(mutations: ["createPin"])
+  onUpdatePin: Pin @aws_subscribe(mutations: ["updatePin"])
+  onDeletePin: Pin @aws_subscribe(mutations: ["deletePin"])
+}

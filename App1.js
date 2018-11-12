@@ -1,18 +1,16 @@
-import React from 'react';
-import { Button, View, Text } from 'react-native';
-import { createStackNavigator } from 'react-navigation'; // Version can be specified in package.json
-import { fadeIn, zoomIn } from 'react-navigation-transitions';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
+import Expo, { Constants, Location, Permissions } from 'expo';
+import MapView from 'react-native-maps';
 
 import MapScreen from './src/components/map/map.component';
-import AddPinMap from './src/components/addpinmap/addpinmap.component';
 
-import Expo, { Constants, Location, Permissions } from 'expo';
 import { withAuthenticator } from 'aws-amplify-react-native'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
 Amplify.configure(config)
 
-class App extends React.Component {
+class App extends Component {
   constructor(props){
     super(props);
 
@@ -41,20 +39,18 @@ class App extends React.Component {
   };
 
   render() {
-    return <RootStack />;
+    return (
+      <MapScreen location={this.state.location}/>
+    );
   }
 }
 
-const RootStack = createStackNavigator(
-  {
-    // Login: LoginScreen,
-    MainMap: MapScreen,
-    AddPin: AddPinMap
-  },
-  {
-    initialRouteName: 'MainMap',
-    transitionConfig: () => fadeIn(),
-  }
-);
+export default withAuthenticator(App, { includeGreetings: true })
 
-export default withAuthenticator(App)
+const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  }
+});

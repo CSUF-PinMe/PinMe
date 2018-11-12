@@ -1,0 +1,13 @@
+{
+    "AppSyncApiName": "pinmeapp",
+    "AuthCognitoUserPoolId": {
+        "Fn::GetAtt": [
+            "authcognito5796e323",
+            "Outputs.UserPoolId"
+        ]
+    },
+    "schemaGraphql": "s3://ine-20181103124101-deployment/amplify-appsync-files/schema.graphql.1541880665775",
+    "ResolverBucket": "ine-20181103124101-deployment",
+    "ResolverRootKey": "amplify-appsync-files",
+    "DeploymentTimestamp": "1541880665775"
+}
