@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { Container, Header, Content, Button, Text} from 'native-base';
+
 import { Navigation } from 'react-native-navigation';
 import MapView, { Marker } from 'react-native-maps';
+
 import Expo, { Constants, Location, Permissions } from 'expo';
 import redPin from '../../../assets/pin_red.png'
 import API, { graphqlOperation } from '@aws-amplify/api'

@@ -1,8 +1,14 @@
+
 import React from 'react';
-import { Button, View, Text } from 'react-native';
+import React, { Component } from 'react';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Button } from 'react-native';
+import Expo, { Constants, Location, Permissions } from 'expo';
+import MapView from 'react-native-maps';
 import { createStackNavigator } from 'react-navigation'; // Version can be specified in package.json
 import { fadeIn, zoomIn } from 'react-navigation-transitions';
 
+
+import FormPage from './src/components/pin_info/form_page.component';
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
 
@@ -41,11 +47,22 @@ class App extends React.Component {
   };
 
   render() {
-    return <RootStack />;
+    return (
+      <FormPage/>
+    );
   }
 }
 
-const RootStack = createStackNavigator(
+// export default withAuthenticator(App, { includeGreetings: true })
+export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+
+const RootStack = createStackNavigator( //render rootstack was deleted for my part
   {
     // Login: LoginScreen,
     MainMap: MapScreen,
