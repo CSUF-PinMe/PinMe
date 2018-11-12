@@ -1,8 +1,7 @@
 
-import React from 'react';
+
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Button } from 'react-native';
-import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
 import { createStackNavigator } from 'react-navigation'; // Version can be specified in package.json
 import { fadeIn, zoomIn } from 'react-navigation-transitions';
@@ -61,6 +60,8 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  }
+});
 
 const RootStack = createStackNavigator( //render rootstack was deleted for my part
   {
@@ -74,4 +75,4 @@ const RootStack = createStackNavigator( //render rootstack was deleted for my pa
   }
 );
 
-export default withAuthenticator(App)
+//export default withAuthenticator(App)
