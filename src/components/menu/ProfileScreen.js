@@ -16,6 +16,11 @@ import {
 } from 'native-base';
 
 class HomeScreen extends Component {
+  static navigationOptions = {
+    drawerIcon: ({tintColor}) => (
+      <Icon name = "home" style = {{fontSize: 24, color:tintColor}} />
+    )
+  }
   render() {
     return (
         <Container>

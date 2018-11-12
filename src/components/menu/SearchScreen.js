@@ -22,6 +22,12 @@ import {
 } from 'native-base';
 
 export default class SearchScreen extends Component {
+
+  static navigationOptions = {
+    drawerIcon: ({tintColor}) => (
+      <Icon name = "home" style = {{fontSize: 24, color:tintColor}} />
+    )
+  }
   render() {
     return (
       <ScrollView>

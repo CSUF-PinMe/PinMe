@@ -62,10 +62,6 @@ export default class MapScreen extends Component {
     this._getLocationAsync.bind(this);
   }
 
-  static navigationOptions = {
-    header: null
-  }
-
   // Needed for Native-Base Buttons
   async componentDidMount() {
     await Expo.Font.loadAsync({
@@ -144,7 +140,7 @@ export default class MapScreen extends Component {
     const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
     console.log(onePin);
   }
-  
+ 
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;

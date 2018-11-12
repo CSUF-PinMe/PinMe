@@ -24,6 +24,12 @@ import {
 } from 'native-base';
 
 class SettingsScreen extends Component {
+  static navigationOptions = {
+    drawerIcon: ({tintColor}) => (
+      <Icon name = "home" style = {{fontSize: 24, color:tintColor}} />
+    )
+  }
+
   render() {
     return (
       <Container>
@@ -37,7 +43,7 @@ class SettingsScreen extends Component {
             </View>
       </Header>
         <Content>
-          <Text>Search</Text>
+          <Text>Settings</Text>
         </Content>
       </Container>
     );

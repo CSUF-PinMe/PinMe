@@ -34,6 +34,7 @@ import SearchScreen from './src/components/menu/SearchScreen'
 import { FormValidationMessage } from 'react-native-elements';
 import MapScreen from './src/components/map/map.component'
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
+import FormPage from './src/components/pin_info/form_page.component';
 //import { fadeIn, zoomIn } from 'react-navigation-transitions';
 import { Route53Domains } from 'aws-sdk/clients/all';
 import mapComponentStyle from './src/components/map/map.component.style';
@@ -77,10 +78,10 @@ this._getLocationAsync();
 const RootStack = createStackNavigator(
   {
     // Login: LoginScreen,
-    AddPin: AddPinMap
+    AddPin: AddPinMap,
+    PinInfo: FormPage
   },
   {
-    initialRouteName: 'MainMap'
   //  transitionConfig: () => fadeIn(),
   }
 );
@@ -104,27 +105,31 @@ const CustomDrawerContentComponent = (props) => (
 );
 
 const MyApp = createDrawerNavigator({
-    Profile: {
-        screen: ProfileScreen
-    },
-    Search: {
-        screen: SearchScreen
-    },
-    Settings: {
-        screen: SettingsScreen
-    },
-    Map: {
-        screen: MapScreen
-    },
+    Profile: ProfileScreen,
+    Search:  SearchScreen,
+    Settings: SettingsScreen,
+    Map: MapScreen,
     AddPin:{
-      screen: AddPinMap
+      screen: AddPinMap,
+      navigationOptions: {
+        drawerLabel: ()=>null
+      }
+    },
+    PinInfo: {
+      screen: FormPage,
+      navigationOptions: {
+        drawerLabel: ()=>null
+      }
     }
 },
 {
   initialRouteName: 'Map',
   drawerPosition: 'left',
   contentComponent: CustomDrawerContentComponent,
-});
+  contentOptions: {
+    activeTintColor: 'red'
+  }
+}, {});
 
 export default withAuthenticator(App /*, { includeGreetings: true }*/)
 
@@ -143,6 +148,8 @@ const styles = StyleSheet.create({
       height: 150,
       width: 150,
       borderRadius: 75,
+      alignSelf: 'center'
+      
     }
   
   });
