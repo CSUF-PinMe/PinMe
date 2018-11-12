@@ -42,22 +42,14 @@ export default class FormPage extends Component {
     }
     return (
       <Container>
-        
-        <Header style = {{backgroundColor: '#03a9f4', height: 86}}>
-          
-          <Left>
-            <Button transparent>
-              <Icon name='arrow-back' />
-            </Button>
-          </Left>
+        <StatusBar hidden/>
+        <Header style = {{backgroundColor: '#03a9f4', height: 65}}>
+        <View style = {{top: 20}}>
           <Body>
             <Title>Pin Information</Title>
           </Body>
-          <Right>
-            <Button transparent>
-              <Text style = {{color: '#FFFFFF'}}>   </Text>
-            </Button>
-          </Right>
+        </View>
+
         </Header>
 
         <Content>
@@ -90,10 +82,15 @@ export default class FormPage extends Component {
             </Item>
 
             <Item stackedLabel>
+              <Label>Description </Label>
+              <Input />
+            </Item> 
+
+            <Item stackedLabel>
             <Label>Start Time</Label>
             <Item>
             <Icon active name='time' />
-            <Input placeholder='e.g. 11:30 AM'/>
+            <Input placeholder='e.g. 11:30 AM' placeholderTextColor = '#9e9e9e'/>
             </Item>
             </Item>
 
@@ -101,15 +98,27 @@ export default class FormPage extends Component {
             <Label>End Time</Label>
             <Item>
             <Icon active name='time' />
-            <Input placeholder='e.g. 2:00 PM'/>
+            <Input placeholder='e.g. 2:00 PM' placeholderTextColor = '#9e9e9e'/>
             </Item>
             </Item>
 
-            <Item stackedLabel>
-              <Label>Description </Label>
-              <Input />
-            </Item> 
+            <Button block style = {{top: 10, height: 60, backgroundColor: '#FFFFFF'}}>
+              <Text style = {{color: '#000000'}}>Change Location</Text>
+            </Button>
+
           </Form>
+
+          <Content>
+            <Button block style = {{top: 20, height: 60, backgroundColor: '#79e56a'}}>
+              <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
+            </Button>
+            <Button block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}}>
+              <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
+            </Button>
+            <Button disabled style = {{top: 40, height: 60, backgroundColor: '#FFFFFF'}}>
+            </Button>
+          </Content>
+
         </Content>
       </Container>
     );
