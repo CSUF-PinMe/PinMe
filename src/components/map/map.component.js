@@ -1,24 +1,7 @@
 import React, { Component } from 'react';
-import { 
-  StyleSheet, 
-  View, 
-  Dimensions, 
-  TouchableOpacity, 
-  StatusBar, 
-  Alert 
-} from 'react-native';
-import { 
-  Container, 
-  Header, 
-  Content, 
-  Text, 
-  Icon,
-  Button,
-  Left
-} from 'native-base';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
-import { DrawerNavigator, DrawerItems } from 'react-navigation';
+import { DrawerNavigator, DrawerItems, Navigation } from 'react-navigation';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';

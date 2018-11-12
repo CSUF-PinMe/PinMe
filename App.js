@@ -68,10 +68,21 @@ this._getLocationAsync();
   };
 
   render() {
-    return <RootStack />;
+    return (
+      <FormPage/>
+    );
   }
 
-const RootStack = createStackNavigator(
+// export default withAuthenticator(App, { includeGreetings: true })
+export default App;
+
+const styles = StyleSheet.create({
+  container: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+
+const RootStack = createStackNavigator( //render rootstack was deleted for my part
   {
     // Login: LoginScreen,
     MainMap: MapScreen,
