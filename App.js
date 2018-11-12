@@ -13,6 +13,7 @@ import Expo, {
 } from 'expo'
 import {
   createDrawerNavigator,
+  createStackNavigator,
   StackNavigator, 
   DrawerItems, 
   SafeAreaView
@@ -33,9 +34,12 @@ import ProfileScreen from './src/components/menu/ProfileScreen'
 import { FormValidationMessage } from 'react-native-elements';
 import MapScreen from './src/components/map/map.component'
 import SearchScreen from './src/components/menu/SearchScreen'
+import AddPinMap from './src/components/addpinmap/addpinmap.component';
+import { fadeIn, zoomIn } from 'react-navigation-transitions';
+
 Amplify.configure(config)
 
-class App extends Component {
+class App extends React.Component {
   constructor(props){
     super(props);
 
@@ -64,11 +68,20 @@ this._getLocationAsync();
   };
 
   render() {
-        return (
-          <MyApp/>
-    );
+    return <RootStack />;
   }
-}
+
+const RootStack = createStackNavigator(
+  {
+    // Login: LoginScreen,
+    MainMap: MapScreen,
+    AddPin: AddPinMap
+  },
+  {
+    initialRouteName: 'MainMap',
+    transitionConfig: () => fadeIn(),
+  }
+);
 
 const CustomDrawerContentComponent = (props) => (
 

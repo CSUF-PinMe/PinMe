@@ -7,8 +7,6 @@ const Screen = {
 };
 
 export default StyleSheet.create({
-  container: {
-    flex: 1,
   },
   mapContainer: {
     width: Screen.width,

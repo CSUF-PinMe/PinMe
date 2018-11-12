@@ -24,6 +24,7 @@ import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
+import redPin from '../../../assets/pin_red.png'
 
 let id = 0;
 var _mapView: MapView;
@@ -38,10 +39,6 @@ const pinDetails = {
   description: "This is a test pin description",
   latitude: "36.81261365334545",
   longitude: "-119.74580140784383"
-}
-
-function randomColor() {
-  return `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 }
 
 const initialMarkers = [];
@@ -65,6 +62,10 @@ export default class MapScreen extends Component {
     this._getLocationAsync.bind(this);
   }
 
+  static navigationOptions = {
+    header: null
+  }
+
   // Needed for Native-Base Buttons
   async componentDidMount() {
     await Expo.Font.loadAsync({
@@ -72,40 +73,7 @@ export default class MapScreen extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
     });
-    this.setState({ loading: false });
     this.loadPins();
-  }
-
-  // Creates pin on DynamoDB on map press
-  onMapPress(e) {
-    // console.log(e.nativeEvent.coordinate);
-    const newPin = API.graphql(graphqlOperation(mutations.createPin,
-      {
-        input:
-        {
-          userId: '123',
-          eventName: 'new pin',
-          eventType: pinDetails.eventType,
-          description: 'my description',
-          latitude: e.nativeEvent.coordinate.latitude,
-          longitude: e.nativeEvent.coordinate.longitude
-        }
-      }
-    ));
-
-    console.log(newPin);
-    this.setState({
-      markers: [
-        ...this.state.markers,
-        {
-          name: 'new pin',
-          description: 'my description',
-          key: id++,
-          coordinate: e.nativeEvent.coordinate,
-          color: randomColor(),
-        },
-      ],
-    });
   }
 
   getInitialState() {
@@ -129,10 +97,16 @@ export default class MapScreen extends Component {
   };
 
   // Adds new pin with info in pinDetails
-  addPin = async () => {
-    const newPin = API.graphql(graphqlOperation(mutations.createPin, {input: pinDetails}));
-    // console.log(newPin);
-    Alert.alert('PinMe', "Pin successfully added!");
+  // addPin = async () => {
+  //   const newPin = API.graphql(graphqlOperation(mutations.createPin, {input: pinDetails}));
+  //   // console.log(newPin);
+  //   Alert.alert('PinMe', "Pin successfully added!");
+  // }
+
+  deletePin = async (e) => {
+    var removeIndex = this.state.markers.map(function(item) { return item.key; }).indexOf(e);
+    this.state.markers.splice(removeIndex, 1);
+    const result = API.graphql(graphqlOperation(mutations.deletePin, {input: {id: e}}));
   }
 
   // Queries and returns all entries
@@ -157,11 +131,11 @@ export default class MapScreen extends Component {
               latitude: Number(pin.latitude),
               longitude: Number(pin.longitude)
             },
-            color: randomColor(),
           }
         ]
       })
     ))
+    this.setState({loading: false});
     console.log('All pins loaded!');
   }
 
@@ -199,16 +173,16 @@ export default class MapScreen extends Component {
           style={styles.mapContainer}
           onRegionChange={(region) => {this.setState({region}); console.log(region);}}
           initialRegion={this.getInitialState()}
-          onPress={(e) => this.onMapPress(e)}
         >
 
         {this.state.markers.map((marker, index) => (
-          <Marker draggable
+          <Marker
             key={marker.key}
             title={marker.name}
             description={marker.description}
             coordinate={marker.coordinate}
-            pinColor={marker.color}
+            image={redPin}
+            onPress={() => this.deletePin(marker.key)}
           />
         ))}
           
@@ -217,7 +191,12 @@ export default class MapScreen extends Component {
        
         <View style={styles.buttonContainer}>
           <Button rounded light
-            onPress={this.addPin}
+            onPress={() => this.props.navigation.navigate('AddPin',
+            {
+              'region': this.state.region,
+              'markers': this.state.markers,
+              refresh: this.loadPins
+            })}
             >
             <Text>Add Pin</Text>
           </Button>
