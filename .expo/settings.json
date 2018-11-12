@@ -1,7 +1,7 @@
 {
   "hostType": "lan",
   "lanType": "ip",
-  "dev": true,
-  "minify": false,
-  "urlRandomness": "sz-jwk"
+  "dev": false,
+  "minify": true,
+  "urlRandomness": "2e-ncs"
 }
