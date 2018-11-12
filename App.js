@@ -1,21 +1,42 @@
-
-import React from 'react';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Button } from 'react-native';
-import Expo, { Constants, Location, Permissions } from 'expo';
-import MapView from 'react-native-maps';
-import { createStackNavigator } from 'react-navigation'; // Version can be specified in package.json
-import { fadeIn, zoomIn } from 'react-navigation-transitions';
-
-
-import FormPage from './src/components/pin_info/form_page.component';
-import MapScreen from './src/components/map/map.component';
-import AddPinMap from './src/components/addpinmap/addpinmap.component';
-
-import Expo, { Constants, Location, Permissions } from 'expo';
+import { 
+  View,
+  StyleSheet, 
+  Text,
+  ScrollView,
+  Image,
+ } from 'react-native'
+import Expo, { 
+  Constants, 
+  Location, 
+  Permissions 
+} from 'expo'
+import {
+  createDrawerNavigator,
+  createStackNavigator,
+  StackNavigator, 
+  DrawerItems, 
+  SafeAreaView
+} from 'react-navigation'
+import {
+  Container, 
+  Content, 
+  Icon, 
+  Header, 
+  Body
+} from 'native-base'
+import MapView from 'react-native-maps'
 import { withAuthenticator } from 'aws-amplify-react-native'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
+import SettingsScreen from './src/components/menu/SettingsScreen'
+import ProfileScreen from './src/components/menu/ProfileScreen'
+import { FormValidationMessage } from 'react-native-elements';
+import MapScreen from './src/components/map/map.component'
+import SearchScreen from './src/components/menu/SearchScreen'
+import AddPinMap from './src/components/addpinmap/addpinmap.component';
+import { fadeIn, zoomIn } from 'react-navigation-transitions';
+
 Amplify.configure(config)
 
 class App extends React.Component {
@@ -28,8 +49,8 @@ class App extends React.Component {
     }
   }
 
-  async componentWillMount() {
-    this._getLocationAsync();
+async componentWillMount() {
+this._getLocationAsync();
   }
 
   _getLocationAsync = async () => {
@@ -51,7 +72,6 @@ class App extends React.Component {
       <FormPage/>
     );
   }
-}
 
 // export default withAuthenticator(App, { includeGreetings: true })
 export default App;
@@ -74,4 +94,61 @@ const RootStack = createStackNavigator( //render rootstack was deleted for my pa
   }
 );
 
-export default withAuthenticator(App)
+const CustomDrawerContentComponent = (props) => (
+
+  <Container>
+    <Header style={styles.drawerHeader}>
+      <Body>
+        <Image
+          style={styles.drawerImage}
+          source={require('./assets/icon.png')} />
+      </Body>
+    </Header>
+    <Content>
+      <DrawerItems {...props} />
+    </Content>
+
+  </Container>
+
+);
+
+const MyApp = createDrawerNavigator({
+    Profile: {
+        screen: ProfileScreen
+    },
+    Search: {
+        screen: SearchScreen
+    },
+    Settings: {
+        screen: SettingsScreen
+    },
+    Map: {
+        screen: MapScreen
+    }
+},
+{
+  initialRouteName: 'Map',
+  drawerPosition: 'left',
+  contentComponent: CustomDrawerContentComponent,
+});
+
+export default withAuthenticator(App /*, { includeGreetings: true }*/)
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
+    drawerHeader: {
+      height: 200,
+      backgroundColor: 'white',
+      alignItems: 'center'
+    },
+    drawerImage: {
+      height: 150,
+      width: 150,
+      borderRadius: 75,
+    }
+  
+  });

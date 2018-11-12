@@ -39,6 +39,7 @@
 >   - When marker is moved, marker location is printed in the console
 
 
+
 ## Description
 
 This is a React Native app created with the Expo CLI to display a simple map view (Google Maps API).

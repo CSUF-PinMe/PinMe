@@ -1,17 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
-import { Container, Header, Content, Button, Text} from 'native-base';
-
-import { Navigation } from 'react-native-navigation';
 import MapView, { Marker } from 'react-native-maps';
-
 import Expo, { Constants, Location, Permissions } from 'expo';
-import redPin from '../../../assets/pin_red.png'
+import { DrawerNavigator, DrawerItems, Navigation } from 'react-navigation';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
+import redPin from '../../../assets/pin_red.png'
 
 let id = 0;
 var _mapView: MapView;
@@ -131,21 +127,34 @@ export default class MapScreen extends Component {
     const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
     console.log(onePin);
   }
-
+  
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
     return (
-      <View style ={styles.container}>
+    <Container>
         <StatusBar hidden/>
-
+          <Header>
+          <View style={{ paddingRight:350, paddingTop:15}}>
+              <Icon name="ios-menu" onPress={
+                ()=>
+                this.props.navigation.openDrawer()}/>
+            </View>
+          </Header>
+          <Content contentContainerSyle={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+          </Content>
+      <View style={styles.Mapcontainer}>
         <MapView
           // provider={PROVIDER_GOOGLE}
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
-          style={styles.map}
-          onRegionChange={(region) => this.setState({region})}
+          style={styles.mapContainer}
+          onRegionChange={(region) => {this.setState({region}); console.log(region);}}
           initialRegion={this.getInitialState()}
         >
 
@@ -159,9 +168,10 @@ export default class MapScreen extends Component {
             onPress={() => this.deletePin(marker.key)}
           />
         ))}
-
+          
         </MapView>
-
+        <View style = {styles.mapDrawerOverlay} />
+       
         <View style={styles.buttonContainer}>
           <Button rounded light
             onPress={() => this.props.navigation.navigate('AddPin',
@@ -178,33 +188,22 @@ export default class MapScreen extends Component {
             style={{top: 10}}
             onPress={this.getAllPins}
             >
-            <Text>Get All Pins</Text>
+            <Text>Get all Pins</Text>
           </Button>
-
           <Button rounded light
             style={{top: 20}}
             onPress={this.getOnePin}
             >
-            <Text>Get One Pin</Text>
+            <Text>Get one Pin</Text>
           </Button>
 
           <Button rounded light
             style={{top: 30}}
-            onPress={this._getLocationAsync}
-            >
-            <Text>Re-center on User</Text>
-          </Button>
-
-          <Button rounded light
-            style={{top: 40}}
             onPress={this.loadPins}
             >
             <Text>Load Pins</Text>
           </Button>
-
-
-        </View>
-
+       </View>
         <View style={[styles.bubble, styles.latlng, {bottom: 10}]}>
           <Text style={{ textAlign: 'center'}}
             onPress = {() => _mapView.animateToCoordinate(this.getInitialState(), 1000)}
@@ -213,9 +212,9 @@ export default class MapScreen extends Component {
             {this.state.region.longitude.toPrecision(7)}
           </Text>
         </View>
-
-
-      </View>
+        </View>
+    </Container>
     );
   }
 }
+
