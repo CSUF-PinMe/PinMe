@@ -9,6 +9,7 @@
  - Pins on the map can be deleted by touching them. (will be changed later)
 
 
+
 ## Description
 
 This is a React Native app created with the Expo CLI to display a simple map view (Google Maps API).
