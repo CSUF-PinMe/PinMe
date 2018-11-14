@@ -68,25 +68,6 @@ export default class AddPinMap extends Component {
     header: null
   }
 
-  addPin() {
-
-    const newPin = API.graphql(graphqlOperation(mutations.createPin,
-      {
-        input:
-        {
-          userId: '123',
-          eventName: 'new pin',
-          eventType: 'my type',
-          description: 'my description',
-          latitude: this.state.region.latitude,
-          longitude: this.state.region.longitude
-        }
-      }
-    ));
-    this.props.navigation.state.params.refresh();
-    this.props.navigation.goBack();
-  }
-
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
@@ -97,7 +78,7 @@ export default class AddPinMap extends Component {
           <View style={styles.container}>
             <MapView
             style={styles.map}
-            onRegionChange={(region) => {this.setState({region}); console.log(region);}}
+            onRegionChange={(region) => this.setState({region})}
             initialRegion={this.state.region}
             customMapStyle={myMapStyle}
             >
@@ -124,7 +105,11 @@ export default class AddPinMap extends Component {
           </View>
           <View style={styles.button2Container}>
             <Button large rounded success
-              onPress={() => this.addPin()}
+              onPress={() => this.props.navigation.navigate('PinInfo',
+              {
+                'region': this.state.region,
+                refreshMap: this.props.navigation.state.params.refresh
+                })}
             >
               <NativeIcon type="FontAwesome" name="check-circle" />
             </Button>
@@ -135,20 +120,3 @@ export default class AddPinMap extends Component {
     );
   }
 }
-
-// <MapView
-// style={styles.map}
-// onRegionChange={(region) => {this.setState({region}); console.log(region);}}
-// initialRegion={this.state.region}
-// customMapStyle={myMapStyle}
-// />
-
-// {this.state.markers.map((marker, index) => (
-//   <Marker
-//     key={marker.key}
-//     title={marker.name}
-//     description={marker.description}
-//     coordinate={marker.coordinate}
-//     pinColor={this.state.color}
-//   />
-// ))}

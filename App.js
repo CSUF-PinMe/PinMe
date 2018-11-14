@@ -5,6 +5,7 @@ import { fadeIn, zoomIn } from 'react-navigation-transitions';
 
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
+import PinInfo from './src/components/pininfo/pininfo.component';
 
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { withAuthenticator } from 'aws-amplify-react-native'
@@ -47,9 +48,9 @@ class App extends React.Component {
 
 const RootStack = createStackNavigator(
   {
-    // Login: LoginScreen,
     MainMap: MapScreen,
-    AddPin: AddPinMap
+    AddPin: AddPinMap,
+    PinInfo: PinInfo
   },
   {
     initialRouteName: 'MainMap',

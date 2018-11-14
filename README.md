@@ -1,12 +1,22 @@
 # PinMe - Core App
 
-## Current App State (v1.6)
- - React Navigation has been implemented for the switching of screens
- - New screen "addPinMap" has been added.
-   - Renders a map and pin in center of the screen.
-   - Allows the user to place a pin on the map or cancel and go back to the main map view
- - New pin images have been added (Thanks Heather!)
- - Pins on the map can be deleted by touching them. (will be changed later)
+## Current App State (V2.0)
+- Pin Information page has been added to provide a form the user will fill when creating a new pin
+- Fields include:
+    1. Event Name
+    2. Event Type
+    3. Description
+    4. Start and End times of the event
+    5. Buttons to: change location, create the pin, or cancel the operation and return to home screen
+
+
+> ## Current App State (v1.6)
+>  - React Navigation has been implemented for the switching of screens
+>  - New screen "addPinMap" has been added.
+>    - Renders a map and pin in center of the screen.
+>    - Allows the user to place a pin on the map or cancel and go back to the main map view
+>  - New pin images have been added (Thanks Heather!)
+>  - Pins on the map can be deleted by touching them. (will be changed later)
 
 
 ## Description

@@ -154,7 +154,6 @@ export default class MapScreen extends Component {
             description={marker.description}
             coordinate={marker.coordinate}
             image={redPin}
-            onPress={() => this.deletePin(marker.key)}
           />
         ))}
 
