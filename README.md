@@ -9,6 +9,8 @@
      3. Description
      4. Start and End times of the event
      5. Buttons to: change location, create the pin, or cancel the operation and return to home screen
+ - Add Pin Buttons have been uploaded in order to add them to the main page with the map
+ - Filter page has been added for search bar functionality enhancement
 ## Previous App State (v1.6)
  - React Navigation has been implemented for the switching of screens
  - New screen "addPinMap" has been added.
