@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "expoServerPort": 19000,
-  "packagerPort": 19001,
-  "packagerPid": 13668,
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
   "expoServerNgrokUrl": "https://vn-ece.anonymous.pinme-local1.exp.direct",
   "packagerNgrokUrl": "https://packager.vn-ece.anonymous.pinme-local1.exp.direct",
-  "ngrokPid": 17280
+  "ngrokPid": 12304
 }

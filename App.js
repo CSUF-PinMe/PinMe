@@ -1,18 +1,17 @@
 
-import React from 'react';
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Button } from 'react-native';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
 import { createStackNavigator } from 'react-navigation'; // Version can be specified in package.json
-import { fadeIn, zoomIn } from 'react-navigation-transitions';
+//import { fadeIn, zoomIn } from 'react-navigation-transitions';
 
 
-import FormPage from './src/components/pin_info/form_page.component';
+import AddPin from './src/components/add_pin_button/addPin.component';
+import FilterPage from './src/components/search_filters/filters.component'
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
 
-import Expo, { Constants, Location, Permissions } from 'expo';
 import { withAuthenticator } from 'aws-amplify-react-native'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
@@ -48,19 +47,19 @@ class App extends React.Component {
 
   render() {
     return (
-      <FormPage/>
+      <AddPin/>
     );
   }
 }
 
 // export default withAuthenticator(App, { includeGreetings: true })
-export default App;
+//export default App;
 
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
-    alignItems: 'center',
+    alignItems: 'center',}});
 
 const RootStack = createStackNavigator( //render rootstack was deleted for my part
   {
@@ -70,8 +69,9 @@ const RootStack = createStackNavigator( //render rootstack was deleted for my pa
   },
   {
     initialRouteName: 'MainMap',
-    transitionConfig: () => fadeIn(),
+   // transitionConfig: () => fadeIn(),
   }
 );
 
 export default withAuthenticator(App)
+
