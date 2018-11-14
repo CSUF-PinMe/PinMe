@@ -11,6 +11,7 @@ import Expo, { Constants, Location, Permissions } from 'expo';
 import { withAuthenticator } from 'aws-amplify-react-native'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
+import OurBar from './src/components/map/search.component';
 Amplify.configure(config)
 
 class App extends React.Component {
@@ -50,7 +51,8 @@ const RootStack = createStackNavigator(
   {
     MainMap: MapScreen,
     AddPin: AddPinMap,
-    PinInfo: PinInfo
+    PinInfo: PinInfo,
+    OurBar: OurBar
   },
   {
     initialRouteName: 'MainMap',

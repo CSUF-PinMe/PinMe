@@ -200,6 +200,19 @@ export default class MapScreen extends Component {
           </Button>
 
 
+          <Button rounded light
+            style={{top: 50}}
+            onPress={() => this.props.navigation.navigate('OurBar',
+            {
+              'markers': this.state.markers,
+              refresh: this.loadPins
+            })}
+            >
+            <Text>Search</Text>
+          </Button>
+
+
+
         </View>
 
         <View style={[styles.bubble, styles.latlng, {bottom: 10}]}>
