@@ -108,6 +108,10 @@ export default class MapScreen extends Component {
             name: pin.eventName,
             description: pin.description,
             key: pin.id,
+            placedBy: pin.userId,
+            type: pin.eventType,
+            startTime: pin.startTime,
+            endTime: pin.endTime,
             coordinate: {
               latitude: Number(pin.latitude),
               longitude: Number(pin.longitude)
@@ -117,7 +121,7 @@ export default class MapScreen extends Component {
       })
     ))
     this.setState({loading: false});
-    // console.log(this.state.markers.length);
+    console.log(this.state.markers);
   }
 
   // Queries for entry with matching id
@@ -147,7 +151,6 @@ export default class MapScreen extends Component {
           <Marker
             key={marker.key}
             title={marker.name}
-            description={marker.description}
             coordinate={marker.coordinate}
             image={redPin}
           />
@@ -170,27 +173,13 @@ export default class MapScreen extends Component {
 
           <Button rounded light
             style={{top: 10}}
-            onPress={this.getAllPins}
-            >
-            <Text>Get All Pins</Text>
-          </Button>
-
-          <Button rounded light
-            style={{top: 20}}
-            onPress={this.getOnePin}
-            >
-            <Text>Get One Pin</Text>
-          </Button>
-
-          <Button rounded light
-            style={{top: 30}}
             onPress={this._getLocationAsync}
             >
             <Text>Re-center on User</Text>
           </Button>
 
           <Button rounded light
-            style={{top: 40}}
+            style={{top: 20}}
             onPress={this.loadPins}
             >
             <Text>Load Pins</Text>
@@ -198,7 +187,7 @@ export default class MapScreen extends Component {
 
 
           <Button rounded light
-            style={{top: 50}}
+            style={{top: 30}}
             onPress={() => this.props.navigation.navigate('SearchScreen',
             {
               'markers': this.state.markers

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
-import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right } from 'native-base';
+import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
 import * as queries from '../../graphql/queries';
@@ -28,6 +28,7 @@ export default class SearchScreen extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
       Entypo: require("native-base/Fonts/Entypo.ttf"),
+      FontAwesome: require("native-base/Fonts/FontAwesome.ttf")
     });
     this.setState({
       loading: false,
@@ -53,7 +54,7 @@ export default class SearchScreen extends Component {
           <Item>
             <Icon name="ios-search" />
             <Input
-              placeholder="Search"
+              placeholder="Search pins"
               onChangeText={ (search) => this.handleSearch(search)}
             />
           </Item>
@@ -63,21 +64,40 @@ export default class SearchScreen extends Component {
         </Header>
 
         <Content padder>
-          {this.state.markers.filter(marker => marker.name.includes(this.state.searchText)).map((marker, index) => (
-            <Card
-              key={marker.key}
-            >
-              <CardItem  header bordered>
-                <Text>{marker.name}</Text>
-              </CardItem>
+          {this.state.markers.filter(
+            marker => marker.name.toLowerCase()
+            .includes(this.state.searchText.toLowerCase()))
+            .map((marker, index) => (
+              <Card
+                key={marker.key}
+              >
+                <CardItem  header bordered>
+                  <Icon active type='Entypo' name='location-pin' />
+                  <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
+                  <Text style={{position: 'absolute', right: 15, fontWeight: 'bold'}}>{marker.type}</Text>
+                </CardItem>
 
-              <CardItem  bordered>
-                <Body>
-                  <Text>{marker.description}</Text>
-                </Body>
-              </CardItem>
+                <CardItem  bordered>
+                  <Icon active name='time' />
+                  <Text style={{fontWeight: 'bold'}}>Start Time: </Text>
+                  <Text>{marker.startTime}</Text>
+                  <Text style={{fontWeight: 'bold', paddingLeft: 15}}>End Time: </Text>
+                  <Text>{marker.endTime}</Text>
+                </CardItem>
 
-            </Card>
+                <CardItem  bordered>
+                  <Body>
+                    <Text style={{fontWeight: 'bold'}}>Description: </Text>
+                    <Text>{marker.description}</Text>
+                  </Body>
+                </CardItem>
+
+                <CardItem  bordered>
+                  <Icon active type='FontAwesome' name='user-o' />
+                  <Text>{marker.placedBy}</Text>
+                </CardItem>
+
+              </Card>
           ))}
         </Content>
       </ScrollView>
