@@ -1,4 +1,4 @@
-# PinMe - Core App
+# PinMe
 
 ## Current App State (V2.0)
 - Pin Information page has been added to provide a form the user will fill when creating a new pin.
