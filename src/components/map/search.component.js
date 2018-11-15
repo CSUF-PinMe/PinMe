@@ -11,31 +11,11 @@ export default class OurBar extends Component {
   constructor(props){
     super(props);
 
+
+    
     this.state = {
         loading: true,
-        markers: [
-            {
-                eventName: 'pin 1'
-            },
-            {
-                eventName: 'pin 2'
-            },
-            {
-                eventName: 'pin 3'
-            },
-            {
-                eventName: 'pin 4'
-            },
-            {
-                eventName: 'pin 5'
-            },
-            {
-                eventName: 'pin 6'
-            },
-            {
-                eventName: 'pin 7'
-            },
-        ]
+        markers: []
     
     }
 
@@ -44,7 +24,7 @@ export default class OurBar extends Component {
 
 handleSearch = (text) => {
     console.log("text", text);
-    this.setState({void: text});
+    this.setState({marker: text});
 };
 
   async componentDidMount() {
@@ -53,7 +33,10 @@ handleSearch = (text) => {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
     });
-    this.setState({ loading: false });
+    this.setState({ 
+      loading: false,
+      markers: this.props.navigation.state.params.markers
+     });
   }
 
   render() { 
@@ -68,7 +51,7 @@ handleSearch = (text) => {
             <Icon name="ios-search" />
             <Input 
             placeholder="Search"
-            onChange = {this.handleSearch}/>
+            onChangeText={ (search) => this.handleSearch(search)}/>
             <Icon name="ios-people" />
           </Item>
           <Button transparent>
@@ -77,10 +60,16 @@ handleSearch = (text) => {
         </Header>
       <Content padder>
       {this.state.markers.map((marker, index) => (
-        <Card>
-          <CardItem  bordered >
-            <Text>{marker.eventName}</Text>
-            <Text>{marker.eventType}</Text>
+        <Card
+        key={marker.key}
+        >
+          <CardItem  header bordered>
+          <Text>{marker.name}</Text>
+          </CardItem>
+          <CardItem  bordered>
+          <Body>
+            <Text>{marker.description}</Text>
+            </Body>
           </CardItem>
         </Card>
       ))}
