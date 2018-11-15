@@ -1,13 +1,16 @@
 # PinMe - Core App
 
 ## Current App State (V2.0)
-- Pin Information page has been added to provide a form the user will fill when creating a new pin
-- Fields include:
-    1. Event Name
-    2. Event Type
-    3. Description
-    4. Start and End times of the event
-    5. Buttons to: change location, create the pin, or cancel the operation and return to home screen
+- Pin Information page has been added to provide a form the user will fill when creating a new pin.
+  - Fields include:
+      1. Event Name
+      2. Event Type
+      3. Description
+      4. Start and End times of the event
+      5. Buttons to: change location, create the pin, or cancel the operation and return to home screen
+- Search screen has been added for the use of searching currently loaded pins by name.
+  - Updates results dynamically as user changes input
+- Username of current logged in user is now saved with pin information on the database.
 
 
 > ## Current App State (v1.6)

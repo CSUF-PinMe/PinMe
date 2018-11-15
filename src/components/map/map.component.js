@@ -5,6 +5,7 @@ import { Navigation } from 'react-native-navigation';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import redPin from '../../../assets/pin_red.png'
+import { Auth } from 'aws-amplify'
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
@@ -33,6 +34,7 @@ export default class MapScreen extends Component {
     super(props);
 
     this.state = {
+      currentUser: "",
       region: {
         latitude: 36.812617,
         longitude: -119.745802,
@@ -58,6 +60,7 @@ export default class MapScreen extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
     });
+    Auth.currentUserInfo().then(res => {this.setState({currentUser: res.username})});
     this.loadPins();
   }
 
@@ -81,13 +84,6 @@ export default class MapScreen extends Component {
     _mapView.animateToCoordinate(userLocation, 1000);
   };
 
-  // Adds new pin with info in pinDetails
-  // addPin = async () => {
-  //   const newPin = API.graphql(graphqlOperation(mutations.createPin, {input: pinDetails}));
-  //   // console.log(newPin);
-  //   Alert.alert('PinMe', "Pin successfully added!");
-  // }
-
   deletePin = async (e) => {
     var removeIndex = this.state.markers.map(function(item) { return item.key; }).indexOf(e);
     this.state.markers.splice(removeIndex, 1);
@@ -101,7 +97,7 @@ export default class MapScreen extends Component {
   }
 
   loadPins = async () => {
-    this.setState({markers: []});
+    this.setState({markers: initialMarkers});
     const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
     allPins.data.listPins.items.map(pin => (
       // console.log()
@@ -121,7 +117,7 @@ export default class MapScreen extends Component {
       })
     ))
     this.setState({loading: false});
-    console.log('All pins loaded!');
+    // console.log(this.state.markers.length);
   }
 
   // Queries for entry with matching id
@@ -165,6 +161,7 @@ export default class MapScreen extends Component {
             {
               'region': this.state.region,
               'markers': this.state.markers,
+              'username': this.state.currentUser,
               refresh: this.loadPins
             })}
             >
@@ -202,10 +199,9 @@ export default class MapScreen extends Component {
 
           <Button rounded light
             style={{top: 50}}
-            onPress={() => this.props.navigation.navigate('OurBar',
+            onPress={() => this.props.navigation.navigate('SearchScreen',
             {
-              'markers': this.state.markers,
-              refresh: this.loadPins
+              'markers': this.state.markers
             })}
             >
             <Text>Search</Text>

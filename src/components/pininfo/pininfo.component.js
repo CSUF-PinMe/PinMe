@@ -16,7 +16,7 @@ export default class PinInfo extends Component {
     this.state = {
         loading: true,
         pinInfo: {
-          userId: '123',
+          userId: navigation.state.params.username,
           eventName: '',
           eventType: undefined,
           description: '',

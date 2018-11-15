@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "core-map",
+    "name": "PinMe",
     "description": "This project is really great.",
-    "slug": "core-map",
+    "slug": "PinMe",
     "privacy": "public",
     "sdkVersion": "30.0.0",
     "platforms": ["ios", "android"],
