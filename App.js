@@ -8,7 +8,8 @@ import { createStackNavigator } from 'react-navigation'; // Version can be speci
 
 
 import AddPin from './src/components/add_pin_button/addPin.component';
-import FilterPage from './src/components/search_filters/filters.component'
+import FilterPage from './src/components/search_filters/filters.component';
+import CheckX from './src/components/check_and_x_button/check_and_x.component';
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
 
@@ -47,7 +48,7 @@ class App extends React.Component {
 
   render() {
     return (
-      <AddPin/>
+      <CheckX/>
     );
   }
 }

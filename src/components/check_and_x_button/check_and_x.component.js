@@ -5,7 +5,7 @@ import Expo, { Constants, Location, Permissions } from 'expo';
 import Font from 'expo';
 import MapView from 'react-native-maps';
 
-export default class AddPin extends Component {
+export default class CheckX extends Component {
   constructor(props){
     super(props);
 
@@ -36,30 +36,24 @@ export default class AddPin extends Component {
         <View style={{ flex: 1 }}>
           <Fab
             active1={this.state.active1}
-            direction="right"
+            direction="up"
             containerStyle={{ }}
-            style={{ backgroundColor: '#03a9f4' }}
-            position="topLeft"
+            style={{ backgroundColor: '#79e56a' }}
+            position="bottomRight"
             onPress={() => this.setState({ active1: !this.state.active1 })}>
-            <Icon name="menu" />
+            <Icon name="checkmark" />
           </Fab>
         </View>
 
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 0 }}>
           <Fab
             active={this.state.active}
             direction="up"
             containerStyle={{ }}
             style={{ backgroundColor: '#ed2224' }}
-            position="bottomRight"
+            position="bottomLeft"
             onPress={() => this.setState({ active: !this.state.active })}>
-            <Icon name="add" />
-            <Button style={{ backgroundColor: '#03a9f4' }}>
-              <Icon name="pin" />
-            </Button>
-            <Button style={{ backgroundColor: '#FFFFFF'}}>
-              <Icon style = {{color: '#03a9f4'}} name="locate"/>
-            </Button>
+            <Icon name="close" />
           </Fab>
         </View>
       </Container>
