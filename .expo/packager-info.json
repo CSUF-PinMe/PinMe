@@ -2,8 +2,8 @@
   "devToolsPort": 19002,
   "packagerPort": 19001,
   "expoServerPort": 19000,
-  "packagerPid": 3052,
-  "expoServerNgrokUrl": "https://tj-pci.anonymous.pinme.exp.direct",
-  "packagerNgrokUrl": "https://packager.tj-pci.anonymous.pinme.exp.direct",
-  "ngrokPid": 2800
+  "packagerPid": 2544,
+  "expoServerNgrokUrl": "https://x4-zjz.anonymous.pinme.exp.direct",
+  "packagerNgrokUrl": "https://packager.x4-zjz.anonymous.pinme.exp.direct",
+  "ngrokPid": 2560
 }

@@ -1,30 +1,37 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
-import { Container, Header, Content, Button, Text} from 'native-base';
-import { Navigation } from 'react-native-navigation';
+import {
+  StyleSheet,
+  View,
+  Dimensions,
+  TouchableOpacity,
+  StatusBar,
+  Alert
+} from 'react-native';
+import {
+  Container,
+  Header,
+  Content,
+  Text,
+  Icon,
+  Button,
+  Left,
+  Fab
+} from 'native-base';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
-import redPin from '../../../assets/pin_red.png'
+import { DrawerNavigator, DrawerItems } from 'react-navigation';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
+import redPin from '../../../assets/pin_red.png'
+import {store} from '../../../App'
+
 
 let id = 0;
 var _mapView: MapView;
 var myTimestamp = new Date();
-
-const pinDetails = {
-  userId: "321",
-  eventName: "Test Pin",
-  eventType: "Test Type",
-  startTime: "Sat 2:25PM",
-  endTime: "Sat 2:30PM",
-  description: "This is a test pin description",
-  latitude: "36.81261365334545",
-  longitude: "-119.74580140784383"
-}
 
 const initialMarkers = [];
 
@@ -40,16 +47,27 @@ export default class MapScreen extends Component {
         longitudeDelta: 0.0221,
       },
       loading: true,
-      markers: initialMarkers
+      markers: initialMarkers,
+      active: false,
+      active1: false
     };
 
     this.getInitialState.bind(this);
     this._getLocationAsync.bind(this);
   }
 
-  static navigationOptions = {
-    header: null
+  // For button components on map
+
+  onValueChange(value: string) {
+    this.setState({
+      selected: value
+    });
   }
+  onValueChange2(value: string) {
+    this.setState({
+      selected2: value
+    });
+}
 
   // Needed for Native-Base Buttons
   async componentDidMount() {
@@ -112,6 +130,10 @@ export default class MapScreen extends Component {
             name: pin.eventName,
             description: pin.description,
             key: pin.id,
+            placedBy: pin.userId,
+            type: pin.eventType,
+            startTime: pin.startTime,
+            endTime: pin.endTime,
             coordinate: {
               latitude: Number(pin.latitude),
               longitude: Number(pin.longitude)
@@ -120,6 +142,7 @@ export default class MapScreen extends Component {
         ]
       })
     ))
+    store.update({markers: this.state.markers})
     this.setState({loading: false});
     console.log('All pins loaded!');
   }
@@ -130,20 +153,30 @@ export default class MapScreen extends Component {
     console.log(onePin);
   }
 
+  static navigationOptions = {
+    header: null
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
     return (
-      <View style ={styles.container}>
+    <Container>
         <StatusBar hidden/>
-
+          <Content contentContainerSyle={{
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}>
+          </Content>
+      <View style={styles.Mapcontainer}>
         <MapView
           // provider={PROVIDER_GOOGLE}
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
-          style={styles.map}
-          onRegionChange={(region) => this.setState({region})}
+          style={styles.mapContainer}
+          onRegionChange={(region) => {this.setState({region}); console.log(region);}}
           initialRegion={this.getInitialState()}
         >
 
@@ -158,74 +191,49 @@ export default class MapScreen extends Component {
         ))}
 
         </MapView>
+        <View style = {styles.mapDrawerOverlay} />
 
-        <View style={styles.buttonContainer}>
-          <Button rounded light
-            onPress={() => this.props.navigation.navigate('AddPin',
-            {
+
+        <View style={{ flex: 1}}>
+          <Fab
+            active1={this.state.active1}
+            direction="right"
+            containerStyle={{ }}
+            style={{ backgroundColor: '#03a9f4' }}
+            position="bottomLeft"
+            onPress={() => this.props.navigation.openDrawer()}>
+            <Icon name="menu" />
+          </Fab>
+        </View>
+
+        <View style={{ flex: 1} }>
+          <Fab
+            active={this.state.active}
+            direction="up"
+            containerStyle={{ }}
+            style={{ backgroundColor: '#03a9f4' }}
+            position="bottomRight"
+            onPress={() => this.setState({ active: !this.state.active })}>
+            <Icon name="add" />
+            <Button style={{ backgroundColor: '#03a9f4' }}
+              onPress={() => this.props.navigation.navigate('AddPin',
+              {
               'region': this.state.region,
               'markers': this.state.markers,
               refresh: this.loadPins
-            })}
+              })}
             >
-            <Text>Add Pin</Text>
-          </Button>
-
-          <Button rounded light
-            style={{top: 10}}
-            onPress={this.getAllPins}
-            >
-            <Text>Get All Pins</Text>
-          </Button>
-
-          <Button rounded light
-            style={{top: 20}}
-            onPress={this.getOnePin}
-            >
-            <Text>Get One Pin</Text>
-          </Button>
-
-          <Button rounded light
-            style={{top: 30}}
-            onPress={this._getLocationAsync}
-            >
-            <Text>Re-center on User</Text>
-          </Button>
-
-          <Button rounded light
-            style={{top: 40}}
-            onPress={this.loadPins}
-            >
-            <Text>Load Pins</Text>
-          </Button>
-
-
-          <Button rounded light
-            style={{top: 50}}
-            onPress={() => this.props.navigation.navigate('OurBar',
-            {
-              'markers': this.state.markers,
-              refresh: this.loadPins
-            })}
-            >
-            <Text>Search</Text>
-          </Button>
-
-
-
+              <Icon name="pin" />
+            </Button>
+            <Button style={{ backgroundColor: '#FFFFFF'}}
+              onPress={this._getLocationAsync}
+              >
+              <Icon style = {{color: '#03a9f4'}} name="locate"/>
+            </Button>
+          </Fab>
+          </View>
         </View>
-
-        <View style={[styles.bubble, styles.latlng, {bottom: 10}]}>
-          <Text style={{ textAlign: 'center'}}
-            onPress = {() => _mapView.animateToCoordinate(this.getInitialState(), 1000)}
-            >
-            {this.state.region.latitude.toPrecision(7)},
-            {this.state.region.longitude.toPrecision(7)}
-          </Text>
-        </View>
-
-
-      </View>
+    </Container>
     );
   }
 }

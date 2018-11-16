@@ -1,15 +1,27 @@
-import { StyleSheet } from 'react-native';
-import React from 'react';
+import { StyleSheet, Dimensions } from 'react-native';
+
+const {width, height} = Dimensions.get("window");
+const Screen = {
+  width: Dimensions.get('window').width,
+  height: Dimensions.get('window').height,
+};
 
 export default StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center'
+  mapContainer: {
+    width: Screen.width,
+    height: Screen.height,
+  },
+  mapDrawerOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    opacity: 0.0,
+    height: Dimensions.get('window').height,
+    width: 10,
   },
   map: {
-    ...StyleSheet.absoluteFillObject,
+    width: Screen.width,
+    height: Screen.height,
   },
   bubble: {
     backgroundColor: 'rgba(255,255,255,0.7)',
@@ -29,6 +41,7 @@ export default StyleSheet.create({
     marginHorizontal: 5,
   },
   buttonContainer: {
+    position: 'absolute',
     flex: 1,
     justifyContent: 'flex-start',
     flexDirection: 'column',
@@ -39,5 +52,19 @@ export default StyleSheet.create({
   },
   buttonText: {
     textAlign: 'center',
+    position: 'absolute'
   },
-});
+  mapDrawerOverlay: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    opacity: 0.0,
+    height: Dimensions.get('window').height,
+    width: 10,
+  },
+    container: {
+      position: 'absolute',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    }
+  });

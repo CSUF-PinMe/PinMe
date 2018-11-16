@@ -6,6 +6,8 @@ import API, { graphqlOperation } from '@aws-amplify/api';
 import * as mutations from '../../graphql/mutations';
 import Font from 'expo';
 import MapView from 'react-native-maps';
+import {store} from '../../../App'
+import { Auth } from 'aws-amplify'
 
 export default class PinInfo extends Component {
   constructor(props){
@@ -16,7 +18,7 @@ export default class PinInfo extends Component {
     this.state = {
         loading: true,
         pinInfo: {
-          userId: '123',
+          userId: store.getState().currentUser,
           eventName: '',
           eventType: undefined,
           description: '',
@@ -71,7 +73,7 @@ export default class PinInfo extends Component {
     ));
 
     this.props.navigation.state.params.refreshMap();
-    this.props.navigation.navigate('MainMap');
+    this.props.navigation.navigate('Map');
   }
 
   render() {
@@ -167,7 +169,7 @@ export default class PinInfo extends Component {
             <Button block style = {{top: 20, height: 60, backgroundColor: '#79e56a'}} onPress={() => this.addPin()}>
               <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
             </Button>
-            <Button block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}} onPress={() => {this.props.navigation.navigate('MainMap')}}>
+            <Button block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}} onPress={() => {this.props.navigation.navigate('Map')}}>
               <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
             </Button>
             <Button disabled style = {{top: 40, height: 60, backgroundColor: '#FFFFFF'}}>
