@@ -189,11 +189,9 @@ export default class MapScreen extends Component {
             image={redPin}
           />
         ))}
-
+          
         </MapView>
         <View style = {styles.mapDrawerOverlay} />
-
-
         <View style={{ flex: 1}}>
           <Fab
             active1={this.state.active1}
@@ -237,3 +235,4 @@ export default class MapScreen extends Component {
     );
   }
 }
+
