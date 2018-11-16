@@ -21,7 +21,7 @@ export default StyleSheet.create({
   },
   map: {
     width: Screen.width,
-    height: Screen.height, 
+    height: Screen.height,
   },
   bubble: {
     backgroundColor: 'rgba(255,255,255,0.7)',
@@ -62,4 +62,9 @@ export default StyleSheet.create({
     height: Dimensions.get('window').height,
     width: 10,
   },
-});
+    container: {
+      position: 'absolute',
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    }
+  });
