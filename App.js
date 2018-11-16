@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, View, Text } from 'react-native';
+import createStore from "pure-store";
 import { createStackNavigator } from 'react-navigation'; // Version can be specified in package.json
 import { fadeIn, zoomIn } from 'react-navigation-transitions';
 
@@ -13,6 +14,17 @@ import { withAuthenticator } from 'aws-amplify-react-native'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
 Amplify.configure(config)
+
+export const store = createStore({
+  markers: [],
+  region: {
+    latitude: 36.812617,
+    longitude: -119.745802,
+    latitudeDelta: 0.0422,
+    longitudeDelta: 0.0221,
+  },
+  currentUser: ""
+})
 
 class App extends React.Component {
   constructor(props){

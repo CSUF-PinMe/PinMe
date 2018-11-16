@@ -3,6 +3,7 @@ import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert } from
 import { Container, Header, Content, Button, Text} from 'native-base';
 import { Navigation } from 'react-native-navigation';
 import MapView, { Marker } from 'react-native-maps';
+import { store } from '../../../App'
 import Expo, { Constants, Location, Permissions } from 'expo';
 import redPin from '../../../assets/pin_red.png'
 import { Auth } from 'aws-amplify'
@@ -15,17 +16,6 @@ import myMapStyle from './mapstyle';
 let id = 0;
 var _mapView: MapView;
 var myTimestamp = new Date();
-
-const pinDetails = {
-  userId: "321",
-  eventName: "Test Pin",
-  eventType: "Test Type",
-  startTime: "Sat 2:25PM",
-  endTime: "Sat 2:30PM",
-  description: "This is a test pin description",
-  latitude: "36.81261365334545",
-  longitude: "-119.74580140784383"
-}
 
 const initialMarkers = [];
 
@@ -62,6 +52,13 @@ export default class MapScreen extends Component {
     });
     Auth.currentUserInfo().then(res => {this.setState({currentUser: res.username})});
     this.loadPins();
+    this.updateStore();
+  }
+
+  updateStore() {
+    console.log('Before: ', store.getState());
+    store.update({currentUser: 'me'});
+    console.log('After: ', store.getState());
   }
 
   getInitialState() {
@@ -121,7 +118,7 @@ export default class MapScreen extends Component {
       })
     ))
     this.setState({loading: false});
-    console.log(this.state.markers);
+    // console.log(this.state.markers);
   }
 
   // Queries for entry with matching id
@@ -164,7 +161,6 @@ export default class MapScreen extends Component {
             {
               'region': this.state.region,
               'markers': this.state.markers,
-              'username': this.state.currentUser,
               refresh: this.loadPins
             })}
             >

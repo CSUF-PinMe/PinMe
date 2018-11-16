@@ -4,6 +4,7 @@
 //  * Implement MobX state management
 import styles from './addpinmap.component.style.js';
 import myMapStyle from '../map/mapstyle';
+
 import { Container, Header, Content, Button, Text, Icon as NativeIcon, Footer} from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView, { Marker } from 'react-native-maps';
@@ -12,6 +13,7 @@ import { createDrawerNavigator } from 'react-navigation';
 import * as mutations from '../../graphql/mutations';
 import redPin from '../../../assets/pin_red.png'
 import grayPin from '../../../assets/pin_gray.png'
+import { store } from '../../../App';
 import React, { Component } from 'react';
 import {
   View,
@@ -62,6 +64,7 @@ export default class AddPinMap extends Component {
       Entypo: require('react-native-vector-icons/Fonts/Entypo.ttf'),
     });
     this.setState({ loading: false });
+    console.log(store.getState().region);
   }
 
   static navigationOptions = {
@@ -108,7 +111,6 @@ export default class AddPinMap extends Component {
               onPress={() => this.props.navigation.navigate('PinInfo',
               {
                 'region': this.state.region,
-                'username': this.props.navigation.state.params.username,
                 refreshMap: this.props.navigation.state.params.refresh
                 })}
             >

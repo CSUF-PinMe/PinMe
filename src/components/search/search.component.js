@@ -73,7 +73,7 @@ export default class SearchScreen extends Component {
               >
                 <CardItem  header bordered>
                   <Icon active type='Entypo' name='location-pin' />
-                  <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
+                  <Text style={{fontWeight: '300', fontSize: 17}}>{marker.name}</Text>
                   <Text style={{position: 'absolute', right: 15, fontWeight: 'bold'}}>{marker.type}</Text>
                 </CardItem>
 

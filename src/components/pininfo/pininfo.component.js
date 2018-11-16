@@ -3,9 +3,12 @@ import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 
 import { Container, Header, Title, Content, Form, Item, Input, Button, Label, Icon, Left, Body, Right, Picker, Textarea} from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api';
+import { Auth } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
 import Font from 'expo';
 import MapView from 'react-native-maps';
+
+const currentUser = '';
 
 export default class PinInfo extends Component {
   constructor(props){
@@ -16,7 +19,7 @@ export default class PinInfo extends Component {
     this.state = {
         loading: true,
         pinInfo: {
-          userId: navigation.state.params.username,
+          userId: currentUser,
           eventName: '',
           eventType: undefined,
           description: '',
@@ -41,6 +44,7 @@ export default class PinInfo extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
     });
+    Auth.currentUserInfo().then(res => currentUser = res.username);
     this.setState({ loading: false });
   }
 
