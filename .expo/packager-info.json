@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "packagerPort": 19001,
-  "expoServerPort": 19000,
-  "packagerPid": 2544,
-  "expoServerNgrokUrl": "https://x4-zjz.anonymous.pinme.exp.direct",
-  "packagerNgrokUrl": "https://packager.x4-zjz.anonymous.pinme.exp.direct",
-  "ngrokPid": 2560
+  "packagerPort": null,
+  "expoServerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null
 }
