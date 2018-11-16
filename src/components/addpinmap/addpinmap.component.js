@@ -8,7 +8,6 @@ import { Container, Header, Content, Button, Text, Icon as NativeIcon, Footer} f
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView, { Marker } from 'react-native-maps';
 import API, { graphqlOperation } from '@aws-amplify/api'
-import { createDrawerNavigator } from 'react-navigation';
 import * as mutations from '../../graphql/mutations';
 import redPin from '../../../assets/pin_red.png'
 import grayPin from '../../../assets/pin_gray.png'

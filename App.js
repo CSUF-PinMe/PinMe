@@ -17,6 +17,7 @@ import {Auth} from 'aws-amplify'
 import Amplify from '@aws-amplify/core'
 import config from './aws-exports'
 
+
 Amplify.configure(config)
 
 export const store = createStore({
@@ -53,7 +54,6 @@ class App extends React.Component {
     let location = await Location.getCurrentPositionAsync({});
     this.setState({ location });
   };
-
   render() {
     return <MyApp />;
   }
@@ -130,7 +130,5 @@ const styles = StyleSheet.create({
       width: 150,
       borderRadius: 75,
       alignSelf: 'center'
-
     }
-
 });
