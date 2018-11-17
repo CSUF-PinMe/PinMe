@@ -159,22 +159,29 @@ export default class PinInfo extends Component {
               </Item>
             </Item>
 
-            <Button block style = {{top: 10, height: 60, backgroundColor: '#FFFFFF'}} onPress={() => this.props.navigation.goBack()}>
+            <Button
+            onPress={() => this.props.navigation.navigate('AddPin')}
+            block style = {{top: 10, height: 60, backgroundColor: '#FFFFFF'}}>
               <Text style = {{color: '#000000'}}>Change Location</Text>
             </Button>
 
           </Form>
 
           <Content>
-            <Button block style = {{top: 20, height: 60, backgroundColor: '#79e56a'}} onPress={() => this.addPin()}>
+            <Button
+            onPress={() => this.addPin()}
+            block style = {{top: 20, height: 60, backgroundColor: '#79e56a',}}>
               <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
             </Button>
-            <Button block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}} onPress={() => {this.props.navigation.navigate('Map')}}>
+            <Button
+            onPress={() => this.props.navigation.navigate('Map')}
+            block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}}>
               <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
             </Button>
             <Button disabled style = {{top: 40, height: 60, backgroundColor: '#FFFFFF'}}>
             </Button>
           </Content>
+
 
         </Content>
       </Container>

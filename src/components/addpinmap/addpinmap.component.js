@@ -110,6 +110,9 @@ export default class AddPinMap extends Component {
               onPress={() => this.props.navigation.navigate('PinInfo',
               {
                 'region': this.state.region,
+                refresh: store.update({latitude: this.state.region.latitude}),
+                refresh: store.update({longitude: this.state.region.longitude}),
+
                 refreshMap: this.props.navigation.state.params.refresh
                 })}
             >

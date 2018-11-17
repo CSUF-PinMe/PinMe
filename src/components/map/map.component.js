@@ -214,7 +214,9 @@ export default class MapScreen extends Component {
               {
               'region': this.state.region,
               'markers': this.state.markers,
-              refresh: this.loadPins
+              refresh: this.loadPins,
+              refresh: store.update({latitude: this.state.region.latitude}),
+              refresh: store.update({longitude: this.state.region.longitude})
               })}
             >
               <Icon name="pin" />
