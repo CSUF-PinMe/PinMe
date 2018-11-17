@@ -71,8 +71,6 @@ export default class PinInfo extends Component {
         input: this.state.pinInfo
       }
     ));
-
-    this.props.navigation.state.params.refreshMap();
     this.props.navigation.navigate('Map');
   }
 
