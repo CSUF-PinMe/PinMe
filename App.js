@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, View, Text, StyleSheet, Image } from 'react-native';
+import { Button, View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
 import { createStackNavigator, createDrawerNavigator, DrawerItems } from 'react-navigation'; // Version can be specified in package.json
 import { fadeIn, zoomIn } from 'react-navigation-transitions';
 import { Container, Icon, Content, Header, Body} from 'native-base'
@@ -24,6 +24,10 @@ export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
+  latitude: 36.812617,
+  longitude: -119.745802,
+  latitudeDelta: 0.0422,
+  longitudeDelta: 0.0221
 })
 
 class App extends React.Component {
@@ -70,7 +74,7 @@ const RootStack = createStackNavigator(
 
 const CustomDrawerContentComponent = (props) => (
 
-  <Container>
+  <SafeAreaView style = {{flex:1}}>
     <Header style={styles.drawerHeader}>
       <Body>
         <Image
@@ -81,8 +85,7 @@ const CustomDrawerContentComponent = (props) => (
     <Content>
       <DrawerItems {...props} />
     </Content>
-
-  </Container>
+  </SafeAreaView>
 
 );
 
@@ -92,13 +95,13 @@ const MyApp = createDrawerNavigator({
     AddPin:{
       screen: AddPinMap,
       navigationOptions: {
-        drawerLabel: ()=>null
+      drawerLabel: ()=>null
       }
     },
     PinInfo: {
       screen: PinInfo,
       navigationOptions: {
-        drawerLabel: ()=>null
+      drawerLabel: ()=>null
       }
     }
 },
@@ -106,13 +109,15 @@ const MyApp = createDrawerNavigator({
   initialRouteName: 'Map',
   transitionConfig: () => fadeIn(),
   drawerPosition: 'left',
+  headerMode: 'screen',
   contentComponent: CustomDrawerContentComponent,
   contentOptions: {
-    activeTintColor: 'red'
+    activeTintColor: 'blue',
+    inactiveTintColor: 'blue',
   }
 }, {});
 
-export default withAuthenticator(App /*, { includeGreetings: true }*/)
+export default withAuthenticator(App , /*{ includeGreetings: true }*/)
 
 const styles = StyleSheet.create({
     container: {

@@ -19,16 +19,11 @@ import {
   Dimensions,
   Image
 } from 'react-native';
+import {store} from '../../../App'
+
 
 let id = 0;
 var {height, width} = Dimensions.get('window');
-
-const initialRegion = {
-  latitude: 36.812617,
-  longitude: -119.745802,
-  latitudeDelta: 0.0422,
-  longitudeDelta: 0.0221,
-}
 
 const pin = {
   userId: '123',
@@ -45,10 +40,15 @@ export default class AddPinMap extends Component {
     const { navigation } = this.props;
 
     this.state ={
-      region: navigation.getParam('region', initialRegion),
       markers: navigation.getParam('markers', pin),
       color: 'navy',
       loading: true,
+      region: {
+        latitude: store.getState().latitude,
+        longitude: store.getState().longitude,
+        latitudeDelta: store.getState().latitudeDelta,
+        longitudeDelta: store.getState().longitudeDelta,
+    },
     };
   }
 
@@ -97,7 +97,10 @@ export default class AddPinMap extends Component {
 
           <View style={styles.button1Container}>
             <Button large rounded danger
-            onPress={() => this.props.navigation.goBack()}
+            onPress={() => this.props.navigation.navigate('Map',
+            store.update({latitude: this.state.region.latitude}),
+            store.update({longitude: this.state.region.longitude})
+            )}
             >
               <NativeIcon type="FontAwesome" name="chevron-circle-left" />
             </Button>

@@ -10,8 +10,8 @@ import {
 import {
   Container,
   Header,
-  Content,
   Text,
+  Content,
   Icon,
   Button,
   Left,
@@ -41,10 +41,10 @@ export default class MapScreen extends Component {
 
     this.state = {
       region: {
-        latitude: 36.812617,
-        longitude: -119.745802,
-        latitudeDelta: 0.0422,
-        longitudeDelta: 0.0221,
+        latitude: store.getState().latitude,
+        longitude: store.getState().longitude,
+        latitudeDelta: store.getState().latitudeDelta,
+        longitudeDelta: store.getState().longitudeDelta,
       },
       loading: true,
       markers: initialMarkers,
@@ -81,10 +81,10 @@ export default class MapScreen extends Component {
 
   getInitialState() {
     return {
-      latitude: 36.812617,
-      longitude: -119.745802,
-      latitudeDelta: 0.0422,
-      longitudeDelta: 0.0221,
+      latitude: store.getState().latitude,
+      longitude: store.getState().longitude,
+      latitudeDelta: store.getState().latitudeDelta,
+      longitudeDelta: store.getState().longitudeDelta,
     };
   }
 
@@ -154,7 +154,8 @@ export default class MapScreen extends Component {
   }
 
   static navigationOptions = {
-    header: null
+    header: null,
+    tabBarHidden: true
   }
 
   render() {
@@ -162,14 +163,8 @@ export default class MapScreen extends Component {
       return <Expo.AppLoading />;
     }
     return (
-    <Container>
+    <Container style={styles.MapContainer}>
         <StatusBar hidden/>
-          <Content contentContainerSyle={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
-          </Content>
       <View style={styles.Mapcontainer}>
         <MapView
           // provider={PROVIDER_GOOGLE}
@@ -189,28 +184,29 @@ export default class MapScreen extends Component {
             image={redPin}
           />
         ))}
-          
+
         </MapView>
         <View style = {styles.mapDrawerOverlay} />
-        <View style={{ flex: 1}}>
+
+        <View style={{ flex: 1, position: 'absolute'}}>
           <Fab
             active1={this.state.active1}
             direction="right"
             containerStyle={{ }}
             style={{ backgroundColor: '#03a9f4' }}
-            position="bottomLeft"
+            position="topLeft"
             onPress={() => this.props.navigation.openDrawer()}>
             <Icon name="menu" />
           </Fab>
         </View>
 
-        <View style={{ flex: 1} }>
+        <View style={{ flex: 1}}>
           <Fab
             active={this.state.active}
             direction="up"
             containerStyle={{ }}
             style={{ backgroundColor: '#03a9f4' }}
-            position="bottomRight"
+            position="bottomLeft"
             onPress={() => this.setState({ active: !this.state.active })}>
             <Icon name="add" />
             <Button style={{ backgroundColor: '#03a9f4' }}
@@ -235,4 +231,3 @@ export default class MapScreen extends Component {
     );
   }
 }
-

@@ -100,6 +100,7 @@ import * as mutations from '../../graphql/mutations';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import {store} from '../../../App'
 
+var _mapView: MapView;
 
 export default class SearchScreen extends Component {
   constructor(props){
@@ -107,7 +108,6 @@ export default class SearchScreen extends Component {
 
     this.state = {
         loading: true,
-        markers: [],
         searchText: ""
     }
   }
@@ -129,6 +129,15 @@ export default class SearchScreen extends Component {
       markers: store.getState().markers,
      });
   }
+
+  _getLocationAsync = async () => {
+    let userLocation = {
+      latitude: store.getState().latitude,
+      longitude: store.getState().longitude
+    }
+    console.log(JSON.stringify(userLocation));
+    _mapView.animateToCoordinate(userLocation, 1000);
+  };
 
   handleSearch = (text) => {
   let newState = Object.assign({}, this.state);
@@ -165,7 +174,16 @@ export default class SearchScreen extends Component {
               <Card
                 key={marker.key}
               >
-                <CardItem  button header bordered>
+                <CardItem  button header bordered
+                onPress={() => this.props.navigation.navigate('Map',
+                console.log(store.getState().latitude),
+                store.update({latitude: marker.coordinate.latitude}),
+                console.log(store.getState().latitude),
+                console.log(store.getState().longitude),
+                store.update({longitude: marker.coordinate.longitude}),
+                console.log(store.getState().longitude)
+
+                )}>
                   <Icon active type='Entypo' name='location-pin' />
                   <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
                   <Text style={{position: 'absolute', right: 15, fontWeight: 'bold'}}>{marker.type}</Text>

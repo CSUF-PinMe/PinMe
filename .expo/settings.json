@@ -1,7 +1,7 @@
 {
   "hostType": "lan",
   "lanType": "ip",
-  "dev": false,
-  "minify": true,
-  "urlRandomness": "2e-ncs"
+  "dev": true,
+  "minify": false,
+  "urlRandomness": "tj-pci"
 }

@@ -45,7 +45,7 @@ export default class FormPage extends Component {
     this.setState({
       selected: value
     });
-  } 
+  }
   onValueChange2(value: string) {
     this.setState({
       selected2: value
@@ -133,7 +133,7 @@ export default class FormPage extends Component {
             <Item stackedLabel>
               <Label>Description </Label>
               <Input />
-            </Item> 
+            </Item>
 
             <Item stackedLabel>
             <Label>Start Time</Label>
@@ -151,7 +151,7 @@ export default class FormPage extends Component {
             </Item>
             </Item>
 
-            <Button 
+            <Button
             onPress={() => this.props.navigation.navigate('AddPin')}
             block style = {{top: 10, height: 60, backgroundColor: '#FFFFFF'}}>
               <Text style = {{color: '#000000'}}>Change Location</Text>
@@ -160,13 +160,13 @@ export default class FormPage extends Component {
           </Form>
 
           <Content>
-            <Button 
-            onPress={() => this.addPin()} 
+            <Button
+            onPress={() => this.addPin()}
             block style = {{top: 20, height: 60, backgroundColor: '#79e56a',}}>
               <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
             </Button>
             <Button
-            onPress={() => this.props.navigation.navigate('Map')} 
+            onPress={() => this.props.navigation.navigate('Map')}
             block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}}>
               <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
             </Button>
