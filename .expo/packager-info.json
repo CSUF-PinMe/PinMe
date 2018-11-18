@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "packagerPort": null,
-  "expoServerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "packagerPort": 19001,
+  "expoServerPort": 19000,
+  "packagerPid": 2552,
+  "expoServerNgrokUrl": "https://xs-sqf.anonymous.pinme.exp.direct",
+  "packagerNgrokUrl": "https://packager.xs-sqf.anonymous.pinme.exp.direct",
+  "ngrokPid": 17024
 }

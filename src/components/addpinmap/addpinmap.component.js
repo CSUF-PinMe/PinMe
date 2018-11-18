@@ -4,7 +4,7 @@
 //  * Implement MobX state management
 import styles from './addpinmap.component.style.js';
 import myMapStyle from '../map/mapstyle';
-import { Container, Header, Content, Button, Text, Icon as NativeIcon, Footer} from 'native-base';
+import { Container, Header, Content, Button, Text, Icon as NativeIcon, Footer, Fab, Icon} from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView, { Marker } from 'react-native-maps';
 import API, { graphqlOperation } from '@aws-amplify/api'
@@ -96,18 +96,22 @@ export default class AddPinMap extends Component {
           </View>
 
           <View style={styles.button1Container}>
-            <Button large rounded danger
+            <Fab
+            style={{ backgroundColor: '#ed2224' }}
+            position="bottomLeft"
             onPress={() => this.props.navigation.navigate('Map',
             store.update({latitude: this.state.region.latitude}),
             store.update({longitude: this.state.region.longitude})
-            )}
-            >
-              <NativeIcon type="FontAwesome" name="chevron-circle-left" />
-            </Button>
+            )}>
+            <Icon name="close" />
+            </Fab>
+            
           </View>
           <View style={styles.button2Container}>
-            <Button large rounded success
-              onPress={() => this.props.navigation.navigate('PinInfo',
+            <Fab
+            style={{ backgroundColor: '#79e56a' }}
+            position="bottomRight"
+            onPress={() => this.props.navigation.navigate('PinInfo',
               {
                 'region': this.state.region,
                 refresh: store.update({latitude: this.state.region.latitude}),
@@ -116,9 +120,10 @@ export default class AddPinMap extends Component {
                 refreshMap: this.props.navigation.state.params.refresh
                 })}
             >
-              <NativeIcon type="FontAwesome" name="check-circle" />
-            </Button>
-          </View>
+            <Icon name="checkmark" />
+            </Fab>
+
+          </View> 
 
 
       </View>
