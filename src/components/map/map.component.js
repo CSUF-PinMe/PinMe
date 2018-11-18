@@ -28,6 +28,8 @@ import myMapStyle from './mapstyle';
 import redPin from '../../../assets/pin_red.png'
 import {store} from '../../../App'
 
+const { width, height } = Dimensions.get('window');
+const ASPECT_RATIO = width / height;
 
 let id = 0;
 var _mapView: MapView;
@@ -171,7 +173,7 @@ export default class MapScreen extends Component {
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
           style={styles.mapContainer}
-          onRegionChange={(region) => {this.setState({region}); console.log(region);}}
+          onRegionChange={(region) => this.setState({region})}
           initialRegion={this.getInitialState()}
         >
 

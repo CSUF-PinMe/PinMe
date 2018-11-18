@@ -7,7 +7,8 @@ import { Container, Icon, Content, Header, Body} from 'native-base'
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
 import PinInfo from './src/components/pininfo/pininfo.component';
-import SearchScreen from './src/components/map/search.component';
+import SearchScreen from './src/components/search/search.component';
+import MyPinsScreen from './src/components/mypins/mypins.component';
 
 import Expo, { Constants, Location, Permissions } from 'expo';
 import createStore from 'pure-store';
@@ -24,6 +25,7 @@ export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
+  testMarkers: [],
   latitude: 36.812617,
   longitude: -119.745802,
   latitudeDelta: 0.0422,
@@ -92,6 +94,7 @@ const CustomDrawerContentComponent = (props) => (
 const MyApp = createDrawerNavigator({
     Search: SearchScreen,
     Map: MapScreen,
+    MyPins: MyPinsScreen,
     AddPin:{
       screen: AddPinMap,
       navigationOptions: {

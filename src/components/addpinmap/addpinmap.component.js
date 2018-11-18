@@ -1,7 +1,3 @@
-/* @flow */
-
-// TO-DO
-//  * Implement MobX state management
 import styles from './addpinmap.component.style.js';
 import myMapStyle from '../map/mapstyle';
 import { Container, Header, Content, Button, Text, Icon as NativeIcon, Footer} from 'native-base';
@@ -12,6 +8,7 @@ import * as mutations from '../../graphql/mutations';
 import redPin from '../../../assets/pin_red.png'
 import grayPin from '../../../assets/pin_gray.png'
 import React, { Component } from 'react';
+import {store} from '../../../App'
 import {
   View,
   StyleSheet,
@@ -19,7 +16,6 @@ import {
   Dimensions,
   Image
 } from 'react-native';
-import {store} from '../../../App'
 
 
 let id = 0;
@@ -107,14 +103,12 @@ export default class AddPinMap extends Component {
           </View>
           <View style={styles.button2Container}>
             <Button large rounded success
-              onPress={() => this.props.navigation.navigate('PinInfo',
-              {
-                'region': this.state.region,
-                refresh: store.update({latitude: this.state.region.latitude}),
-                refresh: store.update({longitude: this.state.region.longitude}),
-
-                refreshMap: this.props.navigation.state.params.refresh
-                })}
+              onPress={() => {
+                store.update({latitude: this.state.region.latitude});
+                store.update({longitude: this.state.region.longitude});
+                this.props.navigation.navigate('PinInfo');
+                }
+              }
             >
               <NativeIcon type="FontAwesome" name="check-circle" />
             </Button>
