@@ -20,6 +20,7 @@ export default class CreateAcct extends Component {
       selected: value
     });
   } 
+  onValueChange2(value: string) {
     this.setState({
       selected2: value
     });
