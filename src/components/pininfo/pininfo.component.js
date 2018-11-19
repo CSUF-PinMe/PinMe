@@ -22,8 +22,8 @@ export default class PinInfo extends Component {
           description: '',
           startTime: '',
           endTime: '',
-          latitude: undefined,
-          longitude: undefined
+          latitude: store.state.latitude,
+          longitude: store.state.longitude
         }
     };
 
