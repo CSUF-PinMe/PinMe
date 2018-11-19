@@ -1,9 +1,9 @@
 {
   "devToolsPort": 19002,
-  "packagerPort": 19003,
+  "packagerPort": 19005,
   "expoServerPort": 19000,
-  "packagerPid": 8579,
+  "packagerPid": 10157,
   "expoServerNgrokUrl": "https://tj-pci.ecast96.pinme.exp.direct",
   "packagerNgrokUrl": "https://packager.tj-pci.ecast96.pinme.exp.direct",
-  "ngrokPid": 8603
+  "ngrokPid": 10181
 }

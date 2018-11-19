@@ -42,6 +42,7 @@ export default class MapScreen extends Component {
     super(props);
 
     this.state = {
+      bottom: 1,
       region: {
         latitude: store.getState().latitude,
         longitude: store.getState().longitude,
@@ -160,21 +161,28 @@ export default class MapScreen extends Component {
     tabBarHidden: true
   }
 
+  toolbarHack = () => {
+    if(this.state.bottom === 1){
+      this.setState({bottom: 0})
+    }
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
     return (
-    <Container style={styles.MapContainer}>
+    <Container style={styles.mapContainer}>
         <StatusBar hidden/>
-      <View style={styles.Mapcontainer}>
+      <View style={styles.mapContainer}>
         <MapView
           // provider={PROVIDER_GOOGLE}
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
-          style={styles.mapContainer}
+          style={[styles.mapContainer, {bottom: this.state.bottom}]}
           onRegionChange={(region) => this.setState({region})}
           initialRegion={this.getInitialState()}
+          toolbarEnabled={true}
         >
 
         {this.state.markers.map((marker, index) => (
@@ -184,6 +192,7 @@ export default class MapScreen extends Component {
             description={marker.description}
             coordinate={marker.coordinate}
             image={redPin}
+            onPress={() => this.toolbarHack()}
           />
         ))}
 
