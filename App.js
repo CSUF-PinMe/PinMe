@@ -7,7 +7,8 @@ import { Container, Icon, Content, Header, Body} from 'native-base'
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
 import PinInfo from './src/components/pininfo/pininfo.component';
-import SearchScreen from './src/components/map/search.component';
+import SearchScreen from './src/components/search/search.component';
+import MyPinsScreen from './src/components/mypins/mypins.component';
 
 import Expo, { Constants, Location, Permissions } from 'expo';
 import createStore from 'pure-store';
@@ -24,10 +25,16 @@ export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
+  testMarkers: [],
   latitude: 36.812617,
   longitude: -119.745802,
   latitudeDelta: 0.0422,
-  longitudeDelta: 0.0221
+  longitudeDelta: 0.0221,
+  pinInfo: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
+    name: undefined,
+    latitude: undefined,
+    longitude: undefined
+  }
 })
 
 class App extends React.Component {
@@ -37,13 +44,22 @@ class App extends React.Component {
     this.state = {
       location: null,
       errorMessage: null,
+      loading: true
     }
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     this._getLocationAsync();
+    await Expo.Font.loadAsync({
+      MaterialIcons: require('react-native-vector-icons/Fonts/MaterialIcons.ttf'),
+      Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+    });
     Auth.currentUserInfo().then(res => store.update({currentUser: res.username}));
+    this.setState({
+      loading: false
+     });
   }
+
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -59,9 +75,14 @@ class App extends React.Component {
     this.setState({ location });
   };
   render() {
+    if (this.state.loading) {
+      return <Expo.AppLoading />;
+    }
     return <MyApp />;
   }
 }
+
+export default withAuthenticator(App , /*{ includeGreetings: true }*/)
 
 const RootStack = createStackNavigator(
   {
@@ -92,6 +113,7 @@ const CustomDrawerContentComponent = (props) => (
 const MyApp = createDrawerNavigator({
     Search: SearchScreen,
     Map: MapScreen,
+    MyPins: MyPinsScreen,
     AddPin:{
       screen: AddPinMap,
       navigationOptions: {
@@ -116,8 +138,6 @@ const MyApp = createDrawerNavigator({
     inactiveTintColor: 'blue',
   }
 }, {});
-
-export default withAuthenticator(App , /*{ includeGreetings: true }*/)
 
 const styles = StyleSheet.create({
     container: {

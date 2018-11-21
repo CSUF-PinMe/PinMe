@@ -17,9 +17,11 @@ import {
   Left,
   Fab
 } from 'native-base';
+import { showLocation, Popup } from 'react-native-map-link';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
+import Modal from "react-native-modal";
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
@@ -28,6 +30,8 @@ import myMapStyle from './mapstyle';
 import redPin from '../../../assets/pin_red.png'
 import {store} from '../../../App'
 
+const { width, height } = Dimensions.get('window');
+const ASPECT_RATIO = width / height;
 
 let id = 0;
 var _mapView: MapView;
@@ -40,6 +44,8 @@ export default class MapScreen extends Component {
     super(props);
 
     this.state = {
+      isVisible: false,
+      bottom: 1,
       region: {
         latitude: store.getState().latitude,
         longitude: store.getState().longitude,
@@ -158,21 +164,36 @@ export default class MapScreen extends Component {
     tabBarHidden: true
   }
 
+  toolbarHack = () => {
+    if(this.state.bottom === 1){
+      this.setState({bottom: 0})
+    }
+  }
+
+  mapLink = (coords, name) => {
+    store.update({pinInfo: {
+      name: name,
+      latitude: coords.latitude,
+      longitude: coords.longitude
+    }})
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
     return (
-    <Container style={styles.MapContainer}>
+    <Container style={styles.mapContainer}>
         <StatusBar hidden/>
-      <View style={styles.Mapcontainer}>
+      <View style={styles.mapContainer}>
         <MapView
           // provider={PROVIDER_GOOGLE}
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
-          style={styles.mapContainer}
-          onRegionChange={(region) => {this.setState({region}); console.log(region);}}
+          style={[styles.mapContainer, {bottom: this.state.bottom}]}
+          onRegionChange={(region) => this.setState({region})}
           initialRegion={this.getInitialState()}
+          toolbarEnabled={true}
         >
 
         {this.state.markers.map((marker, index) => (
@@ -182,10 +203,31 @@ export default class MapScreen extends Component {
             description={marker.description}
             coordinate={marker.coordinate}
             image={redPin}
+            onCalloutPress={() => this.setState({isVisible: true})}
+            onPress={e => {
+              this.mapLink(e.nativeEvent.coordinate, marker.name);
+              this.toolbarHack();
+            }}
           />
         ))}
-
         </MapView>
+
+
+        <Popup
+          isVisible={this.state.isVisible}
+          onCancelPressed={() => this.setState({ isVisible: false })}
+          onAppPressed={() => this.setState({ isVisible: false })}
+          onBackButtonPressed={() => this.setState({ isVisible: false })}
+          appsWhiteList={['uber', 'lyft', 'waze']}
+          options={{
+            latitude: store.state.pinInfo.latitude,
+            longitude: store.state.pinInfo.longitude,
+            title: store.state.pinInfo.name,
+            dialogTitle: 'What app do you want to open?',
+            cancelText: 'Cancel'
+          }}
+        />
+
         <View style = {styles.mapDrawerOverlay} />
 
         <View style={{ flex: 1, position: 'absolute'}}>

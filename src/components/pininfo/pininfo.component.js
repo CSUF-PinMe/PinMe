@@ -13,8 +13,6 @@ export default class PinInfo extends Component {
   constructor(props){
     super(props);
 
-    const { navigation } = this.props;
-
     this.state = {
         loading: true,
         pinInfo: {
@@ -24,8 +22,8 @@ export default class PinInfo extends Component {
           description: '',
           startTime: '',
           endTime: '',
-          latitude: navigation.getParam('region').latitude,
-          longitude: navigation.getParam('region').longitude
+          latitude: store.state.latitude,
+          longitude: store.state.longitude
         }
     };
 
