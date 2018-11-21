@@ -268,7 +268,14 @@ export default class MapScreen extends Component {
               >
               <Icon style = {{color: '#03a9f4'}} name="locate"/>
             </Button>
+            <Button style={{ backgroundColor: '#FFFFFF'}}
+              onPress={this.loadPins}
+              >
+              <Icon style = {{color: '#03a9f4'}} name="refresh"/>
+            </Button>
+            
           </Fab>
+          
           </View>
         </View>
     </Container>
