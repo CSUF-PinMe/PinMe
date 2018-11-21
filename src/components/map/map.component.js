@@ -17,9 +17,11 @@ import {
   Left,
   Fab
 } from 'native-base';
+import { showLocation, Popup } from 'react-native-map-link';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
+import Modal from "react-native-modal";
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
@@ -42,6 +44,7 @@ export default class MapScreen extends Component {
     super(props);
 
     this.state = {
+      isVisible: false,
       bottom: 1,
       region: {
         latitude: store.getState().latitude,
@@ -167,6 +170,14 @@ export default class MapScreen extends Component {
     }
   }
 
+  mapLink = (coords, name) => {
+    store.update({pinInfo: {
+      name: name,
+      latitude: coords.latitude,
+      longitude: coords.longitude
+    }})
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
@@ -192,11 +203,31 @@ export default class MapScreen extends Component {
             description={marker.description}
             coordinate={marker.coordinate}
             image={redPin}
-            onPress={() => this.toolbarHack()}
+            onCalloutPress={() => this.setState({isVisible: true})}
+            onPress={e => {
+              this.mapLink(e.nativeEvent.coordinate, marker.name);
+              this.toolbarHack();
+            }}
           />
         ))}
-
         </MapView>
+
+
+        <Popup
+          isVisible={this.state.isVisible}
+          onCancelPressed={() => this.setState({ isVisible: false })}
+          onAppPressed={() => this.setState({ isVisible: false })}
+          onBackButtonPressed={() => this.setState({ isVisible: false })}
+          appsWhiteList={['uber', 'lyft', 'waze']}
+          options={{
+            latitude: store.state.pinInfo.latitude,
+            longitude: store.state.pinInfo.longitude,
+            title: store.state.pinInfo.name,
+            dialogTitle: 'What app do you want to open?',
+            cancelText: 'Cancel'
+          }}
+        />
+
         <View style = {styles.mapDrawerOverlay} />
 
         <View style={{ flex: 1, position: 'absolute'}}>
