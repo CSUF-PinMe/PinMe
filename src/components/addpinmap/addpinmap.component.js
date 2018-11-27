@@ -17,18 +17,7 @@ import {
   Image
 } from 'react-native';
 
-
-let id = 0;
 var {height, width} = Dimensions.get('window');
-
-const pin = {
-  userId: '123',
-  eventName: 'new pin',
-  eventType: 'type',
-  description: 'my description',
-  latitude: 36.812617,
-  longitude: -119.745802
-}
 
 export default class AddPinMap extends Component {
   constructor(props){
@@ -36,15 +25,7 @@ export default class AddPinMap extends Component {
     const { navigation } = this.props;
 
     this.state ={
-      markers: navigation.getParam('markers', pin),
-      color: 'navy',
       loading: true,
-      region: {
-        latitude: store.getState().latitude,
-        longitude: store.getState().longitude,
-        latitudeDelta: store.getState().latitudeDelta,
-        longitudeDelta: store.getState().longitudeDelta,
-    },
     };
   }
 
@@ -73,11 +54,11 @@ export default class AddPinMap extends Component {
           <View style={styles.container}>
             <MapView
             style={styles.map}
-            onRegionChange={(region) => this.setState({region})}
-            initialRegion={this.state.region}
+            onRegionChange={(region) => store.update({region})}
+            initialRegion={store.state.region}
             customMapStyle={myMapStyle}
             >
-            {this.state.markers.map((marker, index) => (
+            {store.state.markers.map((marker, index) => (
               <Marker
                 key={marker.key}
                 coordinate={marker.coordinate}
@@ -93,22 +74,14 @@ export default class AddPinMap extends Component {
 
           <View style={styles.button1Container}>
             <Button large rounded danger
-            onPress={() => this.props.navigation.navigate('Map',
-            store.update({latitude: this.state.region.latitude}),
-            store.update({longitude: this.state.region.longitude})
-            )}
+            onPress={() => this.props.navigation.navigate('Map')}
             >
               <NativeIcon type="FontAwesome" name="chevron-circle-left" />
             </Button>
           </View>
           <View style={styles.button2Container}>
             <Button large rounded success
-              onPress={() => {
-                store.update({latitude: this.state.region.latitude});
-                store.update({longitude: this.state.region.longitude});
-                this.props.navigation.navigate('PinInfo');
-                }
-              }
+              onPress={() => this.props.navigation.navigate('PinInfo')}
             >
               <NativeIcon type="FontAwesome" name="check-circle" />
             </Button>

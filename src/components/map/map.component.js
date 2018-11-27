@@ -33,11 +33,7 @@ import {store} from '../../../App'
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
 
-let id = 0;
 var _mapView: MapView;
-var myTimestamp = new Date();
-
-const initialMarkers = [];
 
 export default class MapScreen extends Component {
   constructor(props){
@@ -46,14 +42,7 @@ export default class MapScreen extends Component {
     this.state = {
       isVisible: false,
       bottom: 1,
-      region: {
-        latitude: store.getState().latitude,
-        longitude: store.getState().longitude,
-        latitudeDelta: store.getState().latitudeDelta,
-        longitudeDelta: store.getState().longitudeDelta,
-      },
       loading: true,
-      markers: initialMarkers,
       active: false,
       active1: false
     };
@@ -87,10 +76,10 @@ export default class MapScreen extends Component {
 
   getInitialState() {
     return {
-      latitude: store.getState().latitude,
-      longitude: store.getState().longitude,
-      latitudeDelta: store.getState().latitudeDelta,
-      longitudeDelta: store.getState().longitudeDelta,
+      latitude: store.state.region.latitude,
+      longitude: store.state.region.longitude,
+      latitudeDelta: store.state.region.latitudeDelta,
+      longitudeDelta: store.state.region.longitudeDelta,
     };
   }
 
@@ -112,26 +101,26 @@ export default class MapScreen extends Component {
   //   Alert.alert('PinMe', "Pin successfully added!");
   // }
 
-  deletePin = async (e) => {
-    var removeIndex = this.state.markers.map(function(item) { return item.key; }).indexOf(e);
-    this.state.markers.splice(removeIndex, 1);
-    const result = API.graphql(graphqlOperation(mutations.deletePin, {input: {id: e}}));
-  }
+  // deletePin = async (e) => {
+  //   var removeIndex = this.state.markers.map(function(item) { return item.key; }).indexOf(e);
+  //   this.state.markers.splice(removeIndex, 1);
+  //   const result = API.graphql(graphqlOperation(mutations.deletePin, {input: {id: e}}));
+  // }
 
   // Queries and returns all entries
-  getAllPins = async () => {
-    const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
-    console.log(allPins);
-  }
+  // getAllPins = async () => {
+  //   const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
+  //   console.log(allPins);
+  // }
 
   loadPins = async () => {
-    this.setState({markers: []});
+    store.update({markers: []});
     const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
     allPins.data.listPins.items.map(pin => (
       // console.log()
-      this.setState({
+      store.update({
         markers: [
-          ...this.state.markers,
+          ...store.state.markers,
           {
             name: pin.eventName,
             description: pin.description,
@@ -148,16 +137,15 @@ export default class MapScreen extends Component {
         ]
       })
     ))
-    store.update({markers: this.state.markers})
     this.setState({loading: false});
     console.log('All pins loaded!');
   }
 
   // Queries for entry with matching id
-  getOnePin = async () => {
-    const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
-    console.log(onePin);
-  }
+  // getOnePin = async () => {
+  //   const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
+  //   console.log(onePin);
+  // }
 
   static navigationOptions = {
     header: null,
@@ -191,12 +179,12 @@ export default class MapScreen extends Component {
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
           style={[styles.mapContainer, {bottom: this.state.bottom}]}
-          onRegionChange={(region) => this.setState({region})}
-          initialRegion={this.getInitialState()}
+          onRegionChange={(region) => store.update({region})}
+          initialRegion={store.state.region}
           toolbarEnabled={true}
         >
 
-        {this.state.markers.map((marker, index) => (
+        {store.state.markers.map((marker, index) => (
           <Marker
             key={marker.key}
             title={marker.name}
@@ -252,15 +240,7 @@ export default class MapScreen extends Component {
             onPress={() => this.setState({ active: !this.state.active })}>
             <Icon name="add" />
             <Button style={{ backgroundColor: '#03a9f4' }}
-              onPress={() => this.props.navigation.navigate('AddPin',
-              {
-              'region': this.state.region,
-              'markers': this.state.markers,
-              refresh: this.loadPins,
-              refresh: store.update({latitude: this.state.region.latitude}),
-              refresh: store.update({longitude: this.state.region.longitude})
-              })}
-            >
+              onPress={() => this.props.navigation.navigate('AddPin')}>
               <Icon name="pin" />
             </Button>
             <Button style={{ backgroundColor: '#FFFFFF'}}
@@ -273,9 +253,9 @@ export default class MapScreen extends Component {
               >
               <Icon style = {{color: '#03a9f4'}} name="refresh"/>
             </Button>
-            
+
           </Fab>
-          
+
           </View>
         </View>
     </Container>

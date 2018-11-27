@@ -25,11 +25,12 @@ export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
-  testMarkers: [],
-  latitude: 36.812617,
-  longitude: -119.745802,
-  latitudeDelta: 0.0422,
-  longitudeDelta: 0.0221,
+  region: {
+    latitude: 36.812617,
+    longitude: -119.745802,
+    latitudeDelta: 0.0422,
+    longitudeDelta: 0.0221,
+  },
   pinInfo: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
     name: undefined,
     latitude: undefined,
