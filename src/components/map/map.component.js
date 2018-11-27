@@ -258,7 +258,9 @@ export default class MapScreen extends Component {
               'markers': this.state.markers,
               refresh: this.loadPins,
               refresh: store.update({latitude: this.state.region.latitude}),
-              refresh: store.update({longitude: this.state.region.longitude})
+              refresh: store.update({longitude: this.state.region.longitude}),
+              refresh: store.update({latitudeDelta: this.state.region.latitudeDelta}),
+              refresh: store.update({longitudeDelta: this.state.region.longitudeDelta})
               })}
             >
               <Icon name="pin" />
@@ -273,9 +275,9 @@ export default class MapScreen extends Component {
               >
               <Icon style = {{color: '#03a9f4'}} name="refresh"/>
             </Button>
-            
+
           </Fab>
-          
+
           </View>
         </View>
     </Container>

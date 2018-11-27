@@ -93,10 +93,14 @@ export default class AddPinMap extends Component {
 
           <View style={styles.button1Container}>
             <Button large rounded danger
-            onPress={() => this.props.navigation.navigate('Map',
-            store.update({latitude: this.state.region.latitude}),
-            store.update({longitude: this.state.region.longitude})
-            )}
+              onPress={() => {
+                store.update({latitude: this.state.region.latitude});
+                store.update({longitude: this.state.region.longitude});
+                store.update({latitudeDelta: this.state.region.latitudeDelta});
+                store.update({longitudeDelta: this.state.region.longitudeDelta});
+                this.props.navigation.navigate('Map');
+                }
+              }
             >
               <NativeIcon type="FontAwesome" name="chevron-circle-left" />
             </Button>
@@ -106,6 +110,8 @@ export default class AddPinMap extends Component {
               onPress={() => {
                 store.update({latitude: this.state.region.latitude});
                 store.update({longitude: this.state.region.longitude});
+                store.update({latitudeDelta: this.state.region.latitudeDelta});
+                store.update({longitudeDelta: this.state.region.longitudeDelta});
                 this.props.navigation.navigate('PinInfo');
                 }
               }
