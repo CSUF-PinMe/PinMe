@@ -149,7 +149,10 @@ export default class MapScreen extends Component {
 
   static navigationOptions = {
     header: null,
-    tabBarHidden: true
+    tabBarHidden: true,
+    drawerIcon: (
+      <Icon name = "home" style = {{fontSize: 24, color: 'red'}} />
+    )
   }
 
   toolbarHack = () => {

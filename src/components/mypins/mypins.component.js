@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
+import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
 import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
@@ -51,6 +51,11 @@ export default class MyPinsScreen extends Component {
     this.setState(newState);
   };
 
+  static navigationOptions = {
+    header: null,
+    tabBarHidden: true,
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
@@ -59,7 +64,7 @@ export default class MyPinsScreen extends Component {
       <ScrollView>
         <StatusBar hidden/>
 
-        <Header searchBar rounded>
+        <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
           <Item>
             <Icon name="ios-search" />
             <Input

@@ -21,7 +21,10 @@ export default class SearchScreen extends Component {
   }
 
   static navigationOptions = {
-    header: null
+    header: null,
+    drawerIcon: (
+      <Icon name = "search" style = {{fontSize: 24, color:'red'}} />
+    )
   }
 
   async componentDidMount() {
@@ -61,7 +64,7 @@ export default class SearchScreen extends Component {
       <ScrollView>
         <StatusBar hidden/>
 
-        <Header searchBar rounded>
+        <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
           <Item>
             <Icon name="ios-search" />
             <Input

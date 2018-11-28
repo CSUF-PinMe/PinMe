@@ -54,6 +54,7 @@ class App extends React.Component {
     await Expo.Font.loadAsync({
       MaterialIcons: require('react-native-vector-icons/Fonts/MaterialIcons.ttf'),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+      Entypo: require("native-base/Fonts/Entypo.ttf"),
     });
     Auth.currentUserInfo().then(res => store.update({currentUser: res.username}));
     this.setState({
@@ -112,9 +113,26 @@ const CustomDrawerContentComponent = (props) => (
 );
 
 const MyApp = createDrawerNavigator({
-    Search: SearchScreen,
-    Map: MapScreen,
-    MyPins: MyPinsScreen,
+    Search: {
+      screen: SearchScreen,
+      navigationOptions: {
+      drawerIcon: <Icon name = "search" style = {{fontSize: 24, color:'red'}} />
+      }
+    },
+
+    Map: {
+      screen: MapScreen,
+      navigationOptions: {
+      drawerIcon: <Icon name = "home" style = {{fontSize: 24, color: 'red'}} />
+      }
+    },
+
+    MyPins: {
+      screen: MyPinsScreen,
+      navigationOptions: {
+      drawerIcon: <Icon active type='Entypo' name='location-pin' style = {{color:'red'}} />
+      }
+    },
     AddPin:{
       screen: AddPinMap,
       navigationOptions: {
@@ -135,8 +153,8 @@ const MyApp = createDrawerNavigator({
   headerMode: 'screen',
   contentComponent: CustomDrawerContentComponent,
   contentOptions: {
-    activeTintColor: 'blue',
-    inactiveTintColor: 'blue',
+    activeTintColor: '#03a9f4',
+    inactiveTintColor: '#03a9f4',
   }
 }, {});
 
