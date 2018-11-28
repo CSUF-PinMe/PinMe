@@ -4,6 +4,7 @@
 - Users can now open the selected pin in Uber, Lyft, or Waze by pressing on the pin's textbox.
 - Map region is now stored in the global store for updating and reading.
 - Markers are now stored in the global store.
+- fix bug with map not updating when clicking on button on search and mypin page
 
 ## Description
 

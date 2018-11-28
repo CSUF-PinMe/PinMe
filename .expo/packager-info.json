@@ -2,8 +2,8 @@
   "devToolsPort": 19002,
   "packagerPort": 19001,
   "expoServerPort": 19000,
-  "packagerPid": 11327,
-  "expoServerNgrokUrl": "https://9p-2tp.ecast96.pinme.exp.direct",
-  "packagerNgrokUrl": "https://packager.9p-2tp.ecast96.pinme.exp.direct",
-  "ngrokPid": 11342
+  "packagerPid": 23464,
+  "expoServerNgrokUrl": "https://9p-2tp.anonymous.pinme.exp.direct",
+  "packagerNgrokUrl": "https://packager.9p-2tp.anonymous.pinme.exp.direct",
+  "ngrokPid": 6960
 }
