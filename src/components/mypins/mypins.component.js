@@ -85,10 +85,16 @@ export default class MyPinsScreen extends Component {
                 key={marker.key}
               >
                 <CardItem  button header bordered
-                onPress={() => this.props.navigation.navigate('Map',
-                  store.update({latitude: marker.coordinate.latitude}),
-                  store.update({longitude: marker.coordinate.longitude}),
-                )}>
+                onPress={() => { 
+                 store.update({
+                    region:{
+                      latitude: marker.coordinate.latitude,
+                      longitude: marker.coordinate.longitude,
+                      latitudeDelta: store.state.region.latitudeDelta,
+                      longitudeDelta: store.state.region.longitudeDelta
+                }});
+                this.props.navigation.navigate('Map');
+                }}>
                   <Icon active type='Entypo' name='location-pin' />
                   <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
                   <Text style={{position: 'absolute', right: 15, fontWeight: 'bold'}}>{marker.type}</Text>
