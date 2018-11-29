@@ -53,7 +53,13 @@ export default class PinInfo extends Component {
   }
 
   handleDropdown(value: string) {
-    CustomDrawerContentComponent.update({
+    this.setState({
+      pinInfo: {
+        ...this.state.pinInfo,
+        eventType: value
+      }
+    });
+    store.update({
       pinInfo: {
         ...store.state.pinInfo,
         eventType: value
@@ -170,8 +176,9 @@ export default class PinInfo extends Component {
             </Button>
             <Button
             onPress={() => {this.props.navigation.navigate('Map');
-                           this.handleChange('eventName', '');
-                           this.handleChange('description', '')}}
+                            this.handleChange('eventName', '');
+                            this.handleChange('description', '');
+                            this.handleDropdown('')}}
             block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}}>
               <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
             </Button>
