@@ -31,8 +31,18 @@ export const store = createStore({
     latitudeDelta: 0.0422,
     longitudeDelta: 0.0221,
   },
-  pinInfo: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
+  pinLink: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
     name: undefined,
+    latitude: undefined,
+    longitude: undefined
+  },
+  pinInfo: {
+    userId: this.currentUser,
+    eventName: '',
+    eventType: undefined,
+    description: '',
+    startTime: '',
+    endTime: '',
     latitude: undefined,
     longitude: undefined
   }
