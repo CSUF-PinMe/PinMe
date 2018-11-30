@@ -1,16 +1,16 @@
 import React, { Component } from 'react';
-import { 
+import {
     View,
-    StyleSheet, 
+    StyleSheet,
     Dimensions,
     StatusBar,
     ScrollView,
  } from 'react-native';
-import { 
-        Container, 
-        Header, 
-        Content, 
-        Text, 
+import {
+        Container,
+        Header,
+        Content,
+        Text,
         Icon,
         Button,
         Left,
@@ -25,17 +25,17 @@ export default class SearchScreen extends Component {
 
   static navigationOptions = {
     drawerIcon: ({tintColor}) => (
-      <Icon name = "home" style = {{fontSize: 24, color:tintColor}} />
+      <Icon name = "search" style = {{fontSize: 24, color:tintColor}} />
     )
   }
   render() {
     return (
       <ScrollView>
       <StatusBar hidden/>
-      <Header searchBar rounded>
+      <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
           <Item>
             <Icon name="ios-search" />
-            <Input 
+            <Input
             placeholder="Search"/>
             <Icon name="ios-people" />
           </Item>

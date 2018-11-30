@@ -151,7 +151,7 @@ export default class MapScreen extends Component {
 
   static navigationOptions = {
     header: null,
-    tabBarHidden: true
+    tabBarHidden: true,
   }
 
   toolbarHack = () => {
@@ -161,7 +161,7 @@ export default class MapScreen extends Component {
   }
 
   mapLink = (coords, name) => {
-    store.update({pinInfo: {
+    store.update({pinLink: {
       name: name,
       latitude: coords.latitude,
       longitude: coords.longitude
@@ -219,9 +219,9 @@ export default class MapScreen extends Component {
           onBackButtonPressed={() => this.setState({ isVisible: false })}
           appsWhiteList={['uber', 'lyft', 'waze']}
           options={{
-            latitude: store.state.pinInfo.latitude,
-            longitude: store.state.pinInfo.longitude,
-            title: store.state.pinInfo.name,
+            latitude: store.state.pinLink.latitude,
+            longitude: store.state.pinLink.longitude,
+            title: store.state.pinLink.name,
             dialogTitle: 'What app do you want to open?',
             cancelText: 'Cancel'
           }}

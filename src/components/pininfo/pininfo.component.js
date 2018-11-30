@@ -16,14 +16,7 @@ export default class PinInfo extends Component {
     this.state = {
         loading: true,
         pinInfo: {
-          userId: store.getState().currentUser,
-          eventName: '',
-          eventType: undefined,
-          description: '',
-          startTime: '',
-          endTime: '',
-          latitude: store.state.region.latitude,
-          longitude: store.state.region.longitude
+          ...store.state.pinInfo
         }
     };
 
@@ -51,6 +44,12 @@ export default class PinInfo extends Component {
         [name]: value
       }
     });
+    store.update({
+      pinInfo: {
+        ...store.state.pinInfo,
+        [name]: value
+      }
+    });
   }
 
   handleDropdown(value: string) {
@@ -60,13 +59,19 @@ export default class PinInfo extends Component {
         eventType: value
       }
     });
+    store.update({
+      pinInfo: {
+        ...store.state.pinInfo,
+        eventType: value
+      }
+    });
   }
 
   addPin() {
 
     const newPin = API.graphql(graphqlOperation(mutations.createPin,
       {
-        input: this.state.pinInfo
+        input: store.state.pinInfo
       }
     ));
     this.props.navigation.navigate('Map');
@@ -94,8 +99,8 @@ export default class PinInfo extends Component {
             <Item stackedLabel>
               <Label>Event Name </Label>
               <Input
-                onChangeText={(e) => this.handleChange('eventName', e)}
-                value={this.state.pinInfo.eventName}
+              onChangeText={(e) => this.handleChange('eventName', e)}
+              value={store.state.pinInfo.eventName}
                 />
             </Item>
 
@@ -109,7 +114,7 @@ export default class PinInfo extends Component {
                   placeholder="Select the type of event"
                   placeholderStyle={{ color: "#bfc6ea" }}
                   placeholderIconColor="#007aff"
-                  selectedValue={this.state.pinInfo.eventType}
+                  selectedValue={store.state.pinInfo.eventType}
                   onValueChange={this.handleDropdown.bind(this)}
                 >
                   <Picker.Item label=""  />
@@ -150,7 +155,7 @@ export default class PinInfo extends Component {
                 placeholder='e.g. 2:00 PM'
                 placeholderTextColor = '#9e9e9e'
                 onChangeText={(e) => this.handleChange('endTime', e)}
-                value={this.state.pinInfo.endTime}
+                value={store.state.pinInfo.endTime}
                 />
               </Item>
             </Item>
@@ -170,7 +175,10 @@ export default class PinInfo extends Component {
               <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
             </Button>
             <Button
-            onPress={() => this.props.navigation.navigate('Map')}
+            onPress={() => {this.props.navigation.navigate('Map');
+                            this.handleChange('eventName', '');
+                            this.handleChange('description', '');
+                            this.handleDropdown('')}}
             block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}}>
               <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
             </Button>
