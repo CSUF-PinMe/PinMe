@@ -84,10 +84,15 @@ export default class SearchScreen extends Component {
               >
                 <CardItem  button header bordered
                 onPress={() => {
-                  store.update({latitude: marker.coordinate.latitude});
-                  store.update({longitude: marker.coordinate.longitude});
-                  this.props.navigation.navigate('Map');
-                  }
+                  store.update({
+                     region:{
+                       latitude: marker.coordinate.latitude,
+                       longitude: marker.coordinate.longitude,
+                       latitudeDelta: store.state.region.latitudeDelta,
+                       longitudeDelta: store.state.region.longitudeDelta
+                 }});
+                 this.props.navigation.navigate('Map');
+               }
                 }>
                   <Icon active type='Entypo' name='location-pin' />
                   <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
