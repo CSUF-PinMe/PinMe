@@ -21,7 +21,6 @@ import { showLocation, Popup } from 'react-native-map-link';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
-import Modal from "react-native-modal";
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
@@ -29,6 +28,8 @@ import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
 import redPin from '../../../assets/pin_red.png'
 import {store} from '../../../App'
+import {Modal, TouchableHighlight} from 'react-native';
+// import Modal from "react-native-modal";
 
 const { width, height } = Dimensions.get('window');
 const ASPECT_RATIO = width / height;
@@ -44,11 +45,16 @@ export default class MapScreen extends Component {
       bottom: 1,
       loading: true,
       active: false,
-      active1: false
+      active1: false,
+      modalVisible: false
     };
 
     this.getInitialState.bind(this);
     this._getLocationAsync.bind(this);
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
   }
 
   // For button components on map
@@ -169,6 +175,20 @@ export default class MapScreen extends Component {
     }})
   }
 
+  renderButton = (text, onPress) => (
+    <TouchableOpacity onPress={onPress}>
+      <View style={styles.button}>
+        <Text>{text}</Text>
+      </View>
+    </TouchableOpacity>
+  );
+  renderModalContent = () => (
+    <View style={styles.modalContent}>
+      <Text>Hello!</Text>
+      {this.renderButton("Close", () => this.setState({ visibleModal: false }))}
+    </View>
+  );
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
@@ -194,7 +214,7 @@ export default class MapScreen extends Component {
             description={marker.description}
             coordinate={marker.coordinate}
             image={redPin}
-            onCalloutPress={() => this.setState({isVisible: true})}
+            onCalloutPress={() => this.setState({modalVisible: true})}
             onPress={e => {
               this.mapLink(e.nativeEvent.coordinate, marker.name);
               this.toolbarHack();
@@ -203,6 +223,41 @@ export default class MapScreen extends Component {
         ))}
         </MapView>
 
+      <View style={{marginTop: 22}}>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            this.setModalVisible(!this.state.modalVisible);
+          }}>
+          <View style={{marginTop: 22}}>
+            <View>
+              <Text>Hello World!</Text>
+
+              <TouchableHighlight
+                onPress={() => {
+                  this.setModalVisible(!this.state.modalVisible);
+                }}>
+                <Text>Hide Modal</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                onPress={() => {
+                  this.setState({isVisible: true});
+                }}>
+                <Text>Take Me There</Text>
+              </TouchableHighlight>
+            </View>
+          </View>
+        </Modal>
+
+        <TouchableHighlight
+          onPress={() => {
+            this.setModalVisible(true);
+          }}>
+          <Text>Show Modal</Text>
+        </TouchableHighlight>
+      </View>
 
         <Popup
           isVisible={this.state.isVisible}

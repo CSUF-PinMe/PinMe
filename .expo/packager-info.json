@@ -1,9 +1,9 @@
 {
+  "expoServerNgrokUrl": "https://72-xqk.anonymous.pinme.exp.direct",
+  "packagerNgrokUrl": "https://packager.72-xqk.anonymous.pinme.exp.direct",
+  "ngrokPid": 14604,
   "devToolsPort": 19002,
-  "packagerPort": null,
-  "expoServerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 7148
 }
