@@ -46,7 +46,8 @@ export default class MapScreen extends Component {
       loading: true,
       active: false,
       active1: false,
-      modalVisible: false
+      modalVisible: false,
+      modalMarker: undefined
     };
 
     this.getInitialState.bind(this);
@@ -189,6 +190,20 @@ export default class MapScreen extends Component {
     </View>
   );
 
+  setModalMarker = (marker) => {
+    this.setState({
+      ...this.state,
+      modalMarker: {            
+        name: marker.name,
+        description: marker.description,
+        placedBy: marker.placedBy,
+        type: marker.type,
+        startTime: marker.startTime,
+        endTime: marker.endTime,
+      }
+    })
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
@@ -216,14 +231,15 @@ export default class MapScreen extends Component {
             image={redPin}
             onCalloutPress={() => this.setState({modalVisible: true})}
             onPress={e => {
+              this.setModalMarker(marker);
               this.mapLink(e.nativeEvent.coordinate, marker.name);
               this.toolbarHack();
+              console.log(this.state.modalMarker);
             }}
           />
         ))}
         </MapView>
 
-      <View style={{marginTop: 22}}>
         <Modal
           animationType="slide"
           transparent={false}
@@ -231,9 +247,9 @@ export default class MapScreen extends Component {
           onRequestClose={() => {
             this.setModalVisible(!this.state.modalVisible);
           }}>
-          <View style={{marginTop: 22}}>
-            <View>
-              <Text>Hello World!</Text>
+              <Text style={{fontWeight: 'bold'}}>Description: </Text>
+              {/* <Text>{marker.description}</Text> */}
+
 
               <TouchableHighlight
                 onPress={() => {
@@ -247,17 +263,15 @@ export default class MapScreen extends Component {
                 }}>
                 <Text>Take Me There</Text>
               </TouchableHighlight>
-            </View>
-          </View>
         </Modal>
 
-        <TouchableHighlight
+        {/* <TouchableHighlight
           onPress={() => {
             this.setModalVisible(true);
           }}>
           <Text>Show Modal</Text>
-        </TouchableHighlight>
-      </View>
+        </TouchableHighlight> */}
+ 
 
         <Popup
           isVisible={this.state.isVisible}
