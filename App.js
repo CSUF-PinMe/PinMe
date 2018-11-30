@@ -9,6 +9,7 @@ import AddPinMap from './src/components/addpinmap/addpinmap.component';
 import PinInfo from './src/components/pininfo/pininfo.component';
 import SearchScreen from './src/components/search/search.component';
 import MyPinsScreen from './src/components/mypins/mypins.component';
+import Test from './src/components/test_animation/test_animation.component';
 
 import Expo, { Constants, Location, Permissions } from 'expo';
 import createStore from 'pure-store';
@@ -25,13 +26,24 @@ export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
-  testMarkers: [],
-  latitude: 36.812617,
-  longitude: -119.745802,
-  latitudeDelta: 0.0422,
-  longitudeDelta: 0.0221,
-  pinInfo: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
+  region: {
+    latitude: 36.812617,
+    longitude: -119.745802,
+    latitudeDelta: 0.0422,
+    longitudeDelta: 0.0221,
+  },
+  pinLink: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
     name: undefined,
+    latitude: undefined,
+    longitude: undefined
+  },
+  pinInfo: {
+    userId: this.currentUser,
+    eventName: '',
+    eventType: undefined,
+    description: '',
+    startTime: '',
+    endTime: '',
     latitude: undefined,
     longitude: undefined
   }
@@ -53,6 +65,7 @@ class App extends React.Component {
     await Expo.Font.loadAsync({
       MaterialIcons: require('react-native-vector-icons/Fonts/MaterialIcons.ttf'),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+      Entypo: require("native-base/Fonts/Entypo.ttf"),
     });
     Auth.currentUserInfo().then(res => store.update({currentUser: res.username}));
     this.setState({
@@ -111,9 +124,26 @@ const CustomDrawerContentComponent = (props) => (
 );
 
 const MyApp = createDrawerNavigator({
-    Search: SearchScreen,
-    Map: MapScreen,
-    MyPins: MyPinsScreen,
+    Search: {
+      screen: SearchScreen,
+      navigationOptions: {
+      drawerIcon: <Icon name = "search" style = {{fontSize: 24, color:'red'}} />
+      }
+    },
+
+    Map: {
+      screen: MapScreen,
+      navigationOptions: {
+      drawerIcon: <Icon name = "home" style = {{fontSize: 24, color: 'red'}} />
+      }
+    },
+
+    MyPins: {
+      screen: MyPinsScreen,
+      navigationOptions: {
+      drawerIcon: <Icon active type='Entypo' name='location-pin' style = {{color:'red'}} />
+      }
+    },
     AddPin:{
       screen: AddPinMap,
       navigationOptions: {
@@ -134,8 +164,8 @@ const MyApp = createDrawerNavigator({
   headerMode: 'screen',
   contentComponent: CustomDrawerContentComponent,
   contentOptions: {
-    activeTintColor: 'blue',
-    inactiveTintColor: 'blue',
+    activeTintColor: '#03a9f4',
+    inactiveTintColor: '#03a9f4',
   }
 }, {});
 

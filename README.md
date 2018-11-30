@@ -1,13 +1,10 @@
-# PinMe - Core App
+# PinMe
 
-## Current App State (v2.2)
-- All screens have been merged together. Screens included are:
-  - Map: shows the user all the pins on the map
-  - My Pins: Shows the user a list of pins they have placed on the map
-  - Search: Allows the user to search for any pin by name in a list view
-- Map region is now stored in the global state, allowing for consistent map view across screens.
-- Users can now jump to any pin on the map by selecting it on the Search or My Pins screen.
-- Users can now delete their own pins under the My Pins screen.
+## Current App State (v2.2.1)
+- Users can now open the selected pin in Uber, Lyft, or Waze by pressing on the pin's textbox.
+- Map region is now stored in the global store for updating and reading.
+- Markers are now stored in the global store.
+- fix bug with map not updating when clicking on button on search and mypin page
 
 ## Description
 
@@ -44,6 +41,15 @@ This is a React Native app created with the Expo CLI to display a simple map vie
 * Or scan QR code with the Expo app on your personal mobile device.
 
 # Previous App States
+
+> ## Current App State (v2.2)
+> - All screens have been merged together. Screens included are:
+>   - Map: shows the user all the pins on the map
+>   - My Pins: Shows the user a list of pins they have placed on the map
+>   - Search: Allows the user to search for any pin by name in a list view
+> - Map region is now stored in the global state, allowing for consistent map view across screens.
+> - Users can now jump to any pin on the map by selecting it on the Search or My Pins screen.
+> - Users can now delete their own pins under the My Pins screen.
 
 > ## Previous App State (V2.1)
 > - Drawer menu has been added and works with stack navigator now

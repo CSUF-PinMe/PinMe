@@ -1,6 +1,6 @@
 import styles from './addpinmap.component.style.js';
 import myMapStyle from '../map/mapstyle';
-import { Container, Header, Content, Button, Text, Icon as NativeIcon, Footer} from 'native-base';
+import { Container, Header, Content, Button, Text, Icon, Fab, Footer} from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView, { Marker } from 'react-native-maps';
 import API, { graphqlOperation } from '@aws-amplify/api'
@@ -17,18 +17,7 @@ import {
   Image
 } from 'react-native';
 
-
-let id = 0;
 var {height, width} = Dimensions.get('window');
-
-const pin = {
-  userId: '123',
-  eventName: 'new pin',
-  eventType: 'type',
-  description: 'my description',
-  latitude: 36.812617,
-  longitude: -119.745802
-}
 
 export default class AddPinMap extends Component {
   constructor(props){
@@ -36,15 +25,7 @@ export default class AddPinMap extends Component {
     const { navigation } = this.props;
 
     this.state ={
-      markers: navigation.getParam('markers', pin),
-      color: 'navy',
       loading: true,
-      region: {
-        latitude: store.getState().latitude,
-        longitude: store.getState().longitude,
-        latitudeDelta: store.getState().latitudeDelta,
-        longitudeDelta: store.getState().longitudeDelta,
-    },
     };
   }
 
@@ -56,7 +37,8 @@ export default class AddPinMap extends Component {
       FontAwesome: require('react-native-vector-icons/Fonts/FontAwesome.ttf'),
       Entypo: require('react-native-vector-icons/Fonts/Entypo.ttf'),
     });
-    this.setState({ loading: false });
+    this.setState({ loading: false }),
+    console.log(store.state.region)
   }
 
   static navigationOptions = {
@@ -73,11 +55,11 @@ export default class AddPinMap extends Component {
           <View style={styles.container}>
             <MapView
             style={styles.map}
-            onRegionChange={(region) => this.setState({region})}
-            initialRegion={this.state.region}
+            onRegionChange={(region) => store.update({region})}
+            initialRegion={store.state.region}
             customMapStyle={myMapStyle}
             >
-            {this.state.markers.map((marker, index) => (
+            {store.state.markers.map((marker, index) => (
               <Marker
                 key={marker.key}
                 coordinate={marker.coordinate}
@@ -91,33 +73,24 @@ export default class AddPinMap extends Component {
             <Image source={redPin} style={{transform: [{ scale: .35 }]}}/>
           </View>
 
-          <View style={styles.button1Container}>
-            <Button large rounded danger
-              onPress={() => {
-                store.update({latitude: this.state.region.latitude});
-                store.update({longitude: this.state.region.longitude});
-                store.update({latitudeDelta: this.state.region.latitudeDelta});
-                store.update({longitudeDelta: this.state.region.longitudeDelta});
-                this.props.navigation.navigate('Map');
-                }
-              }
-            >
-              <NativeIcon type="FontAwesome" name="chevron-circle-left" />
-            </Button>
+            <View style={styles.button1Container}>
+            <Fab
+            style={{ backgroundColor: '#ed2224' }}
+            position="bottomLeft"
+            onPress={() => this.props.navigation.navigate('Map')}>
+            <Icon name="close" />
+            </Fab>
+
           </View>
           <View style={styles.button2Container}>
-            <Button large rounded success
-              onPress={() => {
-                store.update({latitude: this.state.region.latitude});
-                store.update({longitude: this.state.region.longitude});
-                store.update({latitudeDelta: this.state.region.latitudeDelta});
-                store.update({longitudeDelta: this.state.region.longitudeDelta});
-                this.props.navigation.navigate('PinInfo');
-                }
-              }
+            <Fab
+            style={{ backgroundColor: '#79e56a' }}
+            position="bottomRight"
+            onPress={() => this.props.navigation.navigate('PinInfo')}
             >
-              <NativeIcon type="FontAwesome" name="check-circle" />
-            </Button>
+            <Icon name="checkmark" />
+            </Fab>
+
           </View>
 
 
