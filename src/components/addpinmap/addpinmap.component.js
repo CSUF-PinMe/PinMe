@@ -37,7 +37,8 @@ export default class AddPinMap extends Component {
       FontAwesome: require('react-native-vector-icons/Fonts/FontAwesome.ttf'),
       Entypo: require('react-native-vector-icons/Fonts/Entypo.ttf'),
     });
-    this.setState({ loading: false });
+    this.setState({ loading: false }),
+    console.log(store.state.region)
   }
 
   static navigationOptions = {
@@ -79,7 +80,7 @@ export default class AddPinMap extends Component {
             onPress={() => this.props.navigation.navigate('Map')}>
             <Icon name="close" />
             </Fab>
-            
+
           </View>
           <View style={styles.button2Container}>
             <Fab
@@ -90,7 +91,7 @@ export default class AddPinMap extends Component {
             <Icon name="checkmark" />
             </Fab>
 
-          </View> 
+          </View>
 
 
       </View>

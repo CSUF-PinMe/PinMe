@@ -22,9 +22,6 @@ export default class SearchScreen extends Component {
 
   static navigationOptions = {
     header: null,
-    drawerIcon: (
-      <Icon name = "search" style = {{fontSize: 24, color:'red'}} />
-    )
   }
 
   async componentDidMount() {
@@ -87,17 +84,8 @@ export default class SearchScreen extends Component {
               >
                 <CardItem  button header bordered
                 onPress={() => {
-                  store.update({
-                    region:{
-                      latitude: marker.coordinate.latitude,
-                      longitude: marker.coordinate.longitude,
-                      latitudeDelta: store.state.region.latitudeDelta,
-                      longitudeDelta: store.state.region.longitudeDelta
-
-                  }});
-                
-
-                
+                  store.update({latitude: marker.coordinate.latitude});
+                  store.update({longitude: marker.coordinate.longitude});
                   this.props.navigation.navigate('Map');
                   }
                 }>

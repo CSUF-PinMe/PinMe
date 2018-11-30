@@ -16,10 +16,16 @@ export default class PinInfo extends Component {
     this.state = {
         loading: true,
         pinInfo: {
-          ...store.state.pinInfo
+          userId: '',
+          eventName: '',
+          eventType: undefined,
+          description: '',
+          startTime: '',
+          endTime: '',
+          latitude: undefined,
+          longitude: undefined
         }
     };
-
     this.handleChange.bind(this);
   }
 
@@ -75,6 +81,8 @@ export default class PinInfo extends Component {
       }
     ));
     this.props.navigation.navigate('Map');
+    console.log(store.state.pinInfo)
+
   }
 
   render() {
@@ -99,7 +107,10 @@ export default class PinInfo extends Component {
             <Item stackedLabel>
               <Label>Event Name </Label>
               <Input
-              onChangeText={(e) => this.handleChange('eventName', e)}
+              onChangeText={(e) => {this.handleChange('eventName', e);
+                            this.handleChange('userId',store.state.currentUser);
+                            this.handleChange('latitude',store.state.region.latitude);
+                            this.handleChange('longitude',store.state.region.longitude)}}
               value={store.state.pinInfo.eventName}
                 />
             </Item>
@@ -170,12 +181,16 @@ export default class PinInfo extends Component {
 
           <Content>
             <Button
-            onPress={() => this.addPin()}
+            onPress={() => {this.addPin();
+                          this.handleChange('eventName', '');
+                          this.handleChange('description', '');
+                          this.handleDropdown('')}}
             block style = {{top: 20, height: 60, backgroundColor: '#79e56a',}}>
               <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
             </Button>
             <Button
-            onPress={() => {this.props.navigation.navigate('Map');
+            onPress={() => {console.log(store.state.pinInfo);
+                            this.props.navigation.navigate('Map');
                             this.handleChange('eventName', '');
                             this.handleChange('description', '');
                             this.handleDropdown('')}}

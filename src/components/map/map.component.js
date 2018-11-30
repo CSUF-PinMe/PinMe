@@ -71,7 +71,8 @@ export default class MapScreen extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
     });
-    this.loadPins();
+    this.loadPins(),
+    console.log(store.state.region)
   }
 
   getInitialState() {
