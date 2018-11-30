@@ -141,7 +141,7 @@ export default class PinInfo extends Component {
               <Label>Description </Label>
               <Input
                 onChangeText={(e) => this.handleChange('description', e)}
-                value={this.state.pinInfo.description}
+                value={store.state.pinInfo.description}
               />
             </Item>
 
@@ -153,7 +153,7 @@ export default class PinInfo extends Component {
                   placeholder='e.g. 11:30 AM'
                   placeholderTextColor = '#9e9e9e'
                   onChangeText={(e) => this.handleChange('startTime', e)}
-                  value={this.state.pinInfo.startTime}
+                  value={store.state.pinInfo.startTime}
                   />
               </Item>
             </Item>
@@ -184,6 +184,8 @@ export default class PinInfo extends Component {
             onPress={() => {this.addPin();
                           this.handleChange('eventName', '');
                           this.handleChange('description', '');
+                          this.handleChange('startTime', '');
+                          this.handleChange('endTime', '');
                           this.handleDropdown('')}}
             block style = {{top: 20, height: 60, backgroundColor: '#79e56a',}}>
               <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
@@ -193,6 +195,8 @@ export default class PinInfo extends Component {
                             this.props.navigation.navigate('Map');
                             this.handleChange('eventName', '');
                             this.handleChange('description', '');
+                            this.handleChange('startTime', '');
+                            this.handleChange('endTime', '');
                             this.handleDropdown('')}}
             block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}}>
               <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
