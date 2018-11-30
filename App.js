@@ -9,7 +9,6 @@ import AddPinMap from './src/components/addpinmap/addpinmap.component';
 import PinInfo from './src/components/pininfo/pininfo.component';
 import SearchScreen from './src/components/search/search.component';
 import MyPinsScreen from './src/components/mypins/mypins.component';
-import Test from './src/components/test_animation/test_animation.component';
 
 import Expo, { Constants, Location, Permissions } from 'expo';
 import createStore from 'pure-store';
@@ -38,7 +37,7 @@ export const store = createStore({
     longitude: undefined
   },
   pinInfo: {
-    userId: this.currentUser,
+    userId: '',
     eventName: '',
     eventType: undefined,
     description: '',
