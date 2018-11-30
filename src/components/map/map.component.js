@@ -27,6 +27,7 @@ import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
 import myMapStyle from './mapstyle';
+import * as Animatable from 'react-native-animatable';
 import redPin from '../../../assets/pin_red.png'
 import {store} from '../../../App'
 
@@ -44,7 +45,8 @@ export default class MapScreen extends Component {
       bottom: 1,
       loading: true,
       active: false,
-      active1: false
+      active1: false,
+      margin_onClick: false,
     };
 
     this.getInitialState.bind(this);
@@ -171,6 +173,11 @@ export default class MapScreen extends Component {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
+    if (this.state.margin_onClick === true) {
+      margin_gap = 60;
+    } else {
+      margin_gap = 0;
+    }
     return (
     <Container style={styles.mapContainer}>
         <StatusBar hidden/>
@@ -180,6 +187,7 @@ export default class MapScreen extends Component {
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
           style={[styles.mapContainer, {bottom: this.state.bottom}]}
+          onPress={() => this.setState({ margin_onClick: false})}
           onRegionChange={(region) => store.update({region})}
           initialRegion={store.state.region}
           toolbarEnabled={true}
@@ -187,6 +195,7 @@ export default class MapScreen extends Component {
 
         {store.state.markers.map((marker, index) => (
           <Marker
+          margin_onClick={this.state.margin_onClick}
             key={marker.key}
             title={marker.name}
             description={marker.description}
@@ -195,7 +204,9 @@ export default class MapScreen extends Component {
             onCalloutPress={() => this.setState({isVisible: true})}
             onPress={e => {
               this.mapLink(e.nativeEvent.coordinate, marker.name);
+              this.setState({margin_onClick: true});
               this.toolbarHack();
+              
             }}
           />
         ))}
@@ -235,9 +246,9 @@ export default class MapScreen extends Component {
           <Fab
             active={this.state.active}
             direction="up"
-            containerStyle={{ }}
+            containerStyle={{ marginBottom: margin_gap}}
             style={{ backgroundColor: '#03a9f4' }}
-            position="bottomLeft"
+            position="bottomRight"
             onPress={() => this.setState({ active: !this.state.active })}>
             <Icon name="add" />
             <Button style={{ backgroundColor: '#03a9f4' }}
@@ -256,7 +267,6 @@ export default class MapScreen extends Component {
             </Button>
 
           </Fab>
-
           </View>
         </View>
     </Container>
