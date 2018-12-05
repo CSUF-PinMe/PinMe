@@ -3,17 +3,14 @@ import { Button, View, Text, StyleSheet, Image, SafeAreaView } from 'react-nativ
 import { createStackNavigator, createDrawerNavigator, DrawerItems } from 'react-navigation'; // Version can be specified in package.json
 import { fadeIn, zoomIn } from 'react-navigation-transitions';
 import { Container, Icon, Content, Header, Body} from 'native-base'
-
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
 import PinInfo from './src/components/pininfo/pininfo.component';
 import SearchScreen from './src/components/search/search.component';
 import MyPinsScreen from './src/components/mypins/mypins.component';
 import Test from './src/components/test_animation/test_animation.component';
-
 import Expo, { Constants, Location, Permissions } from 'expo';
 import createStore from 'pure-store';
-
 import { withAuthenticator } from 'aws-amplify-react-native';
 import {Auth} from 'aws-amplify'
 import Amplify from '@aws-amplify/core'
@@ -73,7 +70,6 @@ class App extends React.Component {
      });
   }
 
-
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
     if (status !== 'granted') {
@@ -95,7 +91,9 @@ class App extends React.Component {
   }
 }
 
-export default withAuthenticator(App , /*{ includeGreetings: true }*/)
+export default withAuthenticator(App , 
+  // { includeGreetings: true }
+  )
 
 const RootStack = createStackNavigator(
   {

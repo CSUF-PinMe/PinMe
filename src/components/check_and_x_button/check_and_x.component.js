@@ -61,7 +61,6 @@ export default class CheckX extends Component {
   }
 }
 
-
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,

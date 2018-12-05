@@ -2,12 +2,9 @@ import React, { Component } from 'react';
 import {ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
 import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
-import MapView from 'react-native-maps';
-import * as queries from '../../graphql/queries';
-import * as mutations from '../../graphql/mutations';
-import API, { graphqlOperation } from '@aws-amplify/api'
+import MapView from 'react-native-maps';  
 import {store} from '../../../App'
-import { SageMaker } from 'aws-sdk/clients/all';
+
 
 var _mapView: MapView;
 
@@ -56,22 +53,18 @@ export default class SearchScreen extends Component {
       case "Accident":{
       return <Icon  style={{position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>; 
       }
-        
         break;
       case "Food":{
       return <Icon style={{position: 'absolute', right: 45,}} active type='MaterialCommunityIcons' name='food'/>;
       }
-        
         break;
       case "Social":{
       return <Icon style={{position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>; 
       }
-      
         break;
       case "Study":{
       return <Icon style={{position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>; 
       }
-        
         break;
     }
   }

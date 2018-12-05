@@ -75,9 +75,9 @@ export default class AddPinMap extends Component {
 
             <View style={styles.button1Container}>
             <Fab
-            style={{ backgroundColor: '#ed2224' }}
-            position="bottomLeft"
-            onPress={() => this.props.navigation.navigate('Map')}>
+             style={{ backgroundColor: '#ed2224' }}
+             position="bottomLeft"
+             onPress={() => this.props.navigation.navigate('Map')}>
             <Icon name="close" />
             </Fab>
 
@@ -90,10 +90,7 @@ export default class AddPinMap extends Component {
             >
             <Icon name="checkmark" />
             </Fab>
-
           </View>
-
-
       </View>
     );
   }
