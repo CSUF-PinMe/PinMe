@@ -172,6 +172,8 @@ export default class MapScreen extends Component {
           onRegionChange={(region) => store.update({region})}
           initialRegion={store.state.region}
           toolbarEnabled={true}
+          followsUserLocation={true}
+          showsUserLocation={true}
         >
 
         {store.state.markers.map((marker, index) => (
@@ -269,11 +271,6 @@ export default class MapScreen extends Component {
             <Button style={{ backgroundColor: '#03a9f4' }}
               onPress={() => this.props.navigation.navigate('AddPin')}>
               <Icon name="pin" />
-            </Button>
-            <Button style={{ backgroundColor: '#FFFFFF'}}
-              onPress={this._getLocationAsync}
-              >
-              <Icon style = {{color: '#03a9f4'}} name="locate"/>
             </Button>
             <Button style={{ backgroundColor: '#FFFFFF'}}
               onPress={this.loadPins}

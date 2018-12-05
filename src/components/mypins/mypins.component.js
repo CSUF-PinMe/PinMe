@@ -43,6 +43,8 @@ export default class MyPinsScreen extends Component {
     this.forceUpdate();
   }
 
+
+  
   iconImage (marker) {
     console.log(marker.type);
     switch (marker.type) {
