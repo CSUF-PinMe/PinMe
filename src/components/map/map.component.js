@@ -1,22 +1,6 @@
 import React, { Component } from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  TouchableOpacity,
-  StatusBar,
-  Alert
-} from 'react-native';
-import {
-  Container,
-  Header,
-  Text,
-  Content,
-  Icon,
-  Button,
-  Left,
-  Fab
-} from 'native-base';
+import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert} from 'react-native';
+import { Container, Header, Text, Content, Icon, Button, Left, Fab} from 'native-base';
 import { showLocation, Popup } from 'react-native-map-link';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
