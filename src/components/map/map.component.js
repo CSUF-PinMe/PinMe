@@ -264,7 +264,7 @@ export default class MapScreen extends Component {
             active={this.state.active}
             direction="up"
             containerStyle={{ marginBottom: margin_gap}}
-            style={{ backgroundColor: '#03a9f4' }}
+            style={{bottom: 10, backgroundColor: '#03a9f4' }}
             position="bottomRight"
             onPress={() => this.setState({ active: !this.state.active })}>
             <Icon name="add" />
