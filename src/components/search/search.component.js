@@ -7,6 +7,7 @@ import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import {store} from '../../../App'
+import { SageMaker } from 'aws-sdk/clients/all';
 
 var _mapView: MapView;
 
@@ -30,7 +31,9 @@ export default class SearchScreen extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
       Entypo: require("native-base/Fonts/Entypo.ttf"),
-      FontAwesome: require("native-base/Fonts/FontAwesome.ttf")
+      FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
+      MaterialCommunityIcons: require("native-base/Fonts/MaterialCommunityIcons.ttf"),
+      // FontAwesome5: require("native-base/Fonts/FontAwesome5.tff")
     });
     this.setState({
       loading: false,
@@ -46,6 +49,32 @@ export default class SearchScreen extends Component {
     console.log(JSON.stringify(userLocation));
     _mapView.animateToCoordinate(userLocation, 1000);
   };
+
+  iconImage (marker) {
+    console.log(marker.type);
+    switch (marker.type) {
+      case "Accident":{
+      return <Icon  style={{position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>; 
+      }
+        
+        break;
+      case "Food":{
+      return <Icon style={{position: 'absolute', right: 45,}} active type='MaterialCommunityIcons' name='food'/>;
+      }
+        
+        break;
+      case "Social":{
+      return <Icon style={{position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>; 
+      }
+      
+        break;
+      case "Study":{
+      return <Icon style={{position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>; 
+      }
+        
+        break;
+    }
+  }
 
   handleSearch = (text) => {
   let newState = Object.assign({}, this.state);
@@ -94,8 +123,12 @@ export default class SearchScreen extends Component {
                  this.props.navigation.navigate('Map');
                }
                 }>
-                  <Icon active type='Entypo' name='location-pin' />
+                  <Icon 
+                  active type='Entypo' name='location-pin' />
                   <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
+              
+                  {this.iconImage(marker)}
+              
                   <Text style={{position: 'absolute', right: 15, fontWeight: 'bold'}}>{marker.type}</Text>
                 </CardItem>
 
