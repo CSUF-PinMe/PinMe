@@ -5,8 +5,7 @@ import { showLocation, Popup } from 'react-native-map-link';
 import MapView, { Marker } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
-import Modal from "react-native-modal";
-import API, { graphqlOperation } from '@aws-amplify/api'
+import {Modal, TouchableHighlight} from 'react-native';import API, { graphqlOperation } from '@aws-amplify/api'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
@@ -31,10 +30,16 @@ export default class MapScreen extends Component {
       active: false,
       active1: false,
       margin_onClick: false,
+      modalVisible: false,
+      modalMarker: undefined
     };
 
     this.getInitialState.bind(this);
     this._getLocationAsync.bind(this);
+  }
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
   }
 
   // For button components on map
@@ -56,6 +61,8 @@ export default class MapScreen extends Component {
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+      FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
+
     });
     this.loadPins(),
     console.log(store.state.region)
@@ -80,25 +87,6 @@ export default class MapScreen extends Component {
     console.log(JSON.stringify(userLocation));
     _mapView.animateToCoordinate(userLocation, 1000);
   };
-
-  // Adds new pin with info in pinDetails
-  // addPin = async () => {
-  //   const newPin = API.graphql(graphqlOperation(mutations.createPin, {input: pinDetails}));
-  //   // console.log(newPin);
-  //   Alert.alert('PinMe', "Pin successfully added!");
-  // }
-
-  // deletePin = async (e) => {
-  //   var removeIndex = this.state.markers.map(function(item) { return item.key; }).indexOf(e);
-  //   this.state.markers.splice(removeIndex, 1);
-  //   const result = API.graphql(graphqlOperation(mutations.deletePin, {input: {id: e}}));
-  // }
-
-  // Queries and returns all entries
-  // getAllPins = async () => {
-  //   const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
-  //   console.log(allPins);
-  // }
 
   loadPins = async () => {
     store.update({markers: []});
@@ -128,12 +116,6 @@ export default class MapScreen extends Component {
     console.log('All pins loaded!');
   }
 
-  // Queries for entry with matching id
-  // getOnePin = async () => {
-  //   const onePin = await API.graphql(graphqlOperation(queries.getPin, { id: '30e700b4-31bb-48e3-a9e7-ab4b30e81f73' }));
-  //   console.log(onePin);
-  // }
-
   static navigationOptions = {
     header: null,
     tabBarHidden: true,
@@ -152,6 +134,21 @@ export default class MapScreen extends Component {
       longitude: coords.longitude
     }})
   }
+
+  setModalMarker = (marker) => {
+    this.setState({
+      ...this.state,
+      modalMarker: {            
+        name: marker.name,
+        description: marker.description,
+        placedBy: marker.placedBy,
+        type: marker.type,
+        startTime: marker.startTime,
+        endTime: marker.endTime,
+      }
+    })
+  }
+
 
   render() {
     if (this.state.loading) {
@@ -185,17 +182,51 @@ export default class MapScreen extends Component {
             description={marker.description}
             coordinate={marker.coordinate}
             image={redPin}
-            onCalloutPress={() => this.setState({isVisible: true})}
+            onCalloutPress={() => this.setState({isVisible: true})} // change isVisible to modalMaker to allow modal
             onPress={e => {
+              this.setModalMarker(marker);
               this.mapLink(e.nativeEvent.coordinate, marker.name);
               this.setState({margin_onClick: true});
               this.toolbarHack();
+              console.log(this.state.modalMarker);
               
             }}
           />
         ))}
+
         </MapView>
 
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {
+            this.setModalVisible(!this.state.modalVisible);
+          }}>
+
+              <Text style={{fontWeight: 'bold'}}>Description: </Text>
+
+              <TouchableHighlight
+                onPress={() => {
+                  this.setModalVisible(!this.state.modalVisible);
+                }}>
+                <Text>Hide Modal</Text>
+              </TouchableHighlight>
+              <TouchableHighlight
+                onPress={() => {
+                  this.setState({isVisible: true});
+                }}>
+                <Text>Take Me There</Text>
+              </TouchableHighlight>
+        </Modal>
+
+        <TouchableHighlight
+          onPress={() => {
+            this.setModalVisible(true);
+          }}>
+          <Text>Show Modal</Text>
+        </TouchableHighlight>
+        
 
         <Popup
           isVisible={this.state.isVisible}

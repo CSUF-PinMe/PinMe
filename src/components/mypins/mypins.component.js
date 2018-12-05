@@ -47,24 +47,20 @@ export default class MyPinsScreen extends Component {
     console.log(marker.type);
     switch (marker.type) {
       case "Accident":{
-      return <Icon  style={{position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>; 
+      return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>; 
       }
-        
         break;
       case "Food":{
-      return <Icon style={{position: 'absolute', right: 45,}} active type='MaterialCommunityIcons' name='food'/>;
+      return <Icon style={{color: '#f78640', position: 'absolute', right: 45,}} active type='MaterialCommunityIcons' name='food'/>;
       }
-        
         break;
       case "Social":{
-      return <Icon style={{position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>; 
+      return <Icon style={{color: '#ca30f4',position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>; 
       }
-      
         break;
       case "Study":{
-      return <Icon style={{position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>; 
+      return <Icon style={{color: '#03a9f4',position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>; 
       }
-        
         break;
     }
   }
@@ -119,7 +115,7 @@ export default class MyPinsScreen extends Component {
                 }});
                 this.props.navigation.navigate('Map');
                 }}>
-                  <Icon active type='Entypo' name='location-pin' />
+                  <Icon style={{color: '#ed2224'}} active type='Entypo' name='location-pin' />
                   <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
                   {this.iconImage(marker)}
                   <Text style={{position: 'absolute', right: 15, fontWeight: 'bold'}}>{marker.type}</Text>
