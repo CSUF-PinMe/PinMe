@@ -28,7 +28,8 @@ export default class MyPinsScreen extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
       Entypo: require("native-base/Fonts/Entypo.ttf"),
-      FontAwesome: require("native-base/Fonts/FontAwesome.ttf")
+      FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
+      MaterialCommunityIcons: require("native-base/Fonts/MaterialCommunityIcons.ttf"),
     });
     this.setState({
       loading: false
@@ -43,6 +44,32 @@ export default class MyPinsScreen extends Component {
       s.markers.splice(removeIndex, 1);
     })
     this.forceUpdate();
+  }
+
+  iconImage (marker) {
+    console.log(marker.type);
+    switch (marker.type) {
+      case "Accident":{
+      return <Icon  style={{position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>; 
+      }
+        
+        break;
+      case "Food":{
+      return <Icon style={{position: 'absolute', right: 45,}} active type='MaterialCommunityIcons' name='food'/>;
+      }
+        
+        break;
+      case "Social":{
+      return <Icon style={{position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>; 
+      }
+      
+        break;
+      case "Study":{
+      return <Icon style={{position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>; 
+      }
+        
+        break;
+    }
   }
 
   handleSearch = (text) => {
@@ -97,6 +124,7 @@ export default class MyPinsScreen extends Component {
                 }}>
                   <Icon active type='Entypo' name='location-pin' />
                   <Text style={{fontWeight: '300', fontSize: 15}}>{marker.name}</Text>
+                  {this.iconImage(marker)}
                   <Text style={{position: 'absolute', right: 15, fontWeight: 'bold'}}>{marker.type}</Text>
                 </CardItem>
 
