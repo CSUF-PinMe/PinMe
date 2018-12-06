@@ -4,7 +4,11 @@
 - User location is now seen on the map
 - Added a faster get user location to the top right corner
 - Color code the event icon so that it is easier to distinguish 
-- Clean up unwanted code and space in files
+- Cleaned up unwanted code and space in files
+- Added form requirement for pin info
+- Fixed bug that prevented user to add pin
+- Added an alert to the delete pin feature
+
 
 ## Description
 
