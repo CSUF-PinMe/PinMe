@@ -64,8 +64,8 @@ export default class MapScreen extends Component {
       FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
 
     });
-    this.loadPins(),
-    console.log(store.state.region)
+    this.loadPins();
+    // console.log(store.state.region)
   }
 
   getInitialState() {
@@ -138,7 +138,7 @@ export default class MapScreen extends Component {
   setModalMarker = (marker) => {
     this.setState({
       ...this.state,
-      modalMarker: {            
+      modalMarker: {
         name: marker.name,
         description: marker.description,
         placedBy: marker.placedBy,
@@ -191,7 +191,7 @@ export default class MapScreen extends Component {
               this.setState({margin_onClick: true});
               this.toolbarHack();
               console.log(this.state.modalMarker);
-              
+
             }}
           />
         ))}
@@ -228,7 +228,7 @@ export default class MapScreen extends Component {
           }}>
           <Text>Show Modal</Text>
         </TouchableHighlight>
-        
+
 
         <Popup
           isVisible={this.state.isVisible}
@@ -264,7 +264,7 @@ export default class MapScreen extends Component {
             active={this.state.active}
             direction="up"
             containerStyle={{ marginBottom: margin_gap}}
-            style={{bottom: 10, backgroundColor: '#03a9f4' }}
+            style={{bottom: 15, backgroundColor: '#03a9f4' }}
             position="bottomRight"
             onPress={() => this.setState({ active: !this.state.active })}>
             <Icon name="add" />

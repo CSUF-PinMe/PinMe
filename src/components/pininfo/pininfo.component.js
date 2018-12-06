@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { Container, Header, Title, Content, Form, Item, Input, Button, Label, Icon, Left, Body, Right, Picker, Textarea} from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api';
@@ -14,17 +14,18 @@ export default class PinInfo extends Component {
     super(props);
 
     this.state = {
-        loading: true,
-        pinInfo: {
-          userId: '',
-          eventName: '',
-          eventType: undefined,
-          description: '',
-          startTime: '',
-          endTime: '',
-          latitude: undefined,
-          longitude: undefined
-        }
+      amountEmpty: 0,
+      loading: true,
+      pinInfo: {
+        userId: store.state.currentUser,
+        eventName: store.state.pinInfo.eventName,
+        eventType: store.state.pinInfo.eventType,
+        description: store.state.pinInfo.description,
+        startTime: store.state.pinInfo.startTime,
+        endTime: store.state.pinInfo.endTime,
+        latitude: store.state.region.latitude,
+        longitude: store.state.region.longitude
+      }
     };
     this.handleChange.bind(this);
   }
@@ -35,6 +36,13 @@ export default class PinInfo extends Component {
 
   // Needed for Native-Base Buttons
   async componentDidMount() {
+    store.update({
+      pinInfo: {
+        ...store.state.pinInfo,
+        latitude: this.state.pinInfo.latitude,
+        longitude: this.state.pinInfo.longitude
+      }
+    });
     await Expo.Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
@@ -44,6 +52,7 @@ export default class PinInfo extends Component {
   }
 
   handleChange(name, value){
+    console.log(name, ' is now ', value);
     this.setState({
       pinInfo: {
         ...this.state.pinInfo,
@@ -59,6 +68,7 @@ export default class PinInfo extends Component {
   }
 
   handleDropdown(value: string) {
+    if(value.trim() !== "") {this.setState(() => ({ typeError: null }));}
     this.setState({
       pinInfo: {
         ...this.state.pinInfo,
@@ -73,16 +83,56 @@ export default class PinInfo extends Component {
     });
   }
 
+  checkInput(){
+    let error = false;
+    if (store.state.pinInfo.eventName.trim() === "") {
+      this.setState(() => ({ nameError: "Pin name required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ nameError: null }));
+    }
+
+    if (store.state.pinInfo.description.trim() === "") {
+      this.setState(() => ({ descError: "Description required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ descError: null }));
+    }
+
+    if (store.state.pinInfo.startTime.trim() === "") {
+      this.setState(() => ({ sTimeError: "Start time required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ sTimeError: null }));
+    }
+    if (store.state.pinInfo.endTime.trim() === "") {
+      this.setState(() => ({ eTimeError: "End time required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ eTimeError: null }));
+    }
+    if(error){
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   addPin() {
+    // console.log('Local State', this.state.pinInfo);
+    console.log('Global State', store.state.pinInfo);
 
-    const newPin = API.graphql(graphqlOperation(mutations.createPin,
-      {
-        input: store.state.pinInfo
-      }
-    ));
-    this.props.navigation.navigate('Map');
-    console.log(store.state.pinInfo)
-
+    if(this.checkInput() === false){
+      console.log('something is empty');
+    } else {
+      console.log('no empty fields!');
+      const newPin = API.graphql(graphqlOperation(mutations.createPin,
+        {
+          input: store.state.pinInfo
+        }
+      ));
+      this.props.navigation.navigate('Map');
+    }
   }
 
   render() {
@@ -107,13 +157,17 @@ export default class PinInfo extends Component {
             <Item stackedLabel>
               <Label>Event Name </Label>
               <Input
-              onChangeText={(e) => {this.handleChange('eventName', e);
-                            this.handleChange('userId',store.state.currentUser);
-                            this.handleChange('latitude',store.state.region.latitude);
-                            this.handleChange('longitude',store.state.region.longitude)}}
+              onChangeText={(e) => {
+                this.handleChange('eventName', e);
+                if(e.trim() !== "") {this.setState(() => ({ nameError: null }));}
+                this.handleChange('userId',store.state.currentUser);
+              }}
               value={store.state.pinInfo.eventName}
                 />
             </Item>
+            {!!this.state.nameError && (
+              <Text style={{ color: "red", left: 15 }}>{this.state.nameError}</Text>
+            )}
 
             <Item stackedLabel>
               <Label>Event Type </Label>
@@ -128,7 +182,7 @@ export default class PinInfo extends Component {
                   selectedValue={store.state.pinInfo.eventType}
                   onValueChange={this.handleDropdown.bind(this)}
                 >
-                  <Picker.Item label=""  />
+                  <Picker.Item label="General"  value="General"/>
                   <Picker.Item label="Accident" value="Accident" />
                   <Picker.Item label="Food" value="Food" />
                   <Picker.Item label="Social" value="Social" />
@@ -140,10 +194,16 @@ export default class PinInfo extends Component {
             <Item stackedLabel>
               <Label>Description </Label>
               <Input
-                onChangeText={(e) => this.handleChange('description', e)}
+                onChangeText={(e) => {
+                  this.handleChange('description', e);
+                  if(e.trim() !== "") {this.setState(() => ({ descError: null }));}
+                }}
                 value={store.state.pinInfo.description}
               />
             </Item>
+            {!!this.state.descError && (
+              <Text style={{ color: "red", left: 15 }}>{this.state.descError}</Text>
+            )}
 
             <Item stackedLabel>
             <Label>Start Time</Label>
@@ -152,11 +212,17 @@ export default class PinInfo extends Component {
                 <Input
                   placeholder='e.g. 11:30 AM'
                   placeholderTextColor = '#9e9e9e'
-                  onChangeText={(e) => this.handleChange('startTime', e)}
+                  onChangeText={(e) => {
+                    this.handleChange('startTime', e);
+                    if(e.trim() !== "") {this.setState(() => ({ sTimeError: null }));}
+                  }}
                   value={store.state.pinInfo.startTime}
                   />
               </Item>
             </Item>
+            {!!this.state.sTimeError && (
+              <Text style={{ color: "red", left: 15 }}>{this.state.sTimeError}</Text>
+            )}
 
             <Item stackedLabel>
               <Label>End Time</Label>
@@ -165,11 +231,17 @@ export default class PinInfo extends Component {
                 <Input
                 placeholder='e.g. 2:00 PM'
                 placeholderTextColor = '#9e9e9e'
-                onChangeText={(e) => this.handleChange('endTime', e)}
+                onChangeText={(e) => {
+                  this.handleChange('endTime', e);
+                  if(e.trim() !== "") {this.setState(() => ({ eTimeError: null }));}
+                }}
                 value={store.state.pinInfo.endTime}
                 />
               </Item>
             </Item>
+            {!!this.state.eTimeError && (
+              <Text style={{ color: "red", left: 15 }}>{this.state.eTimeError}</Text>
+            )}
 
             <Button
             onPress={() => this.props.navigation.navigate('AddPin')}
@@ -181,15 +253,14 @@ export default class PinInfo extends Component {
 
           <Content>
             <Button
-            onPress={() => {this.addPin();
-                          this.handleChange('eventName', '');
-                          this.handleChange('description', '');
-                          this.handleChange('startTime', '');
-                          this.handleChange('endTime', '');
-                          this.handleDropdown('')}}
+            onPress={() => {
+              this.addPin();
+
+            }}
             block style = {{top: 20, height: 60, backgroundColor: '#79e56a',}}>
               <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
             </Button>
+
             <Button
             onPress={() => {console.log(store.state.pinInfo);
                             this.props.navigation.navigate('Map');
