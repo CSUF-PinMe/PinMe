@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
+import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
-import MapView from 'react-native-maps';
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import API, { graphqlOperation } from '@aws-amplify/api'
+import MapView from 'react-native-maps';
 import {store} from '../../../App'
 
 export default class MyPinsScreen extends Component {
@@ -47,12 +47,12 @@ export default class MyPinsScreen extends Component {
   }
 
 
-  
+
   iconImage (marker) {
     console.log(marker.type);
     switch (marker.type) {
       case "Accident":{
-      return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>; 
+      return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>;
       }
         break;
       case "Food":{
@@ -60,11 +60,11 @@ export default class MyPinsScreen extends Component {
       }
         break;
       case "Social":{
-      return <Icon style={{color: '#ca30f4',position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>; 
+      return <Icon style={{color: '#ca30f4',position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>;
       }
         break;
       case "Study":{
-      return <Icon style={{color: '#03a9f4',position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>; 
+      return <Icon style={{color: '#03a9f4',position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>;
       }
         break;
     }
@@ -110,7 +110,7 @@ export default class MyPinsScreen extends Component {
                 key={marker.key}
               >
                 <CardItem  button header bordered
-                onPress={() => { 
+                onPress={() => {
                  store.update({
                     region:{
                       latitude: marker.coordinate.latitude,
@@ -144,7 +144,20 @@ export default class MyPinsScreen extends Component {
                 <CardItem  bordered>
                   <Icon active type='FontAwesome' name='user-o' />
                   <Text>{marker.placedBy}</Text>
-                  <Icon style={{position: 'absolute', right: 0 }} type='Ionicons' name='trash' onPress={() => {this.deletePin(marker.key); console.log('Deleting pin: ', marker.name);}}/>
+                  <Icon
+                    style={{position: 'absolute', right: 0 }}
+                    type='Ionicons' name='trash'
+                    onPress={() => {
+                      Alert.alert(
+                        `Deleting Pin`,
+                        `Are you sure you want to delete pin ${marker.name}?`,
+                        [
+                          {text: 'OK', onPress: () => this.deletePin(marker.key)},
+                          {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
+                        ]
+                      );
+                      console.log('Deleting pin: ', marker.name);
+                    }}/>
                 </CardItem>
 
               </Card>

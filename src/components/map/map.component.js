@@ -174,6 +174,7 @@ export default class MapScreen extends Component {
           toolbarEnabled={true}
           followsUserLocation={true}
           showsUserLocation={true}
+        
         >
 
         {store.state.markers.map((marker, index) => (
