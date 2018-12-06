@@ -3,6 +3,9 @@ import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimens
 import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import MapView from 'react-native-maps';
+import * as queries from '../../graphql/queries';
+import * as mutations from '../../graphql/mutations';
+import API, { graphqlOperation } from '@aws-amplify/api'
 import {store} from '../../../App'
 
 export default class MyPinsScreen extends Component {

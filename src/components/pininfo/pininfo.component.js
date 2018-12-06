@@ -16,17 +16,18 @@ export default class PinInfo extends Component {
     this.state = {
         loading: true,
         pinInfo: {
-          userId: '',
-          eventName: '',
-          eventType: undefined,
-          description: '',
-          startTime: '',
-          endTime: '',
-          latitude: undefined,
-          longitude: undefined
+          userId: store.state.currentUser,
+          eventName: store.state.pinInfo.eventName,
+          eventType: store.state.pinInfo.eventType,
+          description: store.state.pinInfo.description,
+          startTime: store.state.pinInfo.startTime,
+          endTime: store.state.pinInfo.endTime,
+          latitude: store.state.region.latitude,
+          longitude: store.state.region.longitude
         }
     };
     this.handleChange.bind(this);
+    console.log(this.state.pinInfo);
   }
 
   static navigationOptions = {
@@ -53,9 +54,13 @@ export default class PinInfo extends Component {
     store.update({
       pinInfo: {
         ...store.state.pinInfo,
-        [name]: value
-      }
+        [name]: value,
+        latitude: store.state.region.latitude,
+        longitude: store.state.region.longitude
+      },
+      
     });
+    console.log(store.state.pinInfo);
   }
 
   handleDropdown(value: string) {
@@ -77,7 +82,7 @@ export default class PinInfo extends Component {
 
     const newPin = API.graphql(graphqlOperation(mutations.createPin,
       {
-        input: store.state.pinInfo
+        input: this.state.pinInfo       // <---change this to local state input, fixed change location bug
       }
     ));
     this.props.navigation.navigate('Map');
@@ -108,9 +113,7 @@ export default class PinInfo extends Component {
               <Label>Event Name </Label>
               <Input
               onChangeText={(e) => {this.handleChange('eventName', e);
-                            this.handleChange('userId',store.state.currentUser);
-                            this.handleChange('latitude',store.state.region.latitude);
-                            this.handleChange('longitude',store.state.region.longitude)}}
+                            this.handleChange('userId',store.state.currentUser);}}
               value={store.state.pinInfo.eventName}
                 />
             </Item>
