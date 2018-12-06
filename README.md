@@ -1,10 +1,14 @@
 # PinMe
 
-## Current App State (v2.2.1)
-- Users can now open the selected pin in Uber, Lyft, or Waze by pressing on the pin's textbox.
-- Map region is now stored in the global store for updating and reading.
-- Markers are now stored in the global store.
-- fix bug with map not updating when clicking on button on search and mypin page
+## Current App State (v2.3)
+- User location is now seen on the map
+- Added a faster get user location to the top right corner
+- Color code the event icon so that it is easier to distinguish 
+- Cleaned up unwanted code and space in files
+- Added form requirement for pin info
+- Fixed bug that prevented user to add pin
+- Added an alert to the delete pin feature
+
 
 ## Description
 
@@ -42,7 +46,7 @@ This is a React Native app created with the Expo CLI to display a simple map vie
 
 # Previous App States
 
-> ## Current App State (v2.2)
+> ## Previous App State (v2.2)
 > - All screens have been merged together. Screens included are:
 >   - Map: shows the user all the pins on the map
 >   - My Pins: Shows the user a list of pins they have placed on the map

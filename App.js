@@ -39,7 +39,7 @@ export const store = createStore({
   pinInfo: {
     userId: '',
     eventName: '',
-    eventType: undefined,
+    eventType: 'General',
     description: '',
     startTime: '',
     endTime: '',
