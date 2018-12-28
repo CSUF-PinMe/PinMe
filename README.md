@@ -1,18 +1,9 @@
 # PinMe
 
-## Current App State (v2.3)
-- User location is now seen on the map
-- Added a faster get user location to the top right corner
-- Color code the event icon so that it is easier to distinguish 
-- Cleaned up unwanted code and space in files
-- Added form requirement for pin info
-- Fixed bug that prevented user to add pin
-- Added an alert to the delete pin feature
-
-
 ## Description
+PinMe is a map-based social media app that allows users to see local events in real time. The main feature will be the map user-interface, which will allow users to place pins using GPS. These pins will show where events are happening near the user, with examples including: study groups, social gatherings, sports meetups, food distribution, accident warnings, and other types of special events.
 
-This is a React Native app created with the Expo CLI to display a simple map view (Google Maps API).
+Find out more in our [wiki](https://github.com/CSUF-PinMe/PinMe/wiki)!
 
 ## Requirements
 * NodeJS & NPM - [Link](https://nodejs.org/en/)
@@ -44,7 +35,16 @@ This is a React Native app created with the Expo CLI to display a simple map vie
 * Press **a** to run on Android Emulator, if installed and running
 * Or scan QR code with the Expo app on your personal mobile device.
 
-# Previous App States
+## Current App State (v2.3)
+- User location is now seen on the map
+- Added a faster get user location to the top right corner
+- Color code the event icon so that it is easier to distinguish 
+- Cleaned up unwanted code and space in files
+- Added form requirement for pin info
+- Fixed bug that prevented user to add pin
+- Added an alert to the delete pin feature
+
+## Previous App States
 
 > ## Previous App State (v2.2)
 > - All screens have been merged together. Screens included are:
