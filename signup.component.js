@@ -1,65 +1,25 @@
 import React, { Component } from 'react';
 import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
-import {createStackNavigator, createAppContainer} from 'react-navigation';
 import * as Animatable from 'react-native-animatable';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Expo, { Constants, Location, Permissions } from 'expo';
-import { fadeIn, fromLeft, fromBottom, fromTop, fromRight } from 'react-navigation-transitions';
 import Font from 'expo';
 import MapView from 'react-native-maps';
-
-import ConfirmCode from './confirmcode.component';
-import ForgotPassword from './forgotpassword.component';
-import SignUp from './signup.component';
-import ChangePassword from './changepassword.component';
-import TestMain from './testmain.component';
-
 import { Auth } from 'aws-amplify';
-import createStore from 'pure-store';
-import Amplify from '@aws-amplify/core'
-import config from './aws-exports'
-Amplify.configure(config)
 
-// import Map from './src/components/map/map.component';
+ var {width, height} = Dimensions.get('window');
 
-var {width, height} = Dimensions.get('window');
-
-export const store = createStore({
-  initialMarkers: [],
-  markers: [],
-  currentUser: '',
-  region: {
-    latitude: 36.812617,
-    longitude: -119.745802,
-    latitudeDelta: 0.0422,
-    longitudeDelta: 0.0221,
-  },
-  pinLink: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
-    name: undefined,
-    latitude: undefined,
-    longitude: undefined
-  },
-  pinInfo: {
-    userId: '',
-    eventName: '',
-    eventType: 'General',
-    description: '',
-    startTime: '',
-    endTime: '',
-    latitude: undefined,
-    longitude: undefined
-  }
-})
-
-class SignIn extends Component {
+export default class SignUp extends Component {
   constructor(props){
     super(props);
 
     this.state = {
         loading: true,
+        email: '',
+        password: '',
         username: '',
-        password: ''
+        number: ''
     };
   }
 
@@ -73,17 +33,33 @@ class SignIn extends Component {
 
   checkInput(){
     let error = false;
+
+    if (this.state.email.trim() === "") {
+      this.setState(() => ({ emailError: "email required" }));
+      error = true;
+    } else {
+      this.setState(() => ({ emailError: null }));
+    }
+
     if (this.state.username.trim() === "") {
       this.setState(() => ({ usernameError: "username required" }));
       error = true;
     } else {
       this.setState(() => ({ usernameError: null }));
     }
+
     if (this.state.password.trim() === "") {
       this.setState(() => ({ passwordError: "password required" }));
       error = true;
     } else {
       this.setState(() => ({ passwordError: null }));
+    }
+
+    if (this.state.number.trim() === "") {
+      this.setState(() => ({ numberError: "phone number required" }));
+      error = true;
+    } else {
+      this.setState(() => ({ numberError: null }));
     }
 
     if(error){
@@ -94,23 +70,39 @@ class SignIn extends Component {
   }
 
   // Needed for Native-Base Buttons
-  async componentDidMount() {
+  async componentWillMount() {
     await Expo.Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
     });
     this.setState({ loading: false });
+    this.refs.title.bounceInDown();
+    this.refs.email.bounceInLeft();
+    this.refs.username.bounceInLeft();
+    this.refs.password.bounceInLeft();
+    this.refs.number.bounceInLeft();
+    this.refs.confirm.bounceInLeft();
   }
 
-  trySignIn() {
+  trySignUp() {
     let username = this.state.username;
     let password = this.state.password;
-    Auth.signIn(
-      username, // Required, the username
-      password, // Optional, the password
-    ).then(user => {console.log('Sign in successful!'); this.props.navigation.navigate('Test')})
-    .catch(err => console.log(err.message));
+    let email = this.state.email;
+    let phone_number = this.state.number;
+    Auth.signUp({
+        username,
+        password,
+        attributes: {
+            email,          // optional
+            phone_number,   // optional - E.164 number convention
+            // other custom attributes
+        },
+        validationData: []  //optional
+        })
+        .then(data => {console.log(data); this.props.navigation.navigate('ConfirmCode');})
+        .catch(err => console.log(err.message));
+
   }
 
   render() {
@@ -124,21 +116,34 @@ class SignIn extends Component {
         <Grid>
 
           <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center'}}>
-            <Label style={[styles.title, {top: 0}]}>Sign In</Label>
-            <Item style={styles.inputItem}>
+            <Animatable.Text ref="title" style={[styles.title, {top: 0}]}>Sign Up</Animatable.Text>
+            <AnimatedItem ref="email" style={styles.inputItem}>
+              <Label style={styles.label} >Email</Label>
+              <Input placeholderTextColor='#017BB0' placeholder="email" style={styles.input}
+                onChangeText={(e) => {
+                  this.handleChange('email', e);
+                  if(e.trim() !== "") {this.setState(() => ({ emailError: null }));}
+                }}
+                value={this.state.email}
+              />
+            </AnimatedItem>
+            {!!this.state.emailError && (
+              <Label style={[styles.error, {left: 18}]}>{this.state.emailError}</Label>
+            )}
+            <AnimatedItem ref="username" style={styles.inputItem}>
               <Label style={styles.label} >Username</Label>
               <Input placeholderTextColor='#017BB0' placeholder="username" style={styles.input}
                 onChangeText={(e) => {
                   this.handleChange('username', e);
                   if(e.trim() !== "") {this.setState(() => ({ usernameError: null }));}
                 }}
-                value={this.state.email}
+                value={this.state.username}
               />
-            </Item>
+            </AnimatedItem>
             {!!this.state.usernameError && (
-              <Label style={[styles.error, {bottom: 70,left: 19}]}>{this.state.usernameError}</Label>
+              <Label style={[styles.error, {left: 19}]}>{this.state.usernameError}</Label>
             )}
-            <Item style={styles.inputItem}>
+            <AnimatedItem ref="password" style={styles.inputItem}>
               <Label style={styles.label} >Password</Label>
               <Input secureTextEntry={true} placeholderTextColor='#017BB0' placeholder="password" style={styles.input}
                 onChangeText={(e) => {
@@ -147,22 +152,34 @@ class SignIn extends Component {
                 }}
                 value={this.state.password}
               />
-            </Item>
+            </AnimatedItem>
             {!!this.state.passwordError && (
-              <Label style={[styles.error,{bottom: 70, left: 18}]}>{this.state.passwordError}</Label>
+              <Label style={[styles.error, {left: 18}]}>{this.state.passwordError}</Label>
             )}
-            <Animatable.Text ref="forgot" onPress={() => this.props.navigation.navigate('ForgotPassword')} style={styles.forgot}>forgot password?</Animatable.Text>
-
+            <AnimatedItem ref="number" style={styles.inputItem}>
+              <Label style={styles.label} >Phone Number</Label>
+              <Input placeholderTextColor='#017BB0' placeholder="+15595677541" style={styles.input}
+                onChangeText={(e) => {
+                  this.handleChange('number', e);
+                  if(e.trim() !== "") {this.setState(() => ({ numberError: null }));}
+                }}
+                value={this.state.number}
+              />
+            </AnimatedItem>
+            {!!this.state.numberError && (
+              <Label style={[styles.error, {left: 18}]}>{this.state.numberError}</Label>
+            )}
+            <Animatable.Text ref="confirm" onPress={() => {this.props.navigation.navigate('ConfirmCode')}} style={styles.confirm}>confirm a code</Animatable.Text>
           </Col>
 
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
 
             <Button large
-              onPress={() => this.props.navigation.navigate('SignUp')}
+              onPress={() => this.props.navigation.navigate('SignIn')}
               style={styles.leftButton}
               backgroundColor='white'
               >
-              <Text style={styles.buttonText}>New to PinMe?</Text>
+              <Text style={styles.buttonText}>Have an Account?</Text>
             </Button>
 
             <Button large
@@ -173,10 +190,10 @@ class SignIn extends Component {
                   console.log('something is empty');
                 } else {
                   console.log('No empty fields!');
-                  this.trySignIn();
+                  this.trySignUp();
                 }
               }}>
-              <Text style={styles.buttonText}>Log in</Text>
+              <Text style={styles.buttonText}>Sign Up</Text>
             </Button>
           </Row>
 
@@ -186,60 +203,6 @@ class SignIn extends Component {
   }
 }
 
-const handleCustomTransition = ({ scenes }) => {
-  const prevScene = scenes[scenes.length - 2];
-  const nextScene = scenes[scenes.length - 1];
-
-  // Custom transitions go there
-  if (prevScene
-    && prevScene.route.routeName === 'SignUp'
-    && nextScene.route.routeName === 'ConfirmCode') {
-    return fromTop();
-  } else if (prevScene
-    && prevScene.route.routeName === 'SignIn'
-    && nextScene.route.routeName === 'ForgotPassword') {
-    return fromTop();
-  } else if (prevScene
-    && prevScene.route.routeName === 'ForgotPassword'
-    && nextScene.route.routeName === 'ChangePassword') {
-    return fromRight();
-  } else if (prevScene
-    && prevScene.route.routeName === 'SignIn'
-    && nextScene.route.routeName === 'Test') {
-    return fromRight();
-  }
-
-  return fromLeft();
-}
-
-const MainNavigator = createStackNavigator(
-  {
-    SignIn: {screen: SignIn},
-    SignUp: {screen: SignUp},
-    ConfirmCode: {screen: ConfirmCode},
-    ForgotPassword: {screen: ForgotPassword},
-    ChangePassword: {screen: ChangePassword},
-    Map: {screen: Map},
-    Test: {screen: TestMain}
-  },
-  {
-    initialRoute: 'SignIn',
-    transitionConfig: (nav) => handleCustomTransition(nav),
-  },
-);
-
-const AppContainer = createAppContainer(MainNavigator);
-export default AppContainer;
-
-// export default class App extends Component {
-//   render(){
-//     return(
-//       <MainNavigator />
-//     )
-//   }
-// }
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -247,9 +210,17 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center',
   },
+  confirm: {
+    left:20,
+    bottom: 50,
+    color: 'white',
+    fontSize: 20,
+    fontFamily: 'sans-serif-thin'
+  },
   error: {
     color: "white",
-    fontFamily: 'sans-serif-thin'
+    fontFamily: 'sans-serif-thin',
+    bottom: 60,
   },
   title: {
     position: 'absolute',
@@ -263,13 +234,6 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: 'sans-serif-thin'
   },
-  forgot: {
-    left:20,
-    bottom: 60,
-    color: 'white',
-    fontSize: 20,
-    fontFamily: 'sans-serif-thin'
-  },
   input: {
     color: '#FFFFFF',
     fontSize: 20,
@@ -278,7 +242,7 @@ const styles = StyleSheet.create({
     top: 3,
   },
   inputItem: {
-    bottom: 60,
+    bottom: 50,
     left: 15,
     borderColor: 'transparent'
   },

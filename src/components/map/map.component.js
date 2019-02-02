@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert} from 'react-native';
 import { Container, Header, Text, Content, Icon, Button, Left, Fab} from 'native-base';
 import { showLocation, Popup } from 'react-native-map-link';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
-import {Modal, TouchableHighlight} from 'react-native';import API, { graphqlOperation } from '@aws-amplify/api'
+import {Modal, TouchableHighlight} from 'react-native';
+import API, { graphqlOperation } from '@aws-amplify/api'
+import {Auth} from 'aws-amplify'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
@@ -138,7 +140,7 @@ export default class MapScreen extends Component {
   setModalMarker = (marker) => {
     this.setState({
       ...this.state,
-      modalMarker: {            
+      modalMarker: {
         name: marker.name,
         description: marker.description,
         placedBy: marker.placedBy,
@@ -164,7 +166,7 @@ export default class MapScreen extends Component {
         <StatusBar hidden/>
       <View style={styles.mapContainer}>
         <MapView
-          // provider={PROVIDER_GOOGLE}
+          provider={PROVIDER_GOOGLE}
           ref = {(mapView) => { _mapView = mapView; }}
           customMapStyle={myMapStyle}
           style={[styles.mapContainer, {bottom: this.state.bottom}]}
@@ -174,7 +176,7 @@ export default class MapScreen extends Component {
           toolbarEnabled={true}
           followsUserLocation={true}
           showsUserLocation={true}
-        
+
         >
 
         {store.state.markers.map((marker, index) => (
@@ -192,7 +194,7 @@ export default class MapScreen extends Component {
               this.setState({margin_onClick: true});
               this.toolbarHack();
               console.log(this.state.modalMarker);
-              
+
             }}
           />
         ))}
@@ -229,7 +231,7 @@ export default class MapScreen extends Component {
           }}>
           <Text>Show Modal</Text>
         </TouchableHighlight>
-        
+
 
         <Popup
           isVisible={this.state.isVisible}
@@ -274,7 +276,7 @@ export default class MapScreen extends Component {
               <Icon name="pin" />
             </Button>
             <Button style={{ backgroundColor: '#FFFFFF'}}
-              onPress={this.loadPins}
+              onPress={() => {Auth.signOut();}}
               >
               <Icon style = {{color: '#03a9f4'}} name="refresh"/>
             </Button>
