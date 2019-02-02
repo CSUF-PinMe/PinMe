@@ -9,7 +9,6 @@
 - Fixed bug that prevented user to add pin
 - Added an alert to the delete pin feature
 
-
 ## Description
 
 This is a React Native app created with the Expo CLI to display a simple map view (Google Maps API).
