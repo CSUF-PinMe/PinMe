@@ -61,6 +61,11 @@ class SignIn extends Component {
         username: '',
         password: ''
     };
+
+    // const session = Auth.currentAuthenticatedUser({
+    //     bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+    // }).then(user => console.log(user))
+    // .catch(err => console.log(err));
   }
 
   static navigationOptions = {
@@ -104,13 +109,30 @@ class SignIn extends Component {
   }
 
   trySignIn() {
-    let username = this.state.username;
+    let username = this.state.username.trim();
     let password = this.state.password;
     Auth.signIn(
       username, // Required, the username
       password, // Optional, the password
-    ).then(user => {console.log('Sign in successful!'); this.props.navigation.navigate('Test')})
-    .catch(err => console.log(err.message));
+    ).then(user => {
+      // console.log(user);
+      this.setState({ authError: "Success!" });
+      this.refs.authMessage.bounce();
+      setTimeout(() => {
+        this.props.navigation.navigate('Test');
+        this.setState({ authError: null, password: '' });
+      }, 1500);
+    })
+    .catch(err => {
+      // console.log(err.message);
+      var msg = err.message;
+      if(msg.startsWith("2 validation")){
+        this.setState({authError: "username is invalid"});
+      } else {
+        this.setState({authError: err.message});
+      }
+      this.refs.authMessage.shake();
+    });
   }
 
   render() {
@@ -153,8 +175,11 @@ class SignIn extends Component {
             )}
             <Animatable.Text ref="forgot" onPress={() => this.props.navigation.navigate('ForgotPassword')} style={styles.forgot}>forgot password?</Animatable.Text>
 
-          </Col>
+            {!!this.state.authError && (
+              <Animatable.Text ref="authMessage" style={styles.authMessage}>{this.state.authError}</Animatable.Text>
+            )}
 
+          </Col>
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
 
             <Button large
@@ -246,6 +271,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  authMessage: {
+    color: "white",
+    fontFamily: 'sans-serif-thin',
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 20,
+    fontSize: 20
   },
   error: {
     color: "white",

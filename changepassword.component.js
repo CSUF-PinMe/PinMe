@@ -66,8 +66,34 @@ export default class ChangePassword extends Component {
     let code = this.state.code;
     let newpassword = this.state.newpassword;
     Auth.forgotPasswordSubmit(username, code, newpassword)
-    .then(data => {console.log(data); this.props.navigation.navigate('SignIn');})
-    .catch(err => console.log(err.message));
+    .then(data => {
+      console.log(data);
+
+      this.setState({authError: "Password changed!"});
+      this.refs.authMessage.bounce();
+      setTimeout(() => {this.props.navigation.navigate('SignIn')}, 1500);
+    })
+    .catch(err => {
+      console.log(err.message);
+      var msg = err.message;
+
+
+      if(msg.includes("^[\\S]+.*[\\S]+$")){
+        this.setState({authError: "Password is not strong enough"});
+      } else if(msg.includes("uppercase characters")){
+        this.setState({authError: "Password must have uppercase characters"});
+      } else if(msg.includes("numeric characters")){
+        this.setState({authError: "Password must have numeric characters"});
+      } else if(msg.includes("symbol characters")){
+        this.setState({authError: "Password must have symbol characters"});
+      } else if(msg.includes("length greater than or equal to 6") || msg.includes("Password not long enough")){
+        this.setState({authError: "Password is too short"});
+      } else {
+        this.setState({authError: msg});
+      }
+
+      this.refs.authMessage.shake();
+    });
   }
 
   // Needed for Native-Base Buttons
@@ -137,6 +163,10 @@ export default class ChangePassword extends Component {
             {!!this.state.newPasswordError && (
               <Label style={styles.error}>{this.state.newPasswordError}</Label>
             )}
+
+            {!!this.state.authError && (
+              <Animatable.Text ref="authMessage" style={styles.authMessage}>{this.state.authError}</Animatable.Text>
+            )}
           </Col>
 
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
@@ -149,7 +179,7 @@ export default class ChangePassword extends Component {
               }}
               style={styles.leftButton}
               >
-              <Text style={styles.buttonText}>Back to Sign In</Text>
+              <Text style={styles.buttonText}>Back</Text>
             </Button>
 
             <Button ref="rightButton" large
@@ -179,6 +209,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  authMessage: {
+    color: "white",
+    fontFamily: 'sans-serif-thin',
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 20,
+    fontSize: 20
   },
   label: {
     color: 'white',

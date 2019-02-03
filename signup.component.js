@@ -100,8 +100,33 @@ export default class SignUp extends Component {
         },
         validationData: []  //optional
         })
-        .then(data => {console.log(data); this.props.navigation.navigate('ConfirmCode');})
-        .catch(err => console.log(err.message));
+        .then(data => {
+          // console.log(data);
+          this.setState({authError: "Account created!"})
+          this.refs.authMessage.bounce();
+          setTimeout(() => {this.props.navigation.navigate('ConfirmCode');}, 1500);
+        })
+        .catch(err => {
+          console.log(err);
+          var msg = err.message;
+
+          if(msg.includes("[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+")){
+            this.setState({authError: "Username is not valid"});
+          } else if(msg.includes("^[\\S]+.*[\\S]+$")){
+            this.setState({authError: "Password is not strong enough"});
+          } else if(msg.includes("uppercase characters")){
+            this.setState({authError: "Password must have uppercase characters"});
+          } else if(msg.includes("numeric characters")){
+            this.setState({authError: "Password must have numeric characters"});
+          } else if(msg.includes("symbol characters")){
+            this.setState({authError: "Password must have symbol characters"});
+          } else if(msg.includes("length greater than or equal to 6") || msg.includes("Password not long enough")){
+            this.setState({authError: "Password is too short"});
+          } else {
+            this.setState({authError: err.message});
+          }
+          this.refs.authMessage.shake();
+        });
 
   }
 
@@ -170,6 +195,10 @@ export default class SignUp extends Component {
               <Label style={[styles.error, {left: 18}]}>{this.state.numberError}</Label>
             )}
             <Animatable.Text ref="confirm" onPress={() => {this.props.navigation.navigate('ConfirmCode')}} style={styles.confirm}>confirm a code</Animatable.Text>
+
+            {!!this.state.authError && (
+              <Animatable.Text ref="authMessage" style={styles.authMessage}>{this.state.authError}</Animatable.Text>
+            )}
           </Col>
 
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
@@ -193,7 +222,7 @@ export default class SignUp extends Component {
                   this.trySignUp();
                 }
               }}>
-              <Text style={styles.buttonText}>Sign Up</Text>
+              <Text style={styles.buttonText}>Submit</Text>
             </Button>
           </Row>
 
@@ -209,6 +238,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  authMessage: {
+    color: "white",
+    fontFamily: 'sans-serif-thin',
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 20,
+    fontSize: 20
   },
   confirm: {
     left:20,

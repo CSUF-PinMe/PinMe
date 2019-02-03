@@ -63,7 +63,13 @@ export default class ConfirmCode extends Component {
     Auth.confirmSignUp(username, code, {
           // Optional. Force user confirmation irrespective of existing alias. By default set to True.
           forceAliasCreation: true
-      }).then(data => {console.log(data); this.props.navigation.navigate('SignIn');})
+      }).then(data => {
+        // console.log(data);
+        // Check for 'SUCCESS'
+        this.setState({authError: "Confirmed!"});
+        this.refs.authMessage.bounce();
+        setTimeout(() => {this.props.navigation.navigate('SignIn');}, 1500);
+      })
         .catch(err => console.log(err));
   }
 
@@ -75,12 +81,24 @@ export default class ConfirmCode extends Component {
     } else {
       this.setState(() => ({ usernameError: null }));
       Auth.resendSignUp(username).then((data) => {
-        this.refs.resendCode.bounce();
-        console.log('code resent successfully');
         console.log(data);
-      }).catch(e => {
-        this.refs.resendCode.shake();
-        console.log(e.message);
+        console.log('code resent successfully');
+
+        this.setState({authError: "Sent!"});
+        this.refs.authMessage.bounce();
+      }).catch(err => {
+        console.log(err.message);
+        var msg = err.message;
+
+        if(msg.includes("[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+")){
+          this.setState({authError: "Username is not valid"});
+        } else if(msg.includes("Username/client id combination not found.")){
+          this.setState({authError: "Username not found"});
+        } else {
+          this.setState({authError: msg});
+        }
+
+        this.refs.authMessage.shake();
       });
     }
   }
@@ -161,6 +179,10 @@ export default class ConfirmCode extends Component {
               <Label style={[styles.error, {left: 18}]}>{this.state.codeError}</Label>
             )}
             <Animatable.Text ref="resendCode" onPress={() => {this.tryResend();}} style={styles.resend}>resend code</Animatable.Text>
+
+            {!!this.state.authError && (
+              <Animatable.Text ref="authMessage" style={styles.authMessage}>{this.state.authError}</Animatable.Text>
+            )}
           </Col>
 
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
@@ -201,6 +223,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  authMessage: {
+    color: "white",
+    fontFamily: 'sans-serif-thin',
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 20,
+    fontSize: 20
   },
   resend: {
     left:20,

@@ -55,7 +55,7 @@ export default class TestMain extends Component {
         <Grid>
 
           <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center'}}>
-            <Animatable.Text ref="title" style={[styles.title, {top: 0}]}>Test Main Page</Animatable.Text>
+            <Animatable.Text ref="title" style={[styles.title, {top: 0}]}>Test Page</Animatable.Text>
           </Col>
 
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>

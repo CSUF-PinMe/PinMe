@@ -35,10 +35,10 @@ export default class ForgotPassword extends Component {
   checkInput(){
     let error = false;
     if (this.state.username.trim() === "") {
-      this.setState(() => ({ nameError: "username required." }));
+      this.setState(() => ({ usernameError: "username required." }));
       error = true;
     } else {
-      this.setState(() => ({ nameError: null }));
+      this.setState(() => ({ usernameError: null }));
     }
 
     if(error){
@@ -51,8 +51,24 @@ export default class ForgotPassword extends Component {
   resetPassword(){
     let username = this.state.username;
     Auth.forgotPassword(username)
-    .then(data => {console.log(data); this.props.navigation.navigate('ChangePassword');})
-    .catch(err => console.log(err));
+    .then(data => {
+      console.log(data);
+      this.setState({authError: "Sent!"});
+      this.refs.authMessage.bounce();
+      setTimeout(() => {this.props.navigation.navigate('ChangePassword');}, 1500);
+    })
+    .catch(err => {
+      console.log(err);
+      var msg = err.message;
+      if(msg.includes("Username/client id combination not found.")){
+        this.setState({authError: "Username not found"});
+      } else if(msg.includes("[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+")){
+        this.setState({authError: "Username is not valid"});
+      } else {
+        this.setState({authError: err.message});
+      }
+      this.refs.authMessage.shake();
+    });
   }
 
   // Needed for Native-Base Buttons
@@ -86,13 +102,17 @@ export default class ForgotPassword extends Component {
               <Input placeholderTextColor='#017BB0' placeholder="username" style={styles.input}
                 onChangeText={(e) => {
                   this.handleChange('username', e);
-                  if(e.trim() !== "") {this.setState(() => ({ nameError: null }));}
+                  if(e.trim() !== "") {this.setState(() => ({ usernameError: null }));}
                 }}
                 value={this.state.username}
               />
             </AnimatedItem>
-            {!!this.state.nameError && (
-              <Label style={styles.error}>{this.state.nameError}</Label>
+            {!!this.state.usernameError && (
+              <Label style={styles.error}>{this.state.usernameError}</Label>
+            )}
+
+            {!!this.state.authError && (
+              <Animatable.Text ref="authMessage" style={styles.authMessage}>{this.state.authError}</Animatable.Text>
             )}
           </Col>
 
@@ -136,6 +156,14 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  authMessage: {
+    color: "white",
+    fontFamily: 'sans-serif-thin',
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 20,
+    fontSize: 20
   },
   label: {
     color: 'white',
