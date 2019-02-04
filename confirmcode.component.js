@@ -70,7 +70,17 @@ export default class ConfirmCode extends Component {
         this.refs.authMessage.bounce();
         setTimeout(() => {this.props.navigation.navigate('SignIn');}, 1500);
       })
-        .catch(err => console.log(err));
+        .catch(err => {
+          console.log(err);
+          var msg = err.message;
+
+          if(msg.includes("[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+")){
+            this.setState({authError: "Username is not valid"});
+          } else {
+            this.setState({authError: err.message})
+          }
+          this.refs.authMessage.shake();
+        });
   }
 
   tryResend(){
