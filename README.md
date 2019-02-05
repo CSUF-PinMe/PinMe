@@ -6,7 +6,7 @@ PinMe is a map-based social media app that allows users to see local events in r
 Find out more in our [wiki](https://github.com/CSUF-PinMe/PinMe/wiki)!
 
 ## Requirements
-* NodeJS & NPM - [Link](https://nodejs.org/en/)
+* npm - [Link](https://www.npmjs.com/get-npm)
 * Expo - [Link](https://expo.io/)
   - Install with NPM: `npm install -g expo-cli`
 
@@ -18,9 +18,7 @@ Find out more in our [wiki](https://github.com/CSUF-PinMe/PinMe/wiki)!
 ## How To Run:
 **1. Open terminal (Mac OS) or cmd (Windows)**  
 
-**2. Check NodeJS & NPM version:**
-* `node -v`
-  - Should print something like `v10.9.0`
+**2. Check npm version:**
 * `npm -v`
   - Should print something like `6.4.1`
 
