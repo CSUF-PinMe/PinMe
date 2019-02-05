@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { ActivityIndicator, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
 import * as Animatable from 'react-native-animatable';
 import { Col, Row, Grid } from 'react-native-easy-grid';
@@ -57,7 +57,6 @@ export default class TestMain extends Component {
           <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center'}}>
             <Animatable.Text ref="title" style={[styles.title, {top: 0}]}>Test Page</Animatable.Text>
           </Col>
-
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
 
             <Button ref="leftButton" large
