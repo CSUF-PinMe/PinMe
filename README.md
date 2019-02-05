@@ -3,6 +3,8 @@
 ## Description
 PinMe is a map-based social media app that allows users to see local events in real time. The main feature will be the map user-interface, which will allow users to place pins using GPS. These pins will show where events are happening near the user, with examples including: study groups, social gatherings, sports meetups, food distribution, accident warnings, and other types of special events.
 
+**This is not the app that tracks your mobile device!**
+
 Find out more in our [wiki](https://github.com/CSUF-PinMe/PinMe/wiki)!
 
 ## Requirements
