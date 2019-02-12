@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
+import { StackActions, NavigationActions } from 'react-navigation';
 import {createStackNavigator, createAppContainer} from 'react-navigation';
 import { fadeIn, fromLeft, fromBottom, fromTop, fromRight } from 'react-navigation-transitions';
 import * as Animatable from 'react-native-animatable';
@@ -22,10 +23,38 @@ import SignUp from './signup.component';
 import ChangePassword from './changepassword.component';
 import TestMain from './testmain.component';
 import SignIn from './signin.component';
+import Map from './src/components/map/map.component';
 
 var {width, height} = Dimensions.get('window');
 AnimatedLoading = Animatable.createAnimatableComponent(ActivityIndicator);
 AnimatedItem = Animatable.createAnimatableComponent(Item);
+
+export const store = createStore({
+  initialMarkers: [],
+  markers: [],
+  currentUser: '',
+  region: {
+    latitude: 36.812617,
+    longitude: -119.745802,
+    latitudeDelta: 0.0422,
+    longitudeDelta: 0.0221,
+  },
+  pinLink: {                // Used for map-link: opening pins in uber, lyft, waze, etc..
+    name: undefined,
+    latitude: undefined,
+    longitude: undefined
+  },
+  pinInfo: {
+    userId: '',
+    eventName: '',
+    eventType: 'General',
+    description: '',
+    startTime: '',
+    endTime: '',
+    latitude: undefined,
+    longitude: undefined
+  }
+})
 
 class Loading extends Component {
   constructor(props){
@@ -55,7 +84,15 @@ class Loading extends Component {
         console.log('User is logged in:', user.username);
         setTimeout(() => {this.refs.title.bounceOutLeft();}, 500);
         setTimeout(() => {this.refs.loading.bounceOutLeft();}, 500);
-        setTimeout(() => {this.props.navigation.navigate('Test');}, 1000);
+        setTimeout(() => {
+          const resetAction = StackActions.reset({
+            index: 0,
+            actions: [
+              NavigationActions.navigate({ routeName: 'Map' }),
+            ],
+          });
+          this.props.navigation.dispatch(resetAction);
+        }, 1000);
       })
       .catch((err) => {
         console.log('Error:',err);
@@ -108,11 +145,11 @@ const handleCustomTransition = ({ scenes }) => {
     return fromLeft();
   } else if (prevScene
     && prevScene.route.routeName === 'Loading'
-    && nextScene.route.routeName === 'Test') {
+    && nextScene.route.routeName === 'Map') {
     return fromRight();
   } else if (prevScene
     && prevScene.route.routeName === 'SignIn'
-    && nextScene.route.routeName === 'Test') {
+    && nextScene.route.routeName === 'Map') {
     return fromRight();
   }
 

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions, Text, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
+import { StackActions, NavigationActions } from 'react-navigation';
 import * as Animatable from 'react-native-animatable';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Expo, { Constants, Location, Permissions } from 'expo';
@@ -72,19 +73,29 @@ export default class SignIn extends Component {
     // this.refs.leftbutton.bounceInLeft();
   }
 
+  async componentWillUnmount(){
+    this.setState({ authError: null, password: '' });
+  }
+
   trySignIn() {
     let username = this.state.username.trim();
     let password = this.state.password;
     Auth.signIn(
-      username, // Required, the username
-      password, // Optional, the password
+      username,
+      password,
     ).then(user => {
       // console.log(user);
       this.setState({ authError: "Success!" });
       this.refs.authMessage.bounce();
       setTimeout(() => {
-        this.props.navigation.navigate('Test');
-        this.setState({ authError: null, password: '' });
+        const resetAction = StackActions.reset({
+          index: 1,
+          actions: [
+            NavigationActions.navigate({ routeName: 'SignIn' }),
+            NavigationActions.navigate({ routeName: 'Map' }),
+          ],
+        });
+        this.props.navigation.dispatch(resetAction);
       }, 1500);
     })
     .catch(err => {

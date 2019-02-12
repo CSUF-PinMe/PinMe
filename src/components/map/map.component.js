@@ -5,6 +5,7 @@ import { showLocation, Popup } from 'react-native-map-link';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
+import { StackActions, NavigationActions } from 'react-navigation';
 import {Modal, TouchableHighlight} from 'react-native';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import {Auth} from 'aws-amplify'
@@ -276,7 +277,16 @@ export default class MapScreen extends Component {
               <Icon name="pin" />
             </Button>
             <Button style={{ backgroundColor: '#FFFFFF'}}
-              onPress={() => {Auth.signOut();}}
+              onPress={() => {
+                Auth.signOut();
+                const resetAction = StackActions.reset({
+                  index: 0,
+                  actions: [
+                    NavigationActions.navigate({ routeName: 'SignIn' }),
+                  ],
+                });
+                this.props.navigation.dispatch(resetAction);
+              }}
               >
               <Icon style = {{color: '#03a9f4'}} name="refresh"/>
             </Button>
