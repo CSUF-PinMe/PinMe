@@ -17,13 +17,13 @@ Amplify.configure(config)
 
 import createStore from 'pure-store';
 
-import ConfirmCode from './confirmcode.component';
-import ForgotPassword from './forgotpassword.component';
-import SignUp from './signup.component';
-import ChangePassword from './changepassword.component';
-import TestMain from './testmain.component';
-import SignIn from './signin.component';
-import Map from './src/components/map/map.component';
+import ConfirmCode from './src/components/confirmcode/confirmcode.component';
+import ForgotPassword from './src/components/forgotpassword/forgotpassword.component';
+import SignUp from './src/components/signup/signup.component';
+import ChangePassword from './src/components/changepassword/changepassword.component';
+// import TestMain from './testmain.component';
+import SignIn from './src/components/signin/signin.component';
+import MapNav from './router';
 
 var {width, height} = Dimensions.get('window');
 AnimatedLoading = Animatable.createAnimatableComponent(ActivityIndicator);
@@ -82,6 +82,7 @@ class Loading extends Component {
           bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
       }).then((user) => {
         console.log('User is logged in:', user.username);
+        store.update({currentUser: user.username});
         setTimeout(() => {this.refs.title.bounceOutLeft();}, 500);
         setTimeout(() => {this.refs.loading.bounceOutLeft();}, 500);
         setTimeout(() => {
@@ -159,17 +160,20 @@ const handleCustomTransition = ({ scenes }) => {
 const MainNavigator = createStackNavigator(
   {
     Loading: {screen: Loading},
-    Test: {screen: TestMain},
+    // Test: {screen: TestMain},
     SignIn: {screen: SignIn},
     SignUp: {screen: SignUp},
     ConfirmCode: {screen: ConfirmCode},
     ForgotPassword: {screen: ForgotPassword},
     ChangePassword: {screen: ChangePassword},
-    Map: {screen: Map},
+    Map: MapNav,
   },
   {
     initialRoute: 'Loading',
     transitionConfig: (nav) => handleCustomTransition(nav),
+    navigationOptions: {
+      headerVisible: false,
+    }
   },
 );
 

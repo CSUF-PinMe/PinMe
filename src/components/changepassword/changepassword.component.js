@@ -6,7 +6,7 @@ import { Col, Row, Grid } from 'react-native-easy-grid';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import Font from 'expo';
 import MapView from 'react-native-maps';
-import {authInfo} from './App.js'
+import {authInfo} from '../../../App.js'
 import { Auth } from 'aws-amplify';
 
  var {width, height} = Dimensions.get('window');

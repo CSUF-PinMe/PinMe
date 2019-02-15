@@ -9,6 +9,8 @@ import { Auth } from 'aws-amplify';
 import Font from 'expo';
 import MapView from 'react-native-maps';
 
+import {store} from '../../../App'
+
 AnimatedItem = Animatable.createAnimatableComponent(Item);
 AnimatedButton = Animatable.createAnimatableComponent(Button);
 
@@ -86,6 +88,7 @@ export default class SignIn extends Component {
     ).then(user => {
       // console.log(user);
       this.setState({ authError: "Success!" });
+      store.update({currentUser: username});
       this.refs.authMessage.bounce();
       setTimeout(() => {
         const resetAction = StackActions.reset({

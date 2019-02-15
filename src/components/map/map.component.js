@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert} from 'react-native';
 import { Container, Header, Text, Content, Icon, Button, Left, Fab} from 'native-base';
+import ActionButton from 'react-native-action-button';
 import { showLocation, Popup } from 'react-native-map-link';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
@@ -41,6 +42,10 @@ export default class MapScreen extends Component {
     this._getLocationAsync.bind(this);
   }
 
+  static navigationOptions = {
+    header: null
+  }
+
   setModalVisible(visible) {
     this.setState({modalVisible: visible});
   }
@@ -56,19 +61,19 @@ export default class MapScreen extends Component {
     this.setState({
       selected2: value
     });
-}
+  }
 
-  // Needed for Native-Base Buttons
-  async componentDidMount() {
+  async componentDidMount(){
     await Expo.Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
       FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
-
     });
-    this.loadPins(),
-    console.log(store.state.region)
+  }
+
+  async componentWillMount(){
+    this.loadPins();
   }
 
   getInitialState() {
@@ -263,37 +268,34 @@ export default class MapScreen extends Component {
           </Fab>
         </View>
 
-        <View style={{ flex: 1}}>
-          <Fab
-            active={this.state.active}
-            direction="up"
-            containerStyle={{ marginBottom: margin_gap}}
-            style={{bottom: 15, backgroundColor: '#03a9f4' }}
-            position="bottomRight"
-            onPress={() => this.setState({ active: !this.state.active })}>
-            <Icon name="add" />
-            <Button style={{ backgroundColor: '#03a9f4' }}
-              onPress={() => this.props.navigation.navigate('AddPin')}>
-              <Icon name="pin" />
-            </Button>
-            <Button style={{ backgroundColor: '#FFFFFF'}}
-              onPress={() => {
-                Auth.signOut();
-                const resetAction = StackActions.reset({
-                  index: 0,
-                  actions: [
-                    NavigationActions.navigate({ routeName: 'SignIn' }),
-                  ],
-                });
-                this.props.navigation.dispatch(resetAction);
-              }}
-              >
-              <Icon style = {{color: '#03a9f4'}} name="refresh"/>
-            </Button>
+        <ActionButton
+        buttonColor="#03a9f4"
+        backgroundTappable={true}
+        fixNativeFeedbackRadius={true}
+        offsetX={15}
+        offsetY={15}
+        >
+          <ActionButton.Item size={40} buttonColor='white' title="Sign Out" onPress={() => {
+            Auth.signOut();
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({ routeName: 'SignIn' }),
+              ],
+            });
+            this.props.navigation.dispatch(resetAction);
+          }}>
+            <Icon name="ios-arrow-back" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item size={40} buttonColor='white' title="Refresh Pins" onPress={() => {this.loadPins();}}>
+            <Icon name="refresh" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+          <ActionButton.Item size={40} buttonColor='white' title="Create Pin" onPress={() => {this.props.navigation.navigate('AddPin')}}>
+            <Icon name="create" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
+        </ActionButton>
 
-          </Fab>
-          </View>
-        </View>
+      </View>
     </Container>
     );
   }

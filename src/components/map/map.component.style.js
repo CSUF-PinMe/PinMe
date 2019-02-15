@@ -7,6 +7,11 @@ const Screen = {
 };
 
 export default StyleSheet.create({
+  actionButtonIcon: {
+    fontSize: 20,
+    height: 22,
+    color: '#03a9f4',
+  },
   mapContainer: {
     width: Screen.width,
     height: Screen.height,

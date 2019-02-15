@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert, RefreshControl } from 'react-native';
 import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import * as queries from '../../graphql/queries';
@@ -14,7 +14,8 @@ export default class MyPinsScreen extends Component {
 
     this.state = {
         loading: true,
-        searchText: ""
+        searchText: "",
+        refreshing: false
     }
   }
 
@@ -31,9 +32,13 @@ export default class MyPinsScreen extends Component {
       FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
       MaterialCommunityIcons: require("native-base/Fonts/MaterialCommunityIcons.ttf"),
     });
-    this.setState({
-      loading: false
-     });
+    console.log(store.state.currentUser);
+    this.setState({loading: false});
+  }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.loadPins();
   }
 
   deletePin = (id) => {
@@ -81,12 +86,49 @@ export default class MyPinsScreen extends Component {
     tabBarHidden: true,
   }
 
+  loadPins = async () => {
+    store.update({markers: []});
+    const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
+    allPins.data.listPins.items.map(pin => (
+      // console.log()
+      store.update({
+        markers: [
+          ...store.state.markers,
+          {
+            name: pin.eventName,
+            description: pin.description,
+            key: pin.id,
+            placedBy: pin.userId,
+            type: pin.eventType,
+            startTime: pin.startTime,
+            endTime: pin.endTime,
+            coordinate: {
+              latitude: Number(pin.latitude),
+              longitude: Number(pin.longitude)
+            },
+          }
+        ]
+      })
+    ))
+    this.setState({loading: false});
+    this.setState({refreshing: false});
+    console.log('All pins loaded!');
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
     return (
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+      >
+
         <StatusBar hidden/>
 
         <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
