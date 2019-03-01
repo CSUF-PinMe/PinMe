@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { Animated, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
 import { NavigationActions } from 'react-navigation';
 import * as Animatable from 'react-native-animatable';
@@ -76,9 +76,14 @@ export default class ConfirmCode extends Component {
 
           if(msg.includes("[\\p{L}\\p{M}\\p{S}\\p{N}\\p{P}]+")){
             this.setState({authError: "Username is not valid"});
+          } else if(msg.includes("Username/client id combination not found.")){
+            this.setState({authError: "Username not found"});
+          } else if(msg.includes("User cannot be confirm. Current status is CONFIRMED")){
+            this.setState({authError: "User is already confirmed."});
           } else {
             this.setState({authError: err.message})
           }
+
           this.refs.authMessage.shake();
         });
   }
@@ -134,13 +139,11 @@ export default class ConfirmCode extends Component {
     }
     return (
       <Container>
-      <StatusBar hidden/>
-
         <Grid>
 
           <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center'}}>
-            <Animatable.Text ref="firstTitle" style={[styles.title, {top: 5}]}>Confirm</Animatable.Text>
-            <Animatable.Text ref="secondTitle" style={[styles.title, {top: 65}]}>Sign Up</Animatable.Text>
+            <Animatable.Text ref="firstTitle" style={styles.firstTitle}>Confirm</Animatable.Text>
+            <Animatable.Text ref="secondTitle" style={styles.secondTitle}>Sign Up</Animatable.Text>
             <AnimatedItem ref="username" style={styles.inputItem}>
               <Label style={styles.label} >Username</Label>
               <Input
@@ -195,7 +198,7 @@ export default class ConfirmCode extends Component {
             )}
           </Col>
 
-          <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
+          <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around', bottom: Platform.OS === 'ios' ? null : 10}}>
 
             <Button large
               onPress={() => {this.props.navigation.navigate('SignUp');}}
@@ -236,10 +239,11 @@ const styles = StyleSheet.create({
   },
   authMessage: {
     color: "white",
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null,
+    bottom: Platform.OS === 'ios' ? 40 : 20,
     position: 'absolute',
     alignSelf: 'center',
-    bottom: 20,
     fontSize: 20
   },
   resend: {
@@ -247,29 +251,42 @@ const styles = StyleSheet.create({
     bottom: 60,
     color: 'white',
     fontSize: 20,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
   },
   error: {
     color: "white",
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
     bottom: 70,
   },
-  title: {
+  firstTitle: {
     position: 'absolute',
     left: 15,
     color: 'white',
     fontSize: 60,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    top: Platform.OS === 'ios' ? 30 : 5,
+    fontWeight: '100'
+  },
+  secondTitle: {
+    position: 'absolute',
+    left: 15,
+    color: 'white',
+    fontSize: 60,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    top: Platform.OS === 'ios' ? 90 : 65,
+    fontWeight: '100'
   },
   label: {
     color: 'white',
     fontSize: 30,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
   },
   input: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'sans-serif-light',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
     marginRight: 20,
     top: 3,
   },
@@ -281,18 +298,22 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#03a9f4',
     fontSize: 15,
-    fontFamily: 'sans-serif-light'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'
   },
   leftButton: {
     width: width/2-20,
     height: 55,
     marginLeft: 5,
-    justifyContent: 'center'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   },
   rightButton: {
     width: width/2-20,
     height: 55,
     marginRight: 5,
-    justifyContent: 'center'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   }
 });

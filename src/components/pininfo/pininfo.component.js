@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert, Platform } from 'react-native';
 import { Container, Header, Title, Content, Form, Item, Input, Button, Label, Icon, Left, Body, Right, Picker, Textarea} from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api';
@@ -52,7 +52,7 @@ export default class PinInfo extends Component {
   }
 
   handleChange(name, value){
-    console.log(name, ' is now ', value);
+    // console.log(name, ' is now ', value);
     this.setState({
       pinInfo: {
         ...this.state.pinInfo,
@@ -141,16 +141,8 @@ export default class PinInfo extends Component {
     }
     return (
       <Container>
-        <StatusBar hidden/>
-
-        <Header style = {{backgroundColor: '#03a9f4', height: 65}}>
-          <View style = {{top: 20}}>
-            <Body>
-              <Title>Pin Information</Title>
-            </Body>
-          </View>
-        </Header>
-
+      <StatusBar hidden={Platform.OS === 'ios' ? false : true} />
+      <Header />
         <Content>
           <Form>
 

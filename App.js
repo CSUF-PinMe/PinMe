@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { Platform, ActivityIndicator, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
 import {createStackNavigator, createAppContainer} from 'react-navigation';
@@ -34,8 +34,8 @@ export const store = createStore({
   markers: [],
   currentUser: '',
   region: {
-    latitude: 36.812617,
-    longitude: -119.745802,
+    latitude: 36.811998,
+    longitude: -119.748398,
     latitudeDelta: 0.0422,
     longitudeDelta: 0.0221,
   },
@@ -69,38 +69,59 @@ class Loading extends Component {
     header: null
   }
 
+  _getLocationAsync = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    // console.log(location.coords);
+    store.update({
+      region: {
+        ...store.state.region,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      }
+    });
+  };
+
   // Needed for Native-Base Buttons
   async componentDidMount() {
+    this._getLocationAsync();
     await Expo.Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
     });
+
+    const session = Auth.currentAuthenticatedUser({
+        bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+    }).then((user) => {
+      console.log('User is logged in:', user.username);
+      store.update({currentUser: user.username});
+      setTimeout(() => {this.refs.title.bounceOutLeft();}, 500);
+      setTimeout(() => {this.refs.loading.bounceOutLeft();}, 500);
+      setTimeout(() => {
+        const resetAction = StackActions.reset({
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: 'Map' }),
+          ],
+        });
+        this.props.navigation.dispatch(resetAction);
+      }, 1000);
+    })
+    .catch((err) => {
+      console.log('Error:',err);
+      setTimeout(() => {this.refs.title.bounceOutRight();}, 500);
+      setTimeout(() => {this.refs.loading.bounceOutRight();}, 500);
+      setTimeout(() => {this.props.navigation.navigate('SignIn');}, 1000);
+    });
     this.setState({ loading: false });
 
-      const session = Auth.currentAuthenticatedUser({
-          bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-      }).then((user) => {
-        console.log('User is logged in:', user.username);
-        store.update({currentUser: user.username});
-        setTimeout(() => {this.refs.title.bounceOutLeft();}, 500);
-        setTimeout(() => {this.refs.loading.bounceOutLeft();}, 500);
-        setTimeout(() => {
-          const resetAction = StackActions.reset({
-            index: 0,
-            actions: [
-              NavigationActions.navigate({ routeName: 'Map' }),
-            ],
-          });
-          this.props.navigation.dispatch(resetAction);
-        }, 1000);
-      })
-      .catch((err) => {
-        console.log('Error:',err);
-        setTimeout(() => {this.refs.title.bounceOutRight();}, 500);
-        setTimeout(() => {this.refs.loading.bounceOutRight();}, 500);
-        setTimeout(() => {this.props.navigation.navigate('SignIn');}, 1000);
-      });
   }
 
 
@@ -184,7 +205,8 @@ const styles = StyleSheet.create({
   title: {
     color: 'white',
     fontSize: 60,
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "100" : 'normal',
     bottom: 70
   },
 

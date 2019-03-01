@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
 import * as Animatable from 'react-native-animatable';
 import { Col, Row, Grid } from 'react-native-easy-grid';
@@ -138,10 +138,10 @@ export default class SignUp extends Component {
       <Container>
       <StatusBar hidden/>
 
-        <Grid>
+        <Grid style={{backgroundColor: '#03a9f4'}}>
 
           <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center'}}>
-            <Animatable.Text ref="title" style={[styles.title, {top: 0}]}>Sign Up</Animatable.Text>
+            <Animatable.Text ref="title" style={styles.title}>Sign Up</Animatable.Text>
             <AnimatedItem ref="email" style={styles.inputItem}>
               <Label style={styles.label} >Email</Label>
               <Input placeholderTextColor='#017BB0' placeholder="email" style={styles.input}
@@ -201,7 +201,7 @@ export default class SignUp extends Component {
             )}
           </Col>
 
-          <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
+          <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around', bottom: Platform.OS === 'ios' ? null : 10}}>
 
             <Button large
               onPress={() => this.props.navigation.navigate('SignIn')}
@@ -241,10 +241,11 @@ const styles = StyleSheet.create({
   },
   authMessage: {
     color: "white",
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null,
+    bottom: Platform.OS === 'ios' ? 40 : 20,
     position: 'absolute',
     alignSelf: 'center',
-    bottom: 20,
     fontSize: 20
   },
   confirm: {
@@ -252,11 +253,13 @@ const styles = StyleSheet.create({
     bottom: 50,
     color: 'white',
     fontSize: 20,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
   },
   error: {
     color: "white",
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null,
     bottom: 60,
   },
   title: {
@@ -264,17 +267,21 @@ const styles = StyleSheet.create({
     left: 15,
     color: 'white',
     fontSize: 60,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null,
+    top: Platform.OS === 'ios' ? 30 : 0,
+    fontWeight: '100'
   },
   label: {
     color: 'white',
     fontSize: 30,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
   },
   input: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'sans-serif-light',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
     marginRight: 20,
     top: 3,
   },
@@ -286,18 +293,22 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#03a9f4',
     fontSize: 15,
-    fontFamily: 'sans-serif-light'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'
   },
   leftButton: {
     width: width/2-20,
     height: 55,
     marginLeft: 5,
-    justifyContent: 'center'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   },
   rightButton: {
     width: width/2-20,
     height: 55,
     marginRight: 5,
-    justifyContent: 'center'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   }
 });

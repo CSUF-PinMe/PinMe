@@ -8,6 +8,12 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'row'
   },
+  actionButtonIcon: {
+    color: 'white',
+    alignSelf: 'center',
+    fontSize: 30,
+    fontWeight: 'bold'
+  },
   map: {
     ...StyleSheet.absoluteFillObject,
   },

@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from 'react-native';
+import { StyleSheet, Dimensions, Platform } from 'react-native';
 
 const {width, height} = Dimensions.get("window");
 const Screen = {
@@ -7,6 +7,21 @@ const Screen = {
 };
 
 export default StyleSheet.create({
+    modalContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    backgroundColor: "white",
+    borderRadius: 4,
+    borderColor: "white",
+    borderWidth: 2,
+    marginHorizontal: 20,
+    marginVertical: 150
+  },
+  description: {
+    padding: 20,
+    fontSize: 18,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'
+  },
   actionButtonIcon: {
     fontSize: 20,
     height: 22,

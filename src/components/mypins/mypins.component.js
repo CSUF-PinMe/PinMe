@@ -14,6 +14,7 @@ export default class MyPinsScreen extends Component {
 
     this.state = {
         loading: true,
+        markers: [],
         searchText: "",
         refreshing: false
     }
@@ -32,7 +33,8 @@ export default class MyPinsScreen extends Component {
       FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
       MaterialCommunityIcons: require("native-base/Fonts/MaterialCommunityIcons.ttf"),
     });
-    console.log(store.state.currentUser);
+    this.loadPins();
+    // console.log(store.state.currentUser);
     this.setState({loading: false});
   }
 
@@ -54,7 +56,6 @@ export default class MyPinsScreen extends Component {
 
 
   iconImage (marker) {
-    console.log(marker.type);
     switch (marker.type) {
       case "Accident":{
       return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>;
@@ -87,13 +88,20 @@ export default class MyPinsScreen extends Component {
   }
 
   loadPins = async () => {
-    store.update({markers: []});
-    const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
+    this.setState({markers: []});
+    const allPins = await API.graphql(graphqlOperation(queries.listPins, {
+  "filter": {
+    "userId": {
+      "eq": store.state.currentUser
+    }
+  },
+  "limit": 100
+}));
     allPins.data.listPins.items.map(pin => (
       // console.log()
-      store.update({
+      this.setState({
         markers: [
-          ...store.state.markers,
+          ...this.state.markers,
           {
             name: pin.eventName,
             description: pin.description,
@@ -120,6 +128,17 @@ export default class MyPinsScreen extends Component {
       return <Expo.AppLoading />;
     }
     return (
+      <Container>
+      <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
+        <Item>
+          <Icon name="ios-search" />
+          <Input
+            placeholder="Search pins"
+            onChangeText={ (search) => this.handleSearch(search)}
+          />
+        </Item>
+      </Header>
+      <StatusBar hidden/>
       <ScrollView
         refreshControl={
             <RefreshControl
@@ -129,25 +148,9 @@ export default class MyPinsScreen extends Component {
           }
       >
 
-        <StatusBar hidden/>
-
-        <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
-          <Item>
-            <Icon name="ios-search" />
-            <Input
-              placeholder="Search pins"
-              onChangeText={ (search) => this.handleSearch(search)}
-            />
-          </Item>
-          <Button transparent>
-            <Text>Search</Text>
-          </Button>
-        </Header>
 
         <Content padder>
-          {store.state.markers.filter(marker => marker.placedBy === store.state.currentUser)
-            .filter(marker => marker.name.toLowerCase()
-            .includes(this.state.searchText.toLowerCase())).map((marker, index) => (
+          {this.state.markers.map((marker, index) => (
               <Card
                 key={marker.key}
               >
@@ -192,7 +195,7 @@ export default class MyPinsScreen extends Component {
                     onPress={() => {
                       Alert.alert(
                         `Deleting Pin`,
-                        `Are you sure you want to delete pin ${marker.name}?`,
+                        `Are you sure you want to delete the pin '${marker.name}?'`,
                         [
                           {text: 'OK', onPress: () => this.deletePin(marker.key)},
                           {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
@@ -206,6 +209,7 @@ export default class MyPinsScreen extends Component {
           ))}
         </Content>
       </ScrollView>
+      </Container>
     );
   }
 }

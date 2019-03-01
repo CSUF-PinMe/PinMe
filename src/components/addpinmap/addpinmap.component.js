@@ -1,8 +1,10 @@
+import { Container, Header, Content, Button, Text, Icon, Fab, Footer} from 'native-base';
+import MapView, { Marker, ProviderPropType } from 'react-native-maps';
+import { Platform } from 'react-native';
+import ActionButton from 'react-native-action-button';
 import styles from './addpinmap.component.style.js';
 import myMapStyle from '../map/mapstyle';
-import { Container, Header, Content, Button, Text, Icon, Fab, Footer} from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
-import MapView, { Marker } from 'react-native-maps';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import * as mutations from '../../graphql/mutations';
 import redPin from '../../../assets/pin_red.png'
@@ -51,13 +53,15 @@ export default class AddPinMap extends Component {
     }
     return (
       <View style={styles.container}>
-          <StatusBar hidden/>
+        <StatusBar hidden={Platform.OS === 'ios' ? false : true} />
           <View style={styles.container}>
             <MapView
+            provider={this.props.provider}
             style={styles.map}
             onRegionChange={(region) => store.update({region})}
             initialRegion={store.state.region}
             customMapStyle={myMapStyle}
+            showsUserLocation={true}
             >
             {store.state.markers.map((marker, index) => (
               <Marker
@@ -69,32 +73,34 @@ export default class AddPinMap extends Component {
             </MapView>
           </View>
 
-          <View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 40, justifyContent: 'center', alignItems: 'center'}}>
+          <View pointerEvents="none" style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: 40, justifyContent: 'center', alignItems: 'center'}}>
             <Image source={redPin} style={{transform: [{ scale: .35 }]}}/>
           </View>
 
-            <View style={styles.button1Container}>
-            <Fab
-            style={{ backgroundColor: '#ed2224' }}
-            position="bottomLeft"
-            onPress={() => this.props.navigation.navigate('Map')}>
-            <Icon name="close" />
-            </Fab>
+          <ActionButton
+          buttonColor="#ed2224"
+          fixNativeFeedbackRadius={Platform.OS === 'ios' ? true : false}
+          renderIcon={() => { return ( <Icon name="close" style={styles.actionButtonIcon} /> ); }}
+          onPress={() => this.props.navigation.goBack()}
+          position="left"
+          offsetX={15}
+          offsetY={15}
+          />
 
-          </View>
-          <View style={styles.button2Container}>
-            <Fab
-            style={{ backgroundColor: '#79e56a' }}
-            position="bottomRight"
-            onPress={() => this.props.navigation.navigate('PinInfo')}
-            >
-            <Icon name="checkmark" />
-            </Fab>
-
-          </View>
-
+          <ActionButton
+          buttonColor="#79e56a"
+          fixNativeFeedbackRadius={Platform.OS === 'ios' ? true : false}
+          renderIcon={() => { return ( <Icon name="checkmark" style={styles.actionButtonIcon} /> ); }}
+          onPress={() => this.props.navigation.navigate('PinInfo')}
+          offsetX={15}
+          offsetY={15}
+          />
 
       </View>
     );
   }
+}
+
+AddPinMap.propTypes = {
+  provider: ProviderPropType,
 }

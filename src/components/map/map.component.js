@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert} from 'react-native';
-import { Container, Header, Text, Content, Icon, Button, Left, Fab} from 'native-base';
+import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert, Platform, ScrollView, Image} from 'react-native';
+import { Container, Header, Text, Content, Icon, Button, Left, Fab, Label} from 'native-base';
+import { Col, Row, Grid } from 'react-native-easy-grid';
+import Modal from "react-native-modalbox";
 import ActionButton from 'react-native-action-button';
 import { showLocation, Popup } from 'react-native-map-link';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, ProviderPropType } from 'react-native-maps';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import { DrawerNavigator, DrawerItems } from 'react-navigation';
 import { StackActions, NavigationActions } from 'react-navigation';
-import {Modal, TouchableHighlight} from 'react-native';
+import { TouchableHighlight } from 'react-native';
+
 import API, { graphqlOperation } from '@aws-amplify/api'
 import {Auth} from 'aws-amplify'
 import * as queries from '../../graphql/queries';
@@ -29,13 +32,12 @@ export default class MapScreen extends Component {
 
     this.state = {
       isVisible: false,
+      currMarker: {},
       bottom: 1,
       loading: true,
       active: false,
       active1: false,
       margin_onClick: false,
-      modalVisible: false,
-      modalMarker: undefined
     };
 
     this.getInitialState.bind(this);
@@ -44,10 +46,6 @@ export default class MapScreen extends Component {
 
   static navigationOptions = {
     header: null
-  }
-
-  setModalVisible(visible) {
-    this.setState({modalVisible: visible});
   }
 
   // For button components on map
@@ -124,6 +122,16 @@ export default class MapScreen extends Component {
     console.log('All pins loaded!');
   }
 
+  deletePin = (id) => {
+    const result = API.graphql(graphqlOperation(mutations.deletePin, {input: {id: id}}));
+    console.log(result.data);
+    var removeIndex = store.getState().markers.map(function(item) { return item.key; }).indexOf(id);
+    store.update(s => {
+      s.markers.splice(removeIndex, 1);
+    })
+    this.forceUpdate();
+  }
+
   static navigationOptions = {
     header: null,
     tabBarHidden: true,
@@ -143,19 +151,39 @@ export default class MapScreen extends Component {
     }})
   }
 
-  setModalMarker = (marker) => {
-    this.setState({
-      ...this.state,
-      modalMarker: {
-        name: marker.name,
-        description: marker.description,
-        placedBy: marker.placedBy,
-        type: marker.type,
-        startTime: marker.startTime,
-        endTime: marker.endTime,
-      }
-    })
+  openModal = () => this.setState({ visible: true });
+  closeModal = () => this.setState({ visible: false });
+
+  iconImage () {
+    switch (this.state.currMarker.type) {
+      case "Accident":
+        return <Icon  style={{color: '#03a9f4', fontSize: 50, left: 15}} active type="FontAwesome" name='warning'/>;
+        break;
+      case "Food":
+        return <Icon style={{color: '#03a9f4', fontSize: 60, left: 15}} active type="Ionicons" name='ios-restaurant'/>;
+        break;
+      case "Social":
+        return <Icon style={{color: '#03a9f4', fontSize: 60, left: 15}} active type="Ionicons" name='ios-people'/>;
+        break;
+      case "Study":
+        return <Icon style={{color: '#03a9f4', fontSize: 40, left: 15}} active type="FontAwesome" name='book'/>;
+        break;
+      default:
+        return <Image source={redPin} style={{transform: [{ scale: .30 }], marginLeft: 0}}/>;
+        break;
+    }
   }
+
+  animateMapToMarker = (e) => {
+    const coordinate = e.nativeEvent.coordinate;
+    var newRegion = {
+      longitudeDelta: store.state.region.longitudeDelta,
+      latitudeDelta: store.state.region.latitudeDelta,
+      longitude: coordinate.longitude,
+      latitude: coordinate.latitude
+    } ;
+    this._map.animateToRegion(newRegion, 300) ;
+  };
 
 
   render() {
@@ -169,20 +197,19 @@ export default class MapScreen extends Component {
     }
     return (
     <Container style={styles.mapContainer}>
-        <StatusBar hidden/>
+      <StatusBar hidden={Platform.OS === 'ios' ? false : true} />
       <View style={styles.mapContainer}>
         <MapView
-          provider={PROVIDER_GOOGLE}
-          ref = {(mapView) => { _mapView = mapView; }}
+          provider={this.props.provider}
+          ref = {(ref)=>this._map=ref}
           customMapStyle={myMapStyle}
           style={[styles.mapContainer, {bottom: this.state.bottom}]}
           onPress={() => this.setState({ margin_onClick: false})}
           onRegionChange={(region) => store.update({region})}
-          initialRegion={store.state.region}
+          region={store.state.region}
+          loadingEnabled={true}
           toolbarEnabled={true}
-          followsUserLocation={true}
           showsUserLocation={true}
-
         >
 
         {store.state.markers.map((marker, index) => (
@@ -190,61 +217,35 @@ export default class MapScreen extends Component {
           margin_onClick={this.state.margin_onClick}
             key={marker.key}
             title={marker.name}
-            description={marker.description}
+            description={marker.placedBy}
             coordinate={marker.coordinate}
             image={redPin}
-            onCalloutPress={() => this.setState({isVisible: true})} // change isVisible to modalMaker to allow modal
+            onCalloutPress={() => {
+              // this.setState({isVisible: true});
+              this.openModal();
+            }} // change isVisible to modalMaker to allow modal
             onPress={e => {
-              this.setModalMarker(marker);
+              this.animateMapToMarker(e);
               this.mapLink(e.nativeEvent.coordinate, marker.name);
-              this.setState({margin_onClick: true});
+              this.setState({
+                currMarker: marker,
+                nameLength: marker.name.length,
+                margin_onClick: true
+              });
               this.toolbarHack();
-              console.log(this.state.modalMarker);
-
+              console.log(this.state);
             }}
           />
         ))}
 
         </MapView>
 
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            this.setModalVisible(!this.state.modalVisible);
-          }}>
-
-              <Text style={{fontWeight: 'bold'}}>Description: </Text>
-
-              <TouchableHighlight
-                onPress={() => {
-                  this.setModalVisible(!this.state.modalVisible);
-                }}>
-                <Text>Hide Modal</Text>
-              </TouchableHighlight>
-              <TouchableHighlight
-                onPress={() => {
-                  this.setState({isVisible: true});
-                }}>
-                <Text>Take Me There</Text>
-              </TouchableHighlight>
-        </Modal>
-
-        <TouchableHighlight
-          onPress={() => {
-            this.setModalVisible(true);
-          }}>
-          <Text>Show Modal</Text>
-        </TouchableHighlight>
-
-
         <Popup
           isVisible={this.state.isVisible}
           onCancelPressed={() => this.setState({ isVisible: false })}
           onAppPressed={() => this.setState({ isVisible: false })}
           onBackButtonPressed={() => this.setState({ isVisible: false })}
-          appsWhiteList={['uber', 'lyft', 'waze']}
+          appsWhiteList={['uber', 'lyft', 'waze', 'google-maps', 'apple-maps']}
           options={{
             latitude: store.state.pinLink.latitude,
             longitude: store.state.pinLink.longitude,
@@ -254,14 +255,61 @@ export default class MapScreen extends Component {
           }}
         />
 
+        <Modal
+          style={{ height: height*.70, width: width*.80, borderRadius: 10, borderColor: "white", borderWidth: 2,}}
+          swipeToClose={true}
+          swipeArea={20} // The height in pixels of the swipeable area, window height by default
+          swipeThreshold={50} // The threshold to reach in pixels to close the modal
+          isOpen={this.state.visible}
+          onClosed={this.closeModal}
+          backdropOpacity={0.3}
+        >
+            <Grid>
+            <Row size={2} style={{alignItems: 'center'}}>
+              {this.iconImage()}
+              <Text numberOfLines={2} style={{marginLeft: 30, marginRight: 45, fontSize: 30, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}>
+                {this.state.currMarker.name}
+              </Text>
+            </Row>
+            <Col size={7}>
+            <ScrollView scrollEnabled={true}>
+              <Label style={{marginLeft: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light', fontSize: 20, fontWeight: '300'}}>Description</Label>
+              <Text style={{marginLeft: 10, marginRight: 10, marginTop: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}> {this.state.currMarker.description} </Text>
+            </ScrollView>
+            </Col>
+              <Row size={1} style={{alignItems: 'center', justifyContent: 'space-between'}}>
+                {this.state.currMarker.placedBy == store.state.currentUser ?
+                  <Icon onPress={() => {
+                    Alert.alert(
+                      `Deleting Pin`,
+                      `Are you sure you want to delete the pin '${this.state.currMarker.name}?'`,
+                      [
+                        {text: 'OK', onPress: () => {
+                          this.deletePin(this.state.currMarker.key);
+                          this.closeModal();
+                        }},
+                        {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
+                      ]
+                    );
+                  }}
+                  style={{color: '#9e9e9e', left: 10}} name="trash-o" type="FontAwesome"/> :
+                  <Label style={{left: 15, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}>{this.state.currMarker.placedBy} </Label>
+                }
+                <Icon style={{fontSize: 40, color: "#03a9f4", right: 10}} name="ios-navigate" type="Ionicons" onPress={() => {
+                    this.closeModal();
+                    setTimeout(() => {this.setState({isVisible: true});}, 400);
+                  }}/>
+              </Row>
+            </Grid>
+        </Modal>
+
         <View style = {styles.mapDrawerOverlay} />
 
         <View style={{ flex: 1, position: 'absolute'}}>
           <Fab
             active1={this.state.active1}
-            direction="right"
             containerStyle={{ }}
-            style={{ backgroundColor: '#03a9f4' }}
+            style={{ backgroundColor: '#03a9f4' , top: Platform.OS === 'ios' ? 30 : 0}}
             position="topLeft"
             onPress={() => this.props.navigation.openDrawer()}>
             <Icon name="menu" />
@@ -299,4 +347,8 @@ export default class MapScreen extends Component {
     </Container>
     );
   }
+}
+
+MapScreen.propTypes = {
+  provider: ProviderPropType,
 }

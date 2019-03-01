@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
 import * as Animatable from 'react-native-animatable';
 import { Col, Row, Grid } from 'react-native-easy-grid';
@@ -95,8 +95,8 @@ export default class ForgotPassword extends Component {
         <Grid>
 
           <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center'}}>
-            <Animatable.Text ref="firstTitle" style={[styles.title, {top: 0}]}>Forgot</Animatable.Text>
-            <Animatable.Text ref="secondTitle" style={[styles.title, {top: 60}]}>Password</Animatable.Text>
+            <Animatable.Text ref="firstTitle" style={[styles.title, {top: Platform.OS === 'ios' ? 30 : 0}]}>Forgot</Animatable.Text>
+            <Animatable.Text ref="secondTitle" style={[styles.title, {top: Platform.OS === 'ios' ? 90 : 60}]}>Password</Animatable.Text>
             <AnimatedItem ref="item" style={styles.inputItem}>
               <Label style={styles.label} >Username</Label>
               <Input placeholderTextColor='#017BB0' placeholder="username" style={styles.input}
@@ -159,34 +159,38 @@ const styles = StyleSheet.create({
   },
   authMessage: {
     color: "white",
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null,
     position: 'absolute',
     alignSelf: 'center',
-    bottom: 20,
+    bottom: 40,
     fontSize: 20
   },
   label: {
     color: 'white',
     fontSize: 30,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
   },
   title: {
     position: 'absolute',
     left: 15,
     color: 'white',
     fontSize: 60,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "100" : null
   },
   error: {
     bottom: 90,
     color: "white",
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null,
     left: 19
   },
   input: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'sans-serif-light',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light',
     marginRight: 20,
     top: 3,
   },
@@ -198,20 +202,22 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#03a9f4',
     fontSize: 15,
-    fontFamily: 'sans-serif-light'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light',
   },
   leftButton: {
     width: width/2-20,
     height: 55,
     marginLeft: 5,
     justifyContent: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   },
   rightButton: {
     width: width/2-20,
     height: 55,
     marginRight: 5,
     justifyContent: 'center',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   }
 });

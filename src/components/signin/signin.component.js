@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, Text, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { StyleSheet, View, Dimensions, Text, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
 import * as Animatable from 'react-native-animatable';
@@ -121,10 +121,10 @@ export default class SignIn extends Component {
       <Container>
       <StatusBar hidden/>
 
-        <Grid>
+        <Grid style={{backgroundColor: '#03a9f4'}}>
 
           <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center'}}>
-            <Animatable.Text ref="title" style={[styles.title, {top: 0}]}>Sign In</Animatable.Text>
+            <Animatable.Text onPress={() => console.log('sign in pressed.')} ref="title" style={[styles.title]}>Sign In</Animatable.Text>
             <AnimatedItem ref="username" style={styles.inputItem}>
               <Label style={styles.label} >Username</Label>
               <Input placeholderTextColor='#017BB0' placeholder="username" style={styles.input}
@@ -158,7 +158,7 @@ export default class SignIn extends Component {
             )}
 
           </Col>
-          <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
+          <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around', bottom: Platform.OS === 'ios' ? null : 10}}>
 
             <AnimatedButton large
               ref="leftbutton"
@@ -196,39 +196,45 @@ const styles = StyleSheet.create({
   },
   authMessage: {
     color: "white",
-    fontFamily: 'sans-serif-thin',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : "200",
     position: 'absolute',
     alignSelf: 'center',
-    bottom: 20,
-    fontSize: 20
+    bottom: 40,
+    fontSize: 20,
   },
   error: {
     color: "white",
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    bottom: Platform.OS === 'ios' ? 20 : 0
   },
   title: {
     position: 'absolute',
     left: 15,
     color: 'white',
     fontSize: 60,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    top: Platform.OS === 'ios' ? 30 : 0,
+    fontWeight: '100'
   },
   label: {
     color: 'white',
     fontSize: 30,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
   },
   forgot: {
     left:20,
     bottom: 60,
     color: 'white',
     fontSize: 20,
-    fontFamily: 'sans-serif-thin'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
   },
   input: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontFamily: 'sans-serif-light',
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
     marginRight: 20,
     top: 3,
   },
@@ -240,20 +246,22 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#03a9f4',
     fontSize: 15,
-    fontFamily: 'sans-serif-light'
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'
   },
   leftButton: {
     width: width/2-20,
     height: 55,
-    backgroundColor: 'white',
     marginLeft: 5,
-    justifyContent: 'center'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   },
   rightButton: {
     width: width/2-20,
     height: 55,
-    backgroundColor: 'white',
     marginRight: 5,
-    justifyContent: 'center'
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    bottom: Platform.OS === 'ios' ? 15 : 0
   }
 });
