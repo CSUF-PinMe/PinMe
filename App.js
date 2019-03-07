@@ -33,6 +33,7 @@ export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
+  myMarkers: undefined,
   region: {
     latitude: 36.811998,
     longitude: -119.748398,
@@ -78,8 +79,9 @@ class Loading extends Component {
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    // console.log(location.coords);
+    // console.log('User location: ', location.coords);
     store.update({
+      userLocation: location.coords,
       region: {
         ...store.state.region,
         latitude: location.coords.latitude,

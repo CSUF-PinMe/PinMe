@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   label: {
     color: 'white',
-    fontSize: 30,
+    fontSize: 28,
     fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
     fontWeight: Platform.OS === 'ios' ? "200" : null
   },

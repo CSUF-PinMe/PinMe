@@ -1,9 +1,9 @@
 {
-  "devToolsPort": 19002,
-  "packagerPort": 19001,
-  "expoServerPort": 19000,
-  "packagerPid": 25998,
-  "expoServerNgrokUrl": "https://s8-2nv.ecast96.pinme.exp.direct",
-  "packagerNgrokUrl": "https://packager.s8-2nv.ecast96.pinme.exp.direct",
-  "ngrokPid": 26026
+  "expoServerPort": null,
+  "packagerPort": null,
+  "packagerPid": null,
+  "expoServerNgrokUrl": null,
+  "packagerNgrokUrl": null,
+  "ngrokPid": null,
+  "devToolsPort": 19002
 }

@@ -90,13 +90,13 @@ export default class MyPinsScreen extends Component {
   loadPins = async () => {
     this.setState({markers: []});
     const allPins = await API.graphql(graphqlOperation(queries.listPins, {
-  "filter": {
-    "userId": {
-      "eq": store.state.currentUser
-    }
-  },
-  "limit": 100
-}));
+      "filter": {
+        "userId": {
+          "eq": store.state.currentUser
+        }
+      },
+      "limit": 100
+    }));
     allPins.data.listPins.items.map(pin => (
       // console.log()
       this.setState({

@@ -60,7 +60,7 @@ export default class ConfirmCode extends Component {
   tryConfirm() {
     let username = this.state.username;
     let code = this.state.code;
-    Auth.confirmSignUp(username, code, {
+    Auth.confirmSignUp(username.trim(), code.trim(), {
           // Optional. Force user confirmation irrespective of existing alias. By default set to True.
           forceAliasCreation: true
       }).then(data => {
@@ -80,6 +80,8 @@ export default class ConfirmCode extends Component {
             this.setState({authError: "Username not found"});
           } else if(msg.includes("User cannot be confirm. Current status is CONFIRMED")){
             this.setState({authError: "User is already confirmed."});
+          } else if(msg.includes("[\\S]+")){
+            this.setState({authError: "Code is not valid"});
           } else {
             this.setState({authError: err.message})
           }
@@ -257,6 +259,7 @@ const styles = StyleSheet.create({
   error: {
     color: "white",
     fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null,
     bottom: 70,
   },
   firstTitle: {
@@ -265,7 +268,7 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 60,
     fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    top: Platform.OS === 'ios' ? 30 : 5,
+    top: Platform.OS === 'ios' ? 30 : 0,
     fontWeight: '100'
   },
   secondTitle: {
@@ -274,12 +277,12 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 60,
     fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    top: Platform.OS === 'ios' ? 90 : 65,
+    top: Platform.OS === 'ios' ? 90 : 60,
     fontWeight: '100'
   },
   label: {
     color: 'white',
-    fontSize: 30,
+    fontSize: 28,
     fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
     fontWeight: Platform.OS === 'ios' ? "200" : null
   },

@@ -31,15 +31,6 @@ export default StyleSheet.create({
     width: Screen.width,
     height: Screen.height,
   },
-  mapDrawerOverlay: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    opacity: 0.0,
-    height: Dimensions.get('window').height,
-    width: 10,
-  },
-
   bubble: {
     backgroundColor: 'rgba(255,255,255,0.7)',
     paddingHorizontal: 18,

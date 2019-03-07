@@ -33,6 +33,7 @@ export default class MapScreen extends Component {
     this.state = {
       isVisible: false,
       currMarker: {},
+      myMarkers: [],
       bottom: 1,
       loading: true,
       active: false,
@@ -66,6 +67,7 @@ export default class MapScreen extends Component {
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+      Entypo: require("@expo/vector-icons/fonts/Entypo.ttf"),
       FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
     });
   }
@@ -154,6 +156,14 @@ export default class MapScreen extends Component {
   openModal = () => this.setState({ visible: true });
   closeModal = () => this.setState({ visible: false });
 
+  // offUserLocation(){
+  //   if(store.state.region.latitude === store.state.userLocation.latitude && store.state.region.longitude === store.state.userLocation.longitude){
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // }
+
   iconImage () {
     switch (this.state.currMarker.type) {
       case "Accident":
@@ -185,6 +195,16 @@ export default class MapScreen extends Component {
     this._map.animateToRegion(newRegion, 300) ;
   };
 
+  animateMapToUser = () => {
+    var newRegion = {
+      longitudeDelta: store.state.region.longitudeDelta,
+      latitudeDelta: store.state.region.latitudeDelta,
+      longitude: store.state.userLocation.longitude,
+      latitude: store.state.userLocation.latitude
+    }
+    this.setState({offUserLocation: false});
+    this._map.animateToRegion(newRegion, 300) ;
+  }
 
   render() {
     if (this.state.loading) {
@@ -205,10 +225,13 @@ export default class MapScreen extends Component {
           customMapStyle={myMapStyle}
           style={[styles.mapContainer, {bottom: this.state.bottom}]}
           onPress={() => this.setState({ margin_onClick: false})}
-          onRegionChange={(region) => store.update({region})}
+          onRegionChange={(region) => {
+            store.update({region});
+          }}
           region={store.state.region}
-          loadingEnabled={true}
+          showsCompass={false}
           toolbarEnabled={true}
+          loadingEnabled={true}
           showsUserLocation={true}
         >
 
@@ -239,6 +262,8 @@ export default class MapScreen extends Component {
         ))}
 
         </MapView>
+
+        <Icon style={{fontSize: 35, color: '#03a9f4', position: 'absolute', top: 60, right: 20}} onPress={() => this.animateMapToUser()} name="compass" type="Entypo" />
 
         <Popup
           isVisible={this.state.isVisible}
@@ -324,14 +349,18 @@ export default class MapScreen extends Component {
         offsetY={15}
         >
           <ActionButton.Item size={40} buttonColor='white' title="Sign Out" onPress={() => {
-            Auth.signOut();
-            const resetAction = StackActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({ routeName: 'SignIn' }),
-              ],
+            this.map.fitToCoordinates(MARKERS, {
+                edgePadding: DEFAULT_PADDING,
+                animated: true,
             });
-            this.props.navigation.dispatch(resetAction);
+            // Auth.signOut();
+            // const resetAction = StackActions.reset({
+            //   index: 0,
+            //   actions: [
+            //     NavigationActions.navigate({ routeName: 'SignIn' }),
+            //   ],
+            // });
+            // this.props.navigation.dispatch(resetAction);
           }}>
             <Icon name="ios-arrow-back" style={styles.actionButtonIcon} />
           </ActionButton.Item>
@@ -342,7 +371,6 @@ export default class MapScreen extends Component {
             <Icon name="create" style={styles.actionButtonIcon} />
           </ActionButton.Item>
         </ActionButton>
-
       </View>
     </Container>
     );
