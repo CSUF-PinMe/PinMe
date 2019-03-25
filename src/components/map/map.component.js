@@ -12,7 +12,7 @@ import { StackActions, NavigationActions } from 'react-navigation';
 import { TouchableHighlight } from 'react-native';
 
 import API, { graphqlOperation } from '@aws-amplify/api'
-import {Auth} from 'aws-amplify'
+import {Auth, Storage} from 'aws-amplify'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import styles from './map.component.style.js';
@@ -99,6 +99,7 @@ export default class MapScreen extends Component {
   loadPins = async () => {
     store.update({markers: []});
     const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
+    console.log(allPins.data.listPins.items)
     allPins.data.listPins.items.map(pin => (
       // console.log()
       store.update({
@@ -106,6 +107,8 @@ export default class MapScreen extends Component {
           ...store.state.markers,
           {
             name: pin.eventName,
+            hasImage: pin.hasImage,
+            cognitoId: pin.userCognitoId,
             description: pin.description,
             key: pin.id,
             placedBy: pin.userId,
@@ -206,6 +209,20 @@ export default class MapScreen extends Component {
     this._map.animateToRegion(newRegion, 300) ;
   }
 
+  getImage(name, id){
+    Storage.get(name+'.jpg', {
+        level: 'protected',
+        identityId: id // the identityId of that user
+    })
+    .then(result => {
+      console.log('Got image: ', result);
+      this.setState({currMarkerImage: result});
+    })
+    .catch(err => {
+      console.log('Could not get image from AWS', err)
+    });
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
@@ -244,7 +261,8 @@ export default class MapScreen extends Component {
             coordinate={marker.coordinate}
             image={redPin}
             onCalloutPress={() => {
-              // this.setState({isVisible: true});
+              this.setState({currMarker: marker});
+              this.getImage(marker.name, marker.cognitoId)
               this.openModal();
             }} // change isVisible to modalMaker to allow modal
             onPress={e => {
@@ -300,6 +318,8 @@ export default class MapScreen extends Component {
             <ScrollView scrollEnabled={true}>
               <Label style={{marginLeft: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light', fontSize: 20, fontWeight: '300'}}>Description</Label>
               <Text style={{marginLeft: 10, marginRight: 10, marginTop: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}> {this.state.currMarker.description} </Text>
+              {this.state.currMarker.hasImage === true ? <Label style={{marginLeft: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light', fontSize: 20, fontWeight: '300'}}>Image</Label> : null}
+              {this.state.currMarkerImage !== undefined ? <Image source={{uri: this.state.currMarkerImage}} style={{width: 100, height: 200, left: 15}}/> : null}
             </ScrollView>
             </Col>
               <Row size={1} style={{alignItems: 'center', justifyContent: 'space-between'}}>
@@ -349,18 +369,14 @@ export default class MapScreen extends Component {
         offsetY={15}
         >
           <ActionButton.Item size={40} buttonColor='white' title="Sign Out" onPress={() => {
-            this.map.fitToCoordinates(MARKERS, {
-                edgePadding: DEFAULT_PADDING,
-                animated: true,
+            Auth.signOut();
+            const resetAction = StackActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({ routeName: 'SignIn' }),
+              ],
             });
-            // Auth.signOut();
-            // const resetAction = StackActions.reset({
-            //   index: 0,
-            //   actions: [
-            //     NavigationActions.navigate({ routeName: 'SignIn' }),
-            //   ],
-            // });
-            // this.props.navigation.dispatch(resetAction);
+            this.props.navigation.dispatch(resetAction);
           }}>
             <Icon name="ios-arrow-back" style={styles.actionButtonIcon} />
           </ActionButton.Item>

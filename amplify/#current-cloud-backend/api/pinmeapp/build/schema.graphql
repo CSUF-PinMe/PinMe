@@ -1,6 +1,8 @@
 type Pin {
   id: ID!
   userId: String!
+  userCognitoId: String!
+  hasImage: Boolean!
   eventName: String!
   eventType: String
   startTime: String
@@ -78,6 +80,8 @@ input ModelBooleanFilterInput {
 input ModelPinFilterInput {
   id: ModelIDFilterInput
   userId: ModelStringFilterInput
+  userCognitoId: ModelStringFilterInput
+  hasImage: ModelBooleanFilterInput
   eventName: ModelStringFilterInput
   eventType: ModelStringFilterInput
   startTime: ModelStringFilterInput
@@ -96,7 +100,10 @@ type Query {
 }
 
 input CreatePinInput {
+  id: ID
   userId: String!
+  userCognitoId: String!
+  hasImage: Boolean!
   eventName: String!
   eventType: String
   startTime: String
@@ -109,6 +116,8 @@ input CreatePinInput {
 input UpdatePinInput {
   id: ID!
   userId: String
+  userCognitoId: String
+  hasImage: Boolean
   eventName: String
   eventType: String
   startTime: String

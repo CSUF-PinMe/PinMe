@@ -1,6 +1,8 @@
 import { Container, Header, Content, Button, Text, Icon, Fab, Footer, Item, Label, Input, Picker, Textarea} from 'native-base';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import ImageViewer from 'react-native-image-zoom-viewer';
+import { FileSystem } from 'expo';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
 import { Platform, KeyboardAvoidingView } from 'react-native';
@@ -9,6 +11,7 @@ import styles from './addpinmap.component.style.js';
 import myMapStyle from '../map/mapstyle';
 import Expo, { Constants, Location, Permissions, ImagePicker } from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api'
+import { Storage } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
 import redPin from '../../../assets/pin_red.png'
 import grayPin from '../../../assets/pin_gray.png'
@@ -34,13 +37,16 @@ export default class AddPinMap extends Component {
       visible: false,
       mapHeight: height,
       selected2: undefined,
+      image: undefined,
       pinInfo: {
         userId: store.state.currentUser,
-        eventName: undefined,
-        eventType: undefined,
-        description: undefined,
-        startTime: undefined,
-        endTime: undefined,
+        userCognitoId: store.state.currentUserId,
+        hasImage: false,
+        eventName: '',
+        eventType: 'General',
+        description: '',
+        startTime: '',
+        endTime: '',
         latitude: undefined,
         longitude: undefined
       }
@@ -123,31 +129,111 @@ export default class AddPinMap extends Component {
     });
   }
 
-  addPin() {
-    console.log('Pin Info: ', this.state.pinInfo);
+  checkInput(){
+    let error = false;
+    if (this.state.pinInfo.eventName.trim() === "") {
+      this.setState(() => ({ nameError: "Pin name required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ nameError: null }));
+    }
 
-    // if(this.checkInput() === false){
-    //   console.log('something is empty');
-    // } else {
-    //   console.log('no empty fields!');
-      const newPin = API.graphql(graphqlOperation(mutations.createPin,
-        {
-          input: this.state.pinInfo
-        }
-      ));
-      this.closeModal();
-      this.props.navigation.navigate('Map');
-    // }
+    if (this.state.pinInfo.description.trim() === "") {
+      this.setState(() => ({ descError: "Description required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ descError: null }));
+    }
+
+    if (this.state.pinInfo.startTime.trim() === "") {
+      this.setState(() => ({ sTimeError: "Start time required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ sTimeError: null }));
+    }
+    if (this.state.pinInfo.endTime.trim() === "") {
+      this.setState(() => ({ eTimeError: "End time required." }));
+      error = true;
+    } else {
+      this.setState(() => ({ eTimeError: null }));
+    }
+    if(error){
+      return false;
+    } else {
+      return true;
+    }
   }
 
-  takeImage() {
-    let result =  ImagePicker.launchCameraAsync({
-      allowsEditing: false,
-      base64: true,
-      aspect: [4, 3]
+  addPin() {
+    console.log('Pin Info: ', this.state.pinInfo);
+    if(this.state.image === undefined){
+      console.log('No picture was taken.')
+    } else {
+      this.uploadImage(this.state.pinInfo.eventName);
+    }
+    const newPin = API.graphql(graphqlOperation(mutations.createPin,
+      {
+        input: this.state.pinInfo
+      }
+    ));
+    this.setState({
+      ...this.state,
+      image: undefined,
+      pinInfo: {
+        userId: store.state.currentUser,
+        userCognitoId: store.state.currentUserId,
+        hasImage: false,
+        eventName: '',
+        eventType: 'General',
+        description: '',
+        startTime: '',
+        endTime: '',
+        latitude: undefined,
+        longitude: undefined
+      }
+    })
+    this.closeModal();
+    this.props.navigation.navigate('Map');
+  }
+
+  async uploadImage(eventName){
+    var image = this.state.image;
+    const imageName = eventName+'.jpg';
+    console.log('Uploading image: '+imageName);
+    const fileType = 'image/jpg';
+
+    const access = { level: "protected", contentType: fileType };
+    fetch(image).then(response => {
+      response.blob()
+        .then(blob => {
+          Storage.put(imageName, blob, access)
+            .then(succ => console.log('Image upload success: ', succ))
+            .catch(err => console.log('Image upload encountered an error: ', err));
+        });
     });
-    this.setState({image: result.uri});
-    console.log(result);
+  }
+
+  async takeImage() {
+    await ImagePicker.launchCameraAsync({
+      allowsEditing: false,
+      aspect: [4, 3]
+    }).then(result => {
+      if(result.cancelled){
+        console.log('User cancelled taking a picture.')
+      } else {
+        this.setState({
+          image: result.uri,
+          pinInfo: {
+            ...this.state.pinInfo,
+            hasImage: true
+          }
+        });
+        console.log('Took picture and saved to:',result.uri);
+      }
+    })
+    .catch(err => {
+      console.log('Error in taking picture: '+err)
+    });
   };
 
   render() {
@@ -225,13 +311,31 @@ export default class AddPinMap extends Component {
                 >
                   <Item style={{borderColor: 'transparent'}}>
                     <Label style={styles.label}>Pin Name: </Label>
-                    <Input style={styles.input} onChangeText={(e) => {this.handleChange('eventName', e);}} placeholderTextColor='#017BB0' placeholder="name of pin"/>
+                    <Input
+                      style={styles.input}
+                      onChangeText={(e) => {
+                        this.handleChange('eventName', e);
+                        if(e.trim() !== "") {this.setState(() => ({ nameError: null }));}
+                      }}
+                      placeholderTextColor='#017BB0' placeholder="name of pin"/>
                   </Item>
+                  {!!this.state.nameError && (
+                    <Label style={[styles.label, {fontSize: 18, top: 0, left: 12}]}>{this.state.nameError}</Label>
+                  )}
                   <Item style={{borderColor: 'transparent'}}>
                     <Label style={styles.label}>Description: </Label>
                   </Item>
+                  {!!this.state.descError && (
+                    <Label style={[styles.label, {fontSize: 18, top: 5, left: 12}]}>{this.state.descError}</Label>
+                  )}
                   <Item style={{borderColor: 'transparent'}}>
-                  <Textarea rowSpan={3} onChangeText={(e) => {this.handleChange('description', e);}} style={{width: width, paddingHorizontal: 5, top: 5, fontSize: 18, color: 'white', fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin'}} placeholderTextColor='#017BB0' placeholder="description of pin" />
+                  <Textarea
+                    rowSpan={3}
+                    onChangeText={(e) => {
+                      this.handleChange('description', e);
+                      if(e.trim() !== "") {this.setState(() => ({ descError: null }));}
+                    }}
+                    style={{width: width, paddingHorizontal: 5, top: 5, fontSize: 18, color: 'white', fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin'}} placeholderTextColor='#017BB0' placeholder="description of pin" />
                   </Item>
                   <Item style={{borderColor: 'transparent'}}>
                     <Label style={styles.label}>Type: </Label>
@@ -257,22 +361,35 @@ export default class AddPinMap extends Component {
                   </Item>
                   <Item style={{borderColor: 'transparent'}}>
                     <Label style={styles.label}>Start Time: </Label>
-                    <Input style={styles.input} onChangeText={(e) => this.handleChange('startTime', e)} placeholderTextColor='#017BB0' placeholder="start time"/>
+                    <Input
+                      style={styles.input}
+                      onChangeText={(e) => {
+                        this.handleChange('startTime', e);
+                        if(e.trim() !== "") {this.setState(() => ({ sTimeError: null }));}
+                      }}
+                      placeholderTextColor='#017BB0'
+                      placeholder="start time"/>
                   </Item>
+                  {!!this.state.sTimeError && (
+                    <Label style={[styles.label, {fontSize: 18, top: 0, left: 12}]}>{this.state.sTimeError}</Label>
+                  )}
                   <Item style={{borderColor: 'transparent'}}>
                     <Label style={styles.label}>End Time: </Label>
-                    <Input style={styles.input} onChangeText={(e) => this.handleChange('endTime', e)} placeholderTextColor='#017BB0' placeholder="end time"/>
+                    <Input
+                      style={styles.input}
+                      onChangeText={(e) => {
+                        this.handleChange('endTime', e);
+                        if(e.trim() !== "") {this.setState(() => ({ eTimeError: null }));}
+                      }}
+                      placeholderTextColor='#017BB0'
+                      placeholder="end time"/>
                   </Item>
-                  <Row>
-                  <ActionButton
-                    buttonColor="white"
-                    fixNativeFeedbackRadius={Platform.OS === 'ios' ? true : false}
-                    renderIcon={() => { return ( <Icon name="ios-camera" style={styles.actionButtonIcon} /> ); }}
-                    onPress={() => this.takeImage()}
-                    offsetX={width-30}
-                  />
-                  {this.state.image ? <Image source={{uri: `${this.state.image}`}} style={{ transform: [{ scale: .35 }] }}/> : null}
-                  </Row>
+                  {!!this.state.eTimeError && (
+                    <Label style={[styles.label, {fontSize: 18, top: 0, left: 12}]}>{this.state.eTimeError}</Label>
+                  )}
+                  <Item style={{borderColor: 'transparent'}}>
+                    <Label style={styles.label} onPress={() => this.takeImage()}>Take Image </Label>
+                  </Item>
                 </KeyboardAwareScrollView>
               </Col>
 
@@ -290,7 +407,14 @@ export default class AddPinMap extends Component {
 
                 <Button large
                   style={styles.rightButton}
-                  onPress={() => this.addPin()}>
+                  onPress={() => {
+                    if(this.checkInput() === false){
+                      console.log('something is empty');
+                    } else {
+                      console.log('No empty fields!');
+                      this.addPin();
+                    }
+                  }}>
                   <Text style={styles.buttonText}>Create Pin</Text>
                 </Button>
               </Row>

@@ -10,10 +10,10 @@ import Expo, { Constants, Location, Permissions } from 'expo';
 import Font from 'expo';
 import MapView from 'react-native-maps';
 import {authInfo} from './App.js'
-import { Auth } from 'aws-amplify';
+import { Auth, Cache } from 'aws-amplify';
 import Amplify from '@aws-amplify/core'
-import config from './aws-exports'
-Amplify.configure(config)
+import awsmobile from './aws-exports'
+Amplify.configure(awsmobile)
 
 import createStore from 'pure-store';
 
@@ -33,6 +33,7 @@ export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
+  currentUserId: '',
   myMarkers: undefined,
   region: {
     latitude: 36.811998,
@@ -98,11 +99,15 @@ class Loading extends Component {
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
     });
-
+    await Auth.currentCredentials().then((response) => {
+      console.log(response.data.IdentityId);
+      store.update({currentUserId: response.data.IdentityId});
+    });
     const session = Auth.currentAuthenticatedUser({
         bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
     }).then((user) => {
       console.log('User is logged in:', user.username);
+      // console.log('User Cognito Information: ',user);
       store.update({currentUser: user.username});
       setTimeout(() => {this.refs.title.bounceOutLeft();}, 500);
       setTimeout(() => {this.refs.loading.bounceOutLeft();}, 500);

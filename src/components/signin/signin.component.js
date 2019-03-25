@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, Text, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, View, Dimensions, Text, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform, Image} from 'react-native';
 import { Container, Header, Button, Item, Input, Label} from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
 import * as Animatable from 'react-native-animatable';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Expo, { Constants, Location, Permissions } from 'expo';
-import { Auth } from 'aws-amplify';
+import { Auth, Storage } from 'aws-amplify';
 import Font from 'expo';
 import MapView from 'react-native-maps';
 
@@ -156,7 +156,6 @@ export default class SignIn extends Component {
             {!!this.state.authError && (
               <Animatable.Text ref="authMessage" style={styles.authMessage}>{this.state.authError}</Animatable.Text>
             )}
-
           </Col>
           <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around', bottom: Platform.OS === 'ios' ? null : 10}}>
 
@@ -181,7 +180,6 @@ export default class SignIn extends Component {
               <Text style={styles.buttonText}>Log in</Text>
             </AnimatedButton>
           </Row>
-
         </Grid>
       </Container>
     );

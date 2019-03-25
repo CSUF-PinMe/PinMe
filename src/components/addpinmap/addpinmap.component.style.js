@@ -8,6 +8,17 @@ export default StyleSheet.create({
     flex: 1,
     flexDirection: 'row'
   },
+  error: {
+    color: "white",
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    bottom: Platform.OS === 'ios' ? 20 : 0
+  },
+  image: {
+      flex: 1,
+      aspectRatio: 1.5,
+      resizeMode: 'contain',
+
+    },
   actionButtonIcon: {
     color: 'white',
     fontSize: 30,

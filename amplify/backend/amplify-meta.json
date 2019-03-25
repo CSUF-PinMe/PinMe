@@ -19,7 +19,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ine-20181103124101-deployment/amplify-cfn-templates/auth/cognito5796e323-cloudformation-template.yml",
 				"logicalId": "authcognito5796e323"
 			},
-			"lastPushTimeStamp": "2018-11-10T20:12:45.377Z",
+			"lastPushTimeStamp": "2019-03-25T05:41:25.371Z",
 			"output": {
 				"AppClientSecret": "1mpol5595n9lq8f9g73vd59nfinnqlccl7j3kdiaehslg1bphas7",
 				"UserPoolId": "us-west-2_6k6em5zLJ",
@@ -29,7 +29,7 @@
 				"IdentityPoolName": "cognito5796e323_identitypool_5796e323",
 				"UserPoolName": "cognito5796e323_userpool_5796e323"
 			},
-			"lastPushDirHash": "CPePi8qljKUBljFb5RbDz5hVIZA="
+			"lastPushDirHash": "ewaXI88AXqwI0ja3iJBhJqnKkV0="
 		}
 	},
 	"api": {
@@ -40,7 +40,7 @@
 				"securityType": "AMAZON_COGNITO_USER_POOLS",
 				"GraphQLAPIIdOutput": "xwvabtlc5fdypa5rusa7gbva2e",
 				"GraphQLAPIEndpointOutput": "https://vccj4wen2nhjje7ed7pwgn5zs4.appsync-api.us-west-2.amazonaws.com/graphql",
-				"GraphQLAPIKeyOutput": "da2-uq7ox4eigbglhnctehlhxedqhi",
+				"GraphQLAPIKeyOutput": "da2-eiank7wpdrdzznryvkpbx2dl4u",
 				"AuthCognitoUserPoolIdOutput": "us-west-2_6k6em5zLJ",
 				"AuthCognitoUserPoolNativeClientId": "See UserPool: us-west-2_6k6em5zLJ",
 				"AuthCognitoUserPoolJSClientId": "See UserPool: us-west-2_6k6em5zLJ"
@@ -49,8 +49,24 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ine-20181103124101-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apipinmeapp"
 			},
-			"lastPushTimeStamp": "2018-11-10T20:12:46.652Z",
-			"lastPushDirHash": "1JoT0Q+s5SAfly3mxRE1GSIUWdk="
+			"lastPushTimeStamp": "2019-03-25T05:41:26.063Z",
+			"lastPushDirHash": "WjHKiAp3NveubrA6LsICzA/SG1M="
+		}
+	},
+	"storage": {
+		"pinmestorage": {
+			"service": "S3",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/ine-20181103124101-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
+				"logicalId": "storagepinmestorage"
+			},
+			"lastPushTimeStamp": "2019-03-25T05:41:25.375Z",
+			"output": {
+				"BucketName": "pinme-pin-media",
+				"Region": "us-west-2"
+			},
+			"lastPushDirHash": "WZFcqwp0Izu5DkZW8aK7re3fhxE="
 		}
 	}
 }
