@@ -1,11 +1,13 @@
 import { Container, Header, Content, Button, Text, Icon, Fab, Footer, Item, Label, Input, Picker, Textarea} from 'native-base';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import { Feather } from '@expo/vector-icons';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { FileSystem } from 'expo';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
-import { Platform, KeyboardAvoidingView } from 'react-native';
+import { Platform, KeyboardAvoidingView, TouchableHighlight, Alert } from 'react-native';
+import {Modal as ImageModal} from 'react-native';
 import ActionButton from 'react-native-action-button';
 import styles from './addpinmap.component.style.js';
 import myMapStyle from '../map/mapstyle';
@@ -35,6 +37,7 @@ export default class AddPinMap extends Component {
     this.state ={
       loading: true,
       visible: false,
+      imageViewer: false,
       mapHeight: height,
       selected2: undefined,
       image: undefined,
@@ -51,6 +54,8 @@ export default class AddPinMap extends Component {
         longitude: undefined
       }
     };
+
+    this.closeImageViewer = this.closeImageViewer.bind(this);
   }
 
   async componentDidMount() {
@@ -62,6 +67,7 @@ export default class AddPinMap extends Component {
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
+      Feather: require("@expo/vector-icons/fonts/Feather.ttf"),
       FontAwesome: require('react-native-vector-icons/Fonts/FontAwesome.ttf'),
       Entypo: require('react-native-vector-icons/Fonts/Entypo.ttf'),
     });
@@ -207,7 +213,10 @@ export default class AddPinMap extends Component {
       response.blob()
         .then(blob => {
           Storage.put(imageName, blob, access)
-            .then(succ => console.log('Image upload success: ', succ))
+            .then(succ => {
+              console.log('Image upload success: ', succ);
+              this.removeImage();
+            })
             .catch(err => console.log('Image upload encountered an error: ', err));
         });
     });
@@ -221,8 +230,13 @@ export default class AddPinMap extends Component {
       if(result.cancelled){
         console.log('User cancelled taking a picture.')
       } else {
+        let imageList = [];
+        imageList.push({
+          url: result.uri
+        })
         this.setState({
           image: result.uri,
+          imageList,
           pinInfo: {
             ...this.state.pinInfo,
             hasImage: true
@@ -235,6 +249,20 @@ export default class AddPinMap extends Component {
       console.log('Error in taking picture: '+err)
     });
   };
+
+  removeImage() {
+    console.log("Removing image...");
+    this.setState({
+      image: undefined,
+      imageList: []
+    });
+  }
+
+  closeImageViewer(){
+    this.setState({
+      imageViewer: false
+    })
+  }
 
   render() {
     if (this.state.loading) {
@@ -296,7 +324,7 @@ export default class AddPinMap extends Component {
             style={{ height: height*.6, width: width, backgroundColor: '#03a9f4', borderRadius: 10, borderColor: 'transparent', borderWidth: 2}}
             keyboardTopOffset={height*.4}
             swipeToClose={false}
-            swipeArea={height*.6} // The height in pixels of the swipeable area, window height by default
+            swipeArea={height*.5} // The height in pixels of the swipeable area, window height by default
             swipeThreshold={50} // The threshold to reach in pixels to close the modal
             isOpen={this.state.visible}
             onClosed={this.closeModal}
@@ -387,39 +415,90 @@ export default class AddPinMap extends Component {
                   {!!this.state.eTimeError && (
                     <Label style={[styles.label, {fontSize: 18, top: 0, left: 12}]}>{this.state.eTimeError}</Label>
                   )}
-                  <Item style={{borderColor: 'transparent'}}>
-                    <Label style={styles.label} onPress={() => this.takeImage()}>Take Image </Label>
+                  {this.state.image === undefined ?
+                    <Item style={{borderColor: 'transparent'}}>
+                      <Icon style={{color: 'white', top: 10, left: 15, fontWeight: '100'}}  name="camera" type="Feather" />
+                      <Label style={[styles.label, {paddingLeft: 10}]} onPress={() => this.takeImage()}>Take Image </Label>
+                    </Item>
+                    :
+                    <Item style={{borderColor: 'transparent'}}>
+                      <Grid>
+                        <Col>
+                          <Row>
+                            <Icon style={{color: 'white', top: 10, left: 15, fontWeight: '100'}} name="camera-off" type="Feather" />
+                            <Label
+                              style={[styles.label, {paddingLeft: 10}]}
+                              onPress={() => Alert.alert(
+                                'Removing Image',
+                                'Are you sure you want to remove the image?',
+                                [
+                                  {text: 'OK', onPress: () => {
+                                    this.removeImage();
+                                  }},
+                                  {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
+                                ]
+                              )}
+                              >Remove Image </Label>
+                          </Row>
+                          <Row style={{justifyContent: 'center'}}>
+                            <TouchableHighlight
+                            onPress={() => {
+                              console.log("Opening image viewer");
+                              this.setState({imageViewer: true});
+                            }}
+                            >
+                              <Image
+                                source={{uri: this.state.image}}
+                                style={{width: 300, height: 300, top: 15}}
+                              />
+                            </TouchableHighlight>
+                          </Row>
+                        </Col>
+                      </Grid>
+                    </Item>
+                  }
+                  <Item style={{borderColor: 'transparent', paddingTop: 50}}>
+                    <Grid>
+                      <Row style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
+                        <Button large
+                          ref="leftbutton"
+                          onPress={() => {
+                            this.closeModal();
+                            this.props.navigation.navigate('Map');
+                          }}
+                          style={styles.leftButton}
+                          >
+                          <Text style={styles.buttonText}>Cancel</Text>
+                        </Button>
+
+                        <Button large
+                          style={styles.rightButton}
+                          onPress={() => {
+                            if(this.checkInput() === false){
+                              console.log('something is empty');
+                            } else {
+                              console.log('No empty fields!');
+                              this.addPin();
+                            }
+                          }}>
+                          <Text style={styles.buttonText}>Create Pin</Text>
+                        </Button>
+                      </Row>
+                    </Grid>
                   </Item>
                 </KeyboardAwareScrollView>
               </Col>
-
-              <Row size={1} style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around', bottom: Platform.OS === 'ios' ? 15 : 10}}>
-                <Button large
-                  ref="leftbutton"
-                  onPress={() => {
-                    this.closeModal();
-                    this.props.navigation.navigate('Map');
-                  }}
-                  style={styles.leftButton}
-                  >
-                  <Text style={styles.buttonText}>Cancel</Text>
-                </Button>
-
-                <Button large
-                  style={styles.rightButton}
-                  onPress={() => {
-                    if(this.checkInput() === false){
-                      console.log('something is empty');
-                    } else {
-                      console.log('No empty fields!');
-                      this.addPin();
-                    }
-                  }}>
-                  <Text style={styles.buttonText}>Create Pin</Text>
-                </Button>
-              </Row>
             </Grid>
           </Modal>
+
+          <ImageModal visible={this.state.imageViewer} transparent={true}>
+            <ImageViewer
+              enableSwipeDown
+              onCancel={this.closeImageViewer}
+              imageUrls={this.state.imageList}
+            />
+          </ImageModal>
+
       </View>
     );
   }

@@ -1,9 +1,9 @@
 {
-  "expoServerPort": null,
-  "packagerPort": null,
-  "packagerPid": null,
-  "expoServerNgrokUrl": null,
-  "packagerNgrokUrl": null,
-  "ngrokPid": null,
+  "expoServerPort": 19000,
+  "packagerPort": 19001,
+  "packagerPid": 21279,
+  "expoServerNgrokUrl": "https://j9-svs.ecast96.pinme.exp.direct",
+  "packagerNgrokUrl": "https://packager.j9-svs.ecast96.pinme.exp.direct",
+  "ngrokPid": 21296,
   "devToolsPort": 19002
 }

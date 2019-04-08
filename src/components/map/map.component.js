@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert, Platform, ScrollView, Image} from 'react-native';
+import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert, Platform, ScrollView, Image, Modal as ImageModal} from 'react-native';
 import { Container, Header, Text, Content, Icon, Button, Left, Fab, Label} from 'native-base';
+import ImageViewer from 'react-native-image-zoom-viewer';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
 import ActionButton from 'react-native-action-button';
@@ -32,6 +33,10 @@ export default class MapScreen extends Component {
 
     this.state = {
       isVisible: false,
+      imageViewer: false,
+      imageList: [{
+        url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460'
+      }],
       currMarker: {},
       myMarkers: [],
       bottom: 1,
@@ -43,6 +48,7 @@ export default class MapScreen extends Component {
 
     this.getInitialState.bind(this);
     this._getLocationAsync.bind(this);
+    this.closeImageViewer = this.closeImageViewer.bind(this);
   }
 
   static navigationOptions = {
@@ -159,14 +165,6 @@ export default class MapScreen extends Component {
   openModal = () => this.setState({ visible: true });
   closeModal = () => this.setState({ visible: false });
 
-  // offUserLocation(){
-  //   if(store.state.region.latitude === store.state.userLocation.latitude && store.state.region.longitude === store.state.userLocation.longitude){
-  //     return true;
-  //   } else {
-  //     return false;
-  //   }
-  // }
-
   iconImage () {
     switch (this.state.currMarker.type) {
       case "Accident":
@@ -215,12 +213,23 @@ export default class MapScreen extends Component {
         identityId: id // the identityId of that user
     })
     .then(result => {
+      let imageList = [];
+      imageList.push({url: result});
       console.log('Got image: ', result);
-      this.setState({currMarkerImage: result});
+      this.setState({
+        currMarkerImage: result,
+        imageList
+      });
     })
     .catch(err => {
       console.log('Could not get image from AWS', err)
     });
+  }
+
+  closeImageViewer(){
+    this.setState({
+      imageViewer: false
+    })
   }
 
   render() {
@@ -319,7 +328,17 @@ export default class MapScreen extends Component {
               <Label style={{marginLeft: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light', fontSize: 20, fontWeight: '300'}}>Description</Label>
               <Text style={{marginLeft: 10, marginRight: 10, marginTop: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}> {this.state.currMarker.description} </Text>
               {this.state.currMarker.hasImage === true ? <Label style={{marginLeft: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light', fontSize: 20, fontWeight: '300'}}>Image</Label> : null}
-              {this.state.currMarkerImage !== undefined ? <Image source={{uri: this.state.currMarkerImage}} style={{width: 100, height: 200, left: 15}}/> : null}
+              {this.state.currMarkerImage !== undefined ?
+                <TouchableHighlight
+                onPress={() => {
+                  console.log("Opening image viewer");
+                  this.setState({imageViewer: true});
+                }}
+                >
+                  <Image source={{uri: this.state.currMarkerImage}} style={{width: width*.70, height: width*.70, left: 15}}/>
+                </TouchableHighlight>
+                :
+                null}
             </ScrollView>
             </Col>
               <Row size={1} style={{alignItems: 'center', justifyContent: 'space-between'}}>
@@ -387,6 +406,14 @@ export default class MapScreen extends Component {
             <Icon name="create" style={styles.actionButtonIcon} />
           </ActionButton.Item>
         </ActionButton>
+
+        <ImageModal visible={this.state.imageViewer}>
+          <ImageViewer
+            enableSwipeDown
+            onCancel={this.closeImageViewer}
+            imageUrls={this.state.imageList}
+          />
+        </ImageModal>
       </View>
     </Container>
     );
