@@ -1,16 +1,15 @@
-import { Container, Header, Title, Content, Form, Item, Input, Button, Label, Icon, Left, Body, Right, Picker, Textarea} from 'native-base';
-import { StyleSheet, Text, View, Dimensions, TouchableHighlight, StatusBar, Alert, Platform, Image, ScrollView } from 'react-native';
+import { Container, Item, Input, Label} from 'native-base';
+import { View, Dimensions, TouchableHighlight, StatusBar, Alert, Image } from 'react-native';
 import React, { Component } from 'react';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import Font from 'expo';
-import MapView, { ProviderPropType } from 'react-native-maps';
+import { ProviderPropType } from 'react-native-maps';
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import Expo, { Constants, Location, Permissions } from 'expo';
+import styles from './pininfo.style'
+import Expo from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import * as mutations from '../../graphql/mutations';
 import redPin from '../../../assets/pin_red.png'
 import {store} from '../../../App'
-import { Auth } from 'aws-amplify'
 
 const {width, height} = Dimensions.get("window");
 const Screen = {
@@ -41,7 +40,7 @@ export default class PinInfo extends Component {
 
   static navigationOptions = {
     header: null
-  }
+  };
 
   // Needed for Native-Base Buttons
   async componentDidMount() {
@@ -76,21 +75,21 @@ export default class PinInfo extends Component {
     });
   }
 
-  handleDropdown(value: string) {
-    if(value.trim() !== "") {this.setState(() => ({ typeError: null }));}
-    this.setState({
-      pinInfo: {
-        ...this.state.pinInfo,
-        eventType: value
-      }
-    });
-    store.update({
-      pinInfo: {
-        ...store.state.pinInfo,
-        eventType: value
-      }
-    });
-  }
+  // handleDropdown(value: string) {
+  //   if(value.trim() !== "") {this.setState(() => ({ typeError: null }));}
+  //   this.setState({
+  //     pinInfo: {
+  //       ...this.state.pinInfo,
+  //       eventType: value
+  //     }
+  //   });
+  //   store.update({
+  //     pinInfo: {
+  //       ...store.state.pinInfo,
+  //       eventType: value
+  //     }
+  //   });
+  // }
 
   checkInput(){
     let error = false;
@@ -120,29 +119,26 @@ export default class PinInfo extends Component {
     } else {
       this.setState(() => ({ eTimeError: null }));
     }
-    if(error){
-      return false;
-    } else {
-      return true;
-    }
+
+    return error;
   }
 
-  addPin() {
-    // console.log('Local State', this.state.pinInfo);
-    console.log('Global State', store.state.pinInfo);
-
-    if(this.checkInput() === false){
-      console.log('something is empty');
-    } else {
-      console.log('no empty fields!');
-      const newPin = API.graphql(graphqlOperation(mutations.createPin,
-        {
-          input: store.state.pinInfo
-        }
-      ));
-      this.props.navigation.navigate('Map');
-    }
-  }
+  // addPin() {
+  //   // console.log('Local State', this.state.pinInfo);
+  //   console.log('Global State', store.state.pinInfo);
+  //
+  //   if(this.checkInput() === false){
+  //     console.log('something is empty');
+  //   } else {
+  //     console.log('no empty fields!');
+  //     const newPin = API.graphql(graphqlOperation(mutations.createPin,
+  //       {
+  //         input: store.state.pinInfo
+  //       }
+  //     ));
+  //     this.props.navigation.navigate('Map');
+  //   }
+  // }
 
   render() {
     if (this.state.loading) {
@@ -209,32 +205,4 @@ export default class PinInfo extends Component {
 
 PinInfo.propTypes = {
   provider: ProviderPropType,
-}
-
-
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  scrollContainer: {
-    flex: 1,
-    backgroundColor: '#03a9f4',
-  },
-  label: {
-    color: 'white',
-    fontSize: 28,
-    left: 10,
-    top: 10,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null
-  },
-  input: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    marginRight: 20,
-    top: 10
-  }
-});
+};

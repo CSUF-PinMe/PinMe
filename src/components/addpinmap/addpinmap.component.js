@@ -1,17 +1,15 @@
-import { Container, Header, Content, Button, Text, Icon, Fab, Footer, Item, Label, Input, Picker, Textarea} from 'native-base';
+import { Button, Text, Icon, Item, Label, Input, Picker, Textarea} from 'native-base';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-import { Feather } from '@expo/vector-icons';
 import ImageViewer from 'react-native-image-zoom-viewer';
-import { FileSystem } from 'expo';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
-import { Platform, KeyboardAvoidingView, TouchableHighlight, Alert } from 'react-native';
+import { Platform, TouchableHighlight, Alert } from 'react-native';
 import {Modal as ImageModal} from 'react-native';
 import ActionButton from 'react-native-action-button';
-import styles from './addpinmap.component.style.js';
+import styles from './addpinmap.style.js';
 import myMapStyle from '../map/mapstyle';
-import Expo, { Constants, Location, Permissions, ImagePicker } from 'expo';
+import Expo, { Permissions, ImagePicker } from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api'
 import { Storage } from 'aws-amplify';
 import * as mutations from '../../graphql/mutations';
@@ -19,20 +17,13 @@ import redPin from '../../../assets/pin_red.png'
 import grayPin from '../../../assets/pin_gray.png'
 import React, { Component } from 'react';
 import {store} from '../../../App'
-import {
-  View,
-  StyleSheet,
-  StatusBar,
-  Dimensions,
-  Image
-} from 'react-native';
+import { View, StatusBar, Dimensions, Image } from 'react-native';
 
 var {height, width} = Dimensions.get('window');
 
 export default class AddPinMap extends Component {
   constructor(props){
     super(props);
-    const { navigation } = this.props;
 
     this.state ={
       loading: true,
@@ -59,7 +50,7 @@ export default class AddPinMap extends Component {
   }
 
   async componentDidMount() {
-    const { status, expires, permissions } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL)
+    const { status } = await Permissions.askAsync(Permissions.CAMERA, Permissions.CAMERA_ROLL);
     if (status !== 'granted') {
       console.log('You need to give camera permissions to take a picture!');
     }
@@ -71,40 +62,40 @@ export default class AddPinMap extends Component {
       FontAwesome: require('react-native-vector-icons/Fonts/FontAwesome.ttf'),
       Entypo: require('react-native-vector-icons/Fonts/Entypo.ttf'),
     });
-    this.setState({ loading: false }),
+    this.setState({ loading: false });
     console.log(store.state.region)
   }
 
   static navigationOptions = {
     header: null
-  }
+  };
 
-  takeSnapshot () {
-    // 'takeSnapshot' takes a config object with the
-    // following options
-    const snapshot = this.map.takeSnapshot({
-      width: 300,      // optional, when omitted the view-width is used
-      height: 300,     // optional, when omitted the view-height is used
-      region: store.state.region,    // iOS only, optional region to render
-      format: 'png',   // image formats: 'png', 'jpg' (default: 'png')
-      quality: 0.8,    // image quality: 0..1 (only relevant for jpg, default: 1)
-      result: 'file'   // result types: 'file', 'base64' (default: 'file')
-    });
-    snapshot.then((uri) => {
-      this.props.navigation.navigate('PinInfo', {snapshot: uri});
-    });
-  }
+  // takeSnapshot () {
+  //   // 'takeSnapshot' takes a config object with the
+  //   // following options
+  //   const snapshot = this.map.takeSnapshot({
+  //     width: 300,      // optional, when omitted the view-width is used
+  //     height: 300,     // optional, when omitted the view-height is used
+  //     region: store.state.region,    // iOS only, optional region to render
+  //     format: 'png',   // image formats: 'png', 'jpg' (default: 'png')
+  //     quality: 0.8,    // image quality: 0..1 (only relevant for jpg, default: 1)
+  //     result: 'file'   // result types: 'file', 'base64' (default: 'file')
+  //   });
+  //   snapshot.then((uri) => {
+  //     this.props.navigation.navigate('PinInfo', {snapshot: uri});
+  //   });
+  // }
 
   openModal = () => {
     this.setRegion();
     this.setState({visible: true});
     setTimeout(() => this.setState({mapHeight: height*.4}), 300);
-  }
+  };
 
   closeModal = () => {
     this.setState({mapHeight: height});
     this.setState({visible: false})
-  }
+  };
 
   setRegion(){
     this.setState({
@@ -137,6 +128,10 @@ export default class AddPinMap extends Component {
 
   checkInput(){
     let error = false;
+
+    if(this.state.nameError || this.state.descError || this.state.sTimeError || this.state.eTimeError)
+      return true;
+
     if (this.state.pinInfo.eventName.trim() === "") {
       this.setState(() => ({ nameError: "Pin name required." }));
       error = true;
@@ -163,11 +158,8 @@ export default class AddPinMap extends Component {
     } else {
       this.setState(() => ({ eTimeError: null }));
     }
-    if(error){
-      return false;
-    } else {
-      return true;
-    }
+
+    return error;
   }
 
   addPin() {
@@ -197,7 +189,7 @@ export default class AddPinMap extends Component {
         latitude: undefined,
         longitude: undefined
       }
-    })
+    });
     this.closeModal();
     this.props.navigation.navigate('Map');
   }
@@ -270,7 +262,7 @@ export default class AddPinMap extends Component {
     }
     return (
       <View style={styles.container}>
-        <StatusBar hidden={Platform.OS === 'ios' ? false : true} />
+        <StatusBar hidden={Platform.OS !== 'ios'} />
           <View style={styles.container}>
             <MapView
               ref = {(ref)=>this.map=ref}
@@ -300,7 +292,7 @@ export default class AddPinMap extends Component {
 
           <ActionButton
             buttonColor="#ed2224"
-            fixNativeFeedbackRadius={Platform.OS === 'ios' ? true : false}
+            fixNativeFeedbackRadius={Platform.OS !== 'ios'}
             renderIcon={() => { return ( <Icon name="close" style={styles.actionButtonIcon} /> ); }}
             onPress={() => this.props.navigation.goBack()}
             position="left"
@@ -310,7 +302,7 @@ export default class AddPinMap extends Component {
 
           <ActionButton
             buttonColor="#79e56a"
-            fixNativeFeedbackRadius={Platform.OS === 'ios' ? true : false}
+            fixNativeFeedbackRadius={Platform.OS !== 'ios'}
             renderIcon={() => { return ( <Icon name="checkmark" style={styles.actionButtonIcon} /> ); }}
             onPress={() => {
               this.openModal();
@@ -474,7 +466,7 @@ export default class AddPinMap extends Component {
                         <Button large
                           style={styles.rightButton}
                           onPress={() => {
-                            if(this.checkInput() === false){
+                            if(this.checkInput()){
                               console.log('something is empty');
                             } else {
                               console.log('No empty fields!');
@@ -487,6 +479,7 @@ export default class AddPinMap extends Component {
                     </Grid>
                   </Item>
                 </KeyboardAwareScrollView>
+
               </Col>
             </Grid>
           </Modal>

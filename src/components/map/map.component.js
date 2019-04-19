@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
-import { StyleSheet, View, Dimensions, TouchableOpacity, StatusBar, Alert, Platform, ScrollView, Image, Modal as ImageModal} from 'react-native';
-import { Container, Header, Text, Content, Icon, Button, Left, Fab, Label} from 'native-base';
+import { View, Dimensions, ActivityIndicator, StatusBar, Alert, Platform, ScrollView, Image, Modal as ImageModal} from 'react-native';
+import { Container, Text, Icon, Fab, Label} from 'native-base';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
 import ActionButton from 'react-native-action-button';
-import { showLocation, Popup } from 'react-native-map-link';
+import { Popup } from 'react-native-map-link';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
-import Expo, { Constants, Location, Permissions } from 'expo';
-import { DrawerNavigator, DrawerItems } from 'react-navigation';
+import Expo, { Location } from 'expo';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { TouchableHighlight } from 'react-native';
 
@@ -16,14 +15,12 @@ import API, { graphqlOperation } from '@aws-amplify/api'
 import {Auth, Storage} from 'aws-amplify'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
-import styles from './map.component.style.js';
+import styles from './map.style.js';
 import myMapStyle from './mapstyle';
-import * as Animatable from 'react-native-animatable';
 import redPin from '../../../assets/pin_red.png'
 import {store} from '../../../App'
 
 const { width, height } = Dimensions.get('window');
-const ASPECT_RATIO = width / height;
 
 var _mapView: MapView;
 
@@ -34,9 +31,7 @@ export default class MapScreen extends Component {
     this.state = {
       isVisible: false,
       imageViewer: false,
-      imageList: [{
-        url: 'https://avatars2.githubusercontent.com/u/7970947?v=3&s=460'
-      }],
+      imageList: [],
       currMarker: {},
       myMarkers: [],
       bottom: 1,
@@ -49,23 +44,6 @@ export default class MapScreen extends Component {
     this.getInitialState.bind(this);
     this._getLocationAsync.bind(this);
     this.closeImageViewer = this.closeImageViewer.bind(this);
-  }
-
-  static navigationOptions = {
-    header: null
-  }
-
-  // For button components on map
-
-  onValueChange(value: string) {
-    this.setState({
-      selected: value
-    });
-  }
-  onValueChange2(value: string) {
-    this.setState({
-      selected2: value
-    });
   }
 
   async componentDidMount(){
@@ -97,7 +75,7 @@ export default class MapScreen extends Component {
     let userLocation = {
       latitude: this.state.location.coords.latitude,
       longitude: this.state.location.coords.longitude,
-    }
+    };
     console.log(JSON.stringify(userLocation));
     _mapView.animateToCoordinate(userLocation, 1000);
   };
@@ -139,20 +117,20 @@ export default class MapScreen extends Component {
     var removeIndex = store.getState().markers.map(function(item) { return item.key; }).indexOf(id);
     store.update(s => {
       s.markers.splice(removeIndex, 1);
-    })
+    });
     this.forceUpdate();
-  }
+  };
 
   static navigationOptions = {
     header: null,
     tabBarHidden: true,
-  }
+  };
 
   toolbarHack = () => {
     if(this.state.bottom === 1){
       this.setState({bottom: 0})
     }
-  }
+  };
 
   mapLink = (coords, name) => {
     store.update({pinLink: {
@@ -160,7 +138,7 @@ export default class MapScreen extends Component {
       latitude: coords.latitude,
       longitude: coords.longitude
     }})
-  }
+  };
 
   openModal = () => this.setState({ visible: true });
   closeModal = () => this.setState({ visible: false });
@@ -169,19 +147,14 @@ export default class MapScreen extends Component {
     switch (this.state.currMarker.type) {
       case "Accident":
         return <Icon  style={{color: '#03a9f4', fontSize: 50, left: 15}} active type="FontAwesome" name='warning'/>;
-        break;
       case "Food":
         return <Icon style={{color: '#03a9f4', fontSize: 60, left: 15}} active type="Ionicons" name='ios-restaurant'/>;
-        break;
       case "Social":
         return <Icon style={{color: '#03a9f4', fontSize: 60, left: 15}} active type="Ionicons" name='ios-people'/>;
-        break;
       case "Study":
         return <Icon style={{color: '#03a9f4', fontSize: 40, left: 15}} active type="FontAwesome" name='book'/>;
-        break;
       default:
         return <Image source={redPin} style={{transform: [{ scale: .30 }], marginLeft: 0}}/>;
-        break;
     }
   }
 
@@ -192,7 +165,7 @@ export default class MapScreen extends Component {
       latitudeDelta: store.state.region.latitudeDelta,
       longitude: coordinate.longitude,
       latitude: coordinate.latitude
-    } ;
+    };
     this._map.animateToRegion(newRegion, 300) ;
   };
 
@@ -202,10 +175,10 @@ export default class MapScreen extends Component {
       latitudeDelta: store.state.region.latitudeDelta,
       longitude: store.state.userLocation.longitude,
       latitude: store.state.userLocation.latitude
-    }
+    };
     this.setState({offUserLocation: false});
     this._map.animateToRegion(newRegion, 300) ;
-  }
+  };
 
   getImage(name, id){
     Storage.get(name+'.jpg', {
@@ -243,7 +216,7 @@ export default class MapScreen extends Component {
     }
     return (
     <Container style={styles.mapContainer}>
-      <StatusBar hidden={Platform.OS === 'ios' ? false : true} />
+      <StatusBar hidden={Platform.OS !== 'ios'} />
       <View style={styles.mapContainer}>
         <MapView
           provider={this.props.provider}
@@ -271,7 +244,7 @@ export default class MapScreen extends Component {
             image={redPin}
             onCalloutPress={() => {
               this.setState({currMarker: marker});
-              this.getImage(marker.name, marker.cognitoId)
+              this.getImage(marker.name, marker.cognitoId);
               this.openModal();
             }} // change isVisible to modalMaker to allow modal
             onPress={e => {
@@ -422,4 +395,4 @@ export default class MapScreen extends Component {
 
 MapScreen.propTypes = {
   provider: ProviderPropType,
-}
+};

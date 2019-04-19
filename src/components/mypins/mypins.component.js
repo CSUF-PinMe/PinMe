@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert, RefreshControl } from 'react-native';
-import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
-import Expo, { Constants, Location, Permissions } from 'expo';
+import { ScrollView, StyleSheet, Text, StatusBar, Alert, RefreshControl } from 'react-native';
+import { Card, CardItem, Body, Container, Header, Content, Icon, Item, Input, } from 'native-base';
+import Expo from 'expo';
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
 import API, { graphqlOperation } from '@aws-amplify/api'
-import MapView from 'react-native-maps';
 import {store} from '../../../App'
 
 export default class MyPinsScreen extends Component {
@@ -18,10 +17,6 @@ export default class MyPinsScreen extends Component {
         searchText: "",
         refreshing: false
     }
-  }
-
-  static navigationOptions = {
-    header: null
   }
 
   async componentDidMount() {
@@ -57,22 +52,15 @@ export default class MyPinsScreen extends Component {
 
   iconImage (marker) {
     switch (marker.type) {
-      case "Accident":{
-      return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>;
-      }
-        break;
-      case "Food":{
-      return <Icon style={{color: '#f78640', position: 'absolute', right: 45,}} active type='MaterialCommunityIcons' name='food'/>;
-      }
-        break;
-      case "Social":{
-      return <Icon style={{color: '#ca30f4',position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>;
-      }
-        break;
-      case "Study":{
-      return <Icon style={{color: '#03a9f4',position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>;
-      }
-        break;
+      case "Accident":
+        return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>;
+      case "Food":
+        return <Icon style={{color: '#f78640', position: 'absolute', right: 45,}} active type='MaterialCommunityIcons' name='food'/>;
+      case "Social":
+        return <Icon style={{color: '#ca30f4',position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>;
+      case "Study":
+        return <Icon style={{color: '#03a9f4',position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>;
+
     }
   }
 
@@ -85,7 +73,7 @@ export default class MyPinsScreen extends Component {
   static navigationOptions = {
     header: null,
     tabBarHidden: true,
-  }
+  };
 
   loadPins = async () => {
     this.setState({markers: []});

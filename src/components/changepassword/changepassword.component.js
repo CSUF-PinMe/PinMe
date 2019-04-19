@@ -1,17 +1,14 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
-import { Container, Header, Button, Item, Input, Label} from 'native-base';
-import * as Animatable from 'react-native-animatable';
-import { Col, Row, Grid } from 'react-native-easy-grid';
-import Expo, { Constants, Location, Permissions } from 'expo';
-import Font from 'expo';
-import MapView from 'react-native-maps';
+import React, { Component } from 'react'
+import { Text, StatusBar, Platform } from 'react-native'
+import { Container, Button, Item, Input, Label} from 'native-base'
+import * as Animatable from 'react-native-animatable'
+import { Col, Row, Grid } from 'react-native-easy-grid'
+import styles from './changepassword.style'
+import Expo from 'expo'
 import {authInfo} from '../../../App.js'
-import { Auth } from 'aws-amplify';
+import { Auth } from 'aws-amplify'
 
- var {width, height} = Dimensions.get('window');
-
- AnimatedItem = Animatable.createAnimatableComponent(Item);
+AnimatedItem = Animatable.createAnimatableComponent(Item);
 
 export default class ChangePassword extends Component {
   constructor(props){
@@ -27,7 +24,7 @@ export default class ChangePassword extends Component {
 
   static navigationOptions = {
     header: null
-  }
+  };
 
   handleChange(name, value) {
     this.setState({ [name]: value });
@@ -35,6 +32,10 @@ export default class ChangePassword extends Component {
 
   checkInput(){
     let error = false;
+
+    if (this.state.usernameError || this.state.codeError || this.state.newPasswordError)
+      return true;
+
     if (this.state.username.trim() === "") {
       this.setState(() => ({ usernameError: "username required." }));
       error = true;
@@ -54,11 +55,7 @@ export default class ChangePassword extends Component {
       this.setState(() => ({ newPasswordError: null }));
     }
 
-    if(error){
-      return false;
-    } else {
-      return true;
-    }
+    return error;
   }
 
   changePassword(){
@@ -185,7 +182,7 @@ export default class ChangePassword extends Component {
             <Button ref="rightButton" large
               style={styles.rightButton}
               onPress={() => {
-                if(this.checkInput() === false){
+                if(this.checkInput()){
                   console.log('something is empty');
                 } else {
                   console.log('No empty fields!');
@@ -202,75 +199,3 @@ export default class ChangePassword extends Component {
     );
   }
 }
-
-
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  authMessage: {
-    color: "white",
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null,
-    position: 'absolute',
-    alignSelf: 'center',
-    bottom: 40,
-    fontSize: 20
-  },
-  label: {
-    color: 'white',
-    fontSize: 28,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null
-  },
-  title: {
-    position: 'absolute',
-    left: 15,
-    color: 'white',
-    fontSize: 60,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "100" : null
-  },
-  error: {
-    bottom: 90,
-    color: "white",
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null,
-    left: 19
-  },
-  input: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light',
-    marginRight: 20,
-    top: 3,
-  },
-  inputItem: {
-    bottom: 80,
-    left: 15,
-    borderColor: 'transparent'
-  },
-  buttonText: {
-    color: '#03a9f4',
-    fontSize: 15,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light',
-  },
-  leftButton: {
-    width: width/2-20,
-    height: 55,
-    marginLeft: 5,
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    bottom: Platform.OS === 'ios' ? 15 : 0
-  },
-  rightButton: {
-    width: width/2-20,
-    height: 55,
-    marginRight: 5,
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    bottom: Platform.OS === 'ios' ? 15 : 0
-  }
-});

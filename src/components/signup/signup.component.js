@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView, Platform } from 'react-native';
-import { Container, Header, Button, Item, Input, Label} from 'native-base';
+import { Text, Dimensions, StatusBar, Platform } from 'react-native';
+import { Container, Button, Input, Label} from 'native-base';
 import * as Animatable from 'react-native-animatable';
 import { Col, Row, Grid } from 'react-native-easy-grid';
-import Expo, { Constants, Location, Permissions } from 'expo';
-import Font from 'expo';
-import MapView from 'react-native-maps';
+import Expo from 'expo';
+import styles from './signup.style'
 import { Auth } from 'aws-amplify';
-
- var {width, height} = Dimensions.get('window');
 
 export default class SignUp extends Component {
   constructor(props){
@@ -25,7 +22,7 @@ export default class SignUp extends Component {
 
   static navigationOptions = {
     header: null
-  }
+  };
 
   handleChange(name, value) {
     this.setState({ [name]: value });
@@ -33,6 +30,10 @@ export default class SignUp extends Component {
 
   checkInput(){
     let error = false;
+
+    if(this.state.emailError || this.state.usernameError || this.state.passwordError || this.state.numberError){
+      return true;
+    }
 
     if (this.state.email.trim() === "") {
       this.setState(() => ({ emailError: "email required" }));
@@ -62,11 +63,7 @@ export default class SignUp extends Component {
       this.setState(() => ({ numberError: null }));
     }
 
-    if(error){
-      return false;
-    } else {
-      return true;
-    }
+    return error;
   }
 
   // Needed for Native-Base Buttons
@@ -215,7 +212,7 @@ export default class SignUp extends Component {
               style={styles.rightButton}
               backgroundColor='white'
               onPress={() => {
-                if(this.checkInput() === false){
+                if(this.checkInput()){
                   console.log('something is empty');
                 } else {
                   console.log('No empty fields!');
@@ -233,82 +230,3 @@ export default class SignUp extends Component {
 }
 
 
-const styles = StyleSheet.create({
-  container: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  authMessage: {
-    color: "white",
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null,
-    bottom: Platform.OS === 'ios' ? 40 : 20,
-    position: 'absolute',
-    alignSelf: 'center',
-    fontSize: 20
-  },
-  confirm: {
-    left:20,
-    bottom: 50,
-    color: 'white',
-    fontSize: 20,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null
-  },
-  error: {
-    color: "white",
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null,
-    bottom: 60,
-  },
-  title: {
-    position: 'absolute',
-    left: 15,
-    color: 'white',
-    fontSize: 60,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null,
-    top: Platform.OS === 'ios' ? 30 : 0,
-    fontWeight: '100'
-  },
-  label: {
-    color: 'white',
-    fontSize: 28,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    fontWeight: Platform.OS === 'ios' ? "200" : null
-  },
-  input: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
-    marginRight: 20,
-    top: 3,
-  },
-  inputItem: {
-    bottom: 50,
-    left: 15,
-    borderColor: 'transparent'
-  },
-  buttonText: {
-    color: '#03a9f4',
-    fontSize: 15,
-    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'
-  },
-  leftButton: {
-    width: width/2-20,
-    height: 55,
-    marginLeft: 5,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    bottom: Platform.OS === 'ios' ? 15 : 0
-  },
-  rightButton: {
-    width: width/2-20,
-    height: 55,
-    marginRight: 5,
-    backgroundColor: 'white',
-    justifyContent: 'center',
-    bottom: Platform.OS === 'ios' ? 15 : 0
-  }
-});

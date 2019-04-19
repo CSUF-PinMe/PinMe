@@ -1,16 +1,14 @@
 import React, { Component } from 'react';
-import { Platform, ActivityIndicator, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
-import { Container, Header, Button, Item, Input, Label} from 'native-base';
+import { Platform, ActivityIndicator, StyleSheet, StatusBar } from 'react-native';
+import { Container, Item } from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
 import {createStackNavigator, createAppContainer} from 'react-navigation';
-import { fadeIn, fromLeft, fromBottom, fromTop, fromRight } from 'react-navigation-transitions';
+import { fromLeft, fromTop, fromRight } from 'react-navigation-transitions';
 import * as Animatable from 'react-native-animatable';
-import { Col, Row, Grid } from 'react-native-easy-grid';
-import Expo, { Constants, Location, Permissions } from 'expo';
-import Font from 'expo';
-import MapView from 'react-native-maps';
+import { Col, Grid } from 'react-native-easy-grid';
+import Expo, { Location, Permissions } from 'expo';
 import {authInfo} from './App.js'
-import { Auth, Cache } from 'aws-amplify';
+import { Auth } from 'aws-amplify';
 import Amplify from '@aws-amplify/core'
 import awsmobile from './aws-exports'
 Amplify.configure(awsmobile)
@@ -25,7 +23,6 @@ import ChangePassword from './src/components/changepassword/changepassword.compo
 import SignIn from './src/components/signin/signin.component';
 import MapNav from './router';
 
-var {width, height} = Dimensions.get('window');
 AnimatedLoading = Animatable.createAnimatableComponent(ActivityIndicator);
 AnimatedItem = Animatable.createAnimatableComponent(Item);
 
@@ -93,22 +90,25 @@ class Loading extends Component {
 
   // Needed for Native-Base Buttons
   async componentDidMount() {
-    this._getLocationAsync();
     await Expo.Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
     });
-    await Auth.currentCredentials().then((response) => {
-      console.log(response.data.IdentityId);
-      store.update({currentUserId: response.data.IdentityId});
-    });
     const session = Auth.currentAuthenticatedUser({
-        bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
-    }).then((user) => {
+        bypassCache: true  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+    }).then(async (user) => {
       console.log('User is logged in:', user.username);
-      // console.log('User Cognito Information: ',user);
-      store.update({currentUser: user.username});
+
+      this._getLocationAsync();
+      await Auth.currentCredentials().then((response) => {
+        console.log(response.data.IdentityId);
+        store.update({
+          currentUserId: response.data.IdentityId,
+          currentUser: user.username
+        });
+      });
+
       setTimeout(() => {this.refs.title.bounceOutLeft();}, 500);
       setTimeout(() => {this.refs.loading.bounceOutLeft();}, 500);
       setTimeout(() => {
@@ -127,6 +127,7 @@ class Loading extends Component {
       setTimeout(() => {this.refs.loading.bounceOutRight();}, 500);
       setTimeout(() => {this.props.navigation.navigate('SignIn');}, 1000);
     });
+
     this.setState({ loading: false });
 
   }
