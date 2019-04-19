@@ -53,7 +53,7 @@ export const store = createStore({
     latitude: undefined,
     longitude: undefined
   }
-})
+});
 
 class Loading extends Component {
   constructor(props){
@@ -66,7 +66,7 @@ class Loading extends Component {
 
   static navigationOptions = {
     header: null
-  }
+  };
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -184,7 +184,7 @@ const handleCustomTransition = ({ scenes }) => {
   }
 
   return fromLeft();
-}
+};
 
 const MainNavigator = createStackNavigator(
   {
