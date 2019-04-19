@@ -1,13 +1,22 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
 import { Container, Header, Title, Content, Form, Item, Input, Button, Label, Icon, Left, Body, Right, Picker, Textarea} from 'native-base';
+import { StyleSheet, Text, View, Dimensions, TouchableHighlight, StatusBar, Alert, Platform, Image, ScrollView } from 'react-native';
+import React, { Component } from 'react';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import Font from 'expo';
+import MapView, { ProviderPropType } from 'react-native-maps';
+import { Col, Row, Grid } from 'react-native-easy-grid';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import API, { graphqlOperation } from '@aws-amplify/api';
 import * as mutations from '../../graphql/mutations';
-import Font from 'expo';
-import MapView from 'react-native-maps';
+import redPin from '../../../assets/pin_red.png'
 import {store} from '../../../App'
 import { Auth } from 'aws-amplify'
+
+const {width, height} = Dimensions.get("window");
+const Screen = {
+  width: Dimensions.get('window').width,
+  height: '100%',
+};
 
 export default class PinInfo extends Component {
   constructor(props){
@@ -23,8 +32,8 @@ export default class PinInfo extends Component {
         description: store.state.pinInfo.description,
         startTime: store.state.pinInfo.startTime,
         endTime: store.state.pinInfo.endTime,
-        latitude: store.state.region.latitude,
-        longitude: store.state.region.longitude
+        latitude: undefined,
+        longitude: undefined
       }
     };
     this.handleChange.bind(this);
@@ -52,7 +61,7 @@ export default class PinInfo extends Component {
   }
 
   handleChange(name, value){
-    console.log(name, ' is now ', value);
+    // console.log(name, ' is now ', value);
     this.setState({
       pinInfo: {
         ...this.state.pinInfo,
@@ -141,146 +150,65 @@ export default class PinInfo extends Component {
     }
     return (
       <Container>
-        <StatusBar hidden/>
-
-        <Header style = {{backgroundColor: '#03a9f4', height: 65}}>
-          <View style = {{top: 20}}>
-            <Body>
-              <Title>Pin Information</Title>
-            </Body>
+      <StatusBar hidden={true} />
+      <Grid>
+        <Row style={{ borderRadius: 5, borderTopWidth: 3, borderColor: 'white',}} size={3}>
+          <TouchableHighlight
+            onPress={() => Alert.alert(
+              "Changing Pin Location",
+              "Do you want to change the location of the pin?",
+              [
+                {text: 'OK', onPress: () => this.props.navigation.navigate('AddPin')},
+                {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
+              ]
+            )}
+          >
+            <Image style={{width: width, height: height*.3}} source={{uri: this.props.navigation.getParam('snapshot', 'some default value')}}/>
+          </TouchableHighlight>
+          <View pointerEvents="none" style={{width: width, height: height*.3, position: 'absolute', alignItems: 'center'}}>
+            <Image source={redPin} style={{transform: [{ scale: .35 }], top: 25}}/>
           </View>
-        </Header>
-
-        <Content>
-          <Form>
-
-            <Item stackedLabel>
-              <Label>Event Name </Label>
-              <Input
-              onChangeText={(e) => {
-                this.handleChange('eventName', e);
-                if(e.trim() !== "") {this.setState(() => ({ nameError: null }));}
-                this.handleChange('userId',store.state.currentUser);
-              }}
-              value={store.state.pinInfo.eventName}
-                />
-            </Item>
-            {!!this.state.nameError && (
-              <Text style={{ color: "red", left: 15 }}>{this.state.nameError}</Text>
-            )}
-
-            <Item stackedLabel>
-              <Label>Event Type </Label>
-              <Item picker >
-                <Picker
-                  mode="dropdown"
-                  iosIcon={<Icon name="ios-arrow-down-outline" />}
-                  style={{ width: undefined }}
-                  placeholder="Select the type of event"
-                  placeholderStyle={{ color: "#bfc6ea" }}
-                  placeholderIconColor="#007aff"
-                  selectedValue={store.state.pinInfo.eventType}
-                  onValueChange={this.handleDropdown.bind(this)}
-                >
-                  <Picker.Item label="General"  value="General"/>
-                  <Picker.Item label="Accident" value="Accident" />
-                  <Picker.Item label="Food" value="Food" />
-                  <Picker.Item label="Social" value="Social" />
-                  <Picker.Item label="Study" value="Study" />
-                </Picker>
-              </Item>
-            </Item>
-
-            <Item stackedLabel>
-              <Label>Description </Label>
-              <Input
-                onChangeText={(e) => {
-                  this.handleChange('description', e);
-                  if(e.trim() !== "") {this.setState(() => ({ descError: null }));}
-                }}
-                value={store.state.pinInfo.description}
-              />
-            </Item>
-            {!!this.state.descError && (
-              <Text style={{ color: "red", left: 15 }}>{this.state.descError}</Text>
-            )}
-
-            <Item stackedLabel>
-            <Label>Start Time</Label>
-              <Item>
-                <Icon active name='time' />
-                <Input
-                  placeholder='e.g. 11:30 AM'
-                  placeholderTextColor = '#9e9e9e'
-                  onChangeText={(e) => {
-                    this.handleChange('startTime', e);
-                    if(e.trim() !== "") {this.setState(() => ({ sTimeError: null }));}
-                  }}
-                  value={store.state.pinInfo.startTime}
-                  />
-              </Item>
-            </Item>
-            {!!this.state.sTimeError && (
-              <Text style={{ color: "red", left: 15 }}>{this.state.sTimeError}</Text>
-            )}
-
-            <Item stackedLabel>
-              <Label>End Time</Label>
-              <Item>
-                <Icon active name='time' />
-                <Input
-                placeholder='e.g. 2:00 PM'
-                placeholderTextColor = '#9e9e9e'
-                onChangeText={(e) => {
-                  this.handleChange('endTime', e);
-                  if(e.trim() !== "") {this.setState(() => ({ eTimeError: null }));}
-                }}
-                value={store.state.pinInfo.endTime}
-                />
-              </Item>
-            </Item>
-            {!!this.state.eTimeError && (
-              <Text style={{ color: "red", left: 15 }}>{this.state.eTimeError}</Text>
-            )}
-
-            <Button
-            onPress={() => this.props.navigation.navigate('AddPin')}
-            block style = {{top: 10, height: 60, backgroundColor: '#FFFFFF'}}>
-              <Text style = {{color: '#000000'}}>Change Location</Text>
-            </Button>
-
-          </Form>
-
-          <Content>
-            <Button
-            onPress={() => {
-              this.addPin();
-
-            }}
-            block style = {{top: 20, height: 60, backgroundColor: '#79e56a',}}>
-              <Text style = {{color: '#FFFFFF'}}>Create Pin</Text>
-            </Button>
-
-            <Button
-            onPress={() => {console.log(store.state.pinInfo);
-                            this.props.navigation.navigate('Map');
-                            this.handleChange('eventName', '');
-                            this.handleChange('description', '');
-                            this.handleChange('startTime', '');
-                            this.handleChange('endTime', '');
-                            this.handleDropdown('')}}
-            block style = {{top: 30, height: 60, backgroundColor: '#9e9e9e'}}>
-              <Text style = {{color: '#FFFFFF'}}>Cancel</Text>
-            </Button>
-            <Button disabled style = {{top: 40, height: 60, backgroundColor: '#FFFFFF'}}>
-            </Button>
-          </Content>
-
-
-        </Content>
+        </Row>
+        <Col size={7} style={{backgroundColor: "#03a9f4", borderColor: '#03a9f4', borderRadius: 20, borderWidth: 3}}>
+        <KeyboardAwareScrollView
+        style={{backgroundColor: '#03a9f4', borderColor: '#03a9f4', borderRadius: 20, borderWidth: 2}}
+          resetScrollToCoords={{ x: 0, y: 0 }}
+          contentContainerStyle={styles.scrollContainer}
+          scrollEnabled={true}
+          enableOnAndroid={true}
+        >
+          <Item style={{borderColor: 'transparent', top: 5}}>
+            <Label style={styles.label}>Pin Name: </Label>
+            <Input style={styles.input} placeholderTextColor='#017BB0' placeholder="name of pin"/>
+          </Item>
+          <Item style={{borderColor: 'transparent', top: 5}}>
+            <Label style={styles.label}>Description: </Label>
+          </Item>
+          <Item style={{borderColor: 'transparent', top: 5}}>
+          <Input editable={true} multiline={true} style={styles.input, {left: 10}} placeholderTextColor='#017BB0' placeholder="description of your pin"/>
+          </Item>
+          <Item style={{borderColor: 'transparent', top: 5}}>
+            <Label style={styles.label}>Type: </Label>
+            <Input style={styles.input} placeholderTextColor='#017BB0' placeholder="type of pin"/>
+          </Item>
+          <Item style={{borderColor: 'transparent', top: 5}}>
+            <Label style={styles.label}>Start Time: </Label>
+            <Input style={styles.input} placeholderTextColor='#017BB0' placeholder="start time"/>
+          </Item>
+          <Item style={{borderColor: 'transparent', top: 5}}>
+            <Label style={styles.label}>End Time: </Label>
+            <Input style={styles.input} placeholderTextColor='#017BB0' placeholder="end time"/>
+          </Item>
+        </KeyboardAwareScrollView>
+        </Col>
+      </Grid>
       </Container>
     );
   }
+}
+
+PinInfo.propTypes = {
+  provider: ProviderPropType,
 }
 
 
@@ -289,5 +217,24 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',
     alignItems: 'center',
+  },
+  scrollContainer: {
+    flex: 1,
+    backgroundColor: '#03a9f4',
+  },
+  label: {
+    color: 'white',
+    fontSize: 28,
+    left: 10,
+    top: 10,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "200" : null
+  },
+  input: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    marginRight: 20,
+    top: 10
   }
 });

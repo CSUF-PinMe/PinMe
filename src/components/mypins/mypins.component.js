@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert } from 'react-native';
+import {Image, ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, Alert, RefreshControl } from 'react-native';
 import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
 import * as queries from '../../graphql/queries';
@@ -14,7 +14,9 @@ export default class MyPinsScreen extends Component {
 
     this.state = {
         loading: true,
-        searchText: ""
+        markers: [],
+        searchText: "",
+        refreshing: false
     }
   }
 
@@ -31,9 +33,14 @@ export default class MyPinsScreen extends Component {
       FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
       MaterialCommunityIcons: require("native-base/Fonts/MaterialCommunityIcons.ttf"),
     });
-    this.setState({
-      loading: false
-     });
+    this.loadPins();
+    // console.log(store.state.currentUser);
+    this.setState({loading: false});
+  }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.loadPins();
   }
 
   deletePin = (id) => {
@@ -49,7 +56,6 @@ export default class MyPinsScreen extends Component {
 
 
   iconImage (marker) {
-    console.log(marker.type);
     switch (marker.type) {
       case "Accident":{
       return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>;
@@ -81,31 +87,70 @@ export default class MyPinsScreen extends Component {
     tabBarHidden: true,
   }
 
+  loadPins = async () => {
+    this.setState({markers: []});
+    const allPins = await API.graphql(graphqlOperation(queries.listPins, {
+      "filter": {
+        "userId": {
+          "eq": store.state.currentUser
+        }
+      },
+      "limit": 100
+    }));
+    allPins.data.listPins.items.map(pin => (
+      // console.log()
+      this.setState({
+        markers: [
+          ...this.state.markers,
+          {
+            name: pin.eventName,
+            description: pin.description,
+            key: pin.id,
+            placedBy: pin.userId,
+            type: pin.eventType,
+            startTime: pin.startTime,
+            endTime: pin.endTime,
+            coordinate: {
+              latitude: Number(pin.latitude),
+              longitude: Number(pin.longitude)
+            },
+          }
+        ]
+      })
+    ))
+    this.setState({loading: false});
+    this.setState({refreshing: false});
+    console.log('All pins loaded!');
+  }
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
     return (
-      <ScrollView>
-        <StatusBar hidden/>
-
-        <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
-          <Item>
-            <Icon name="ios-search" />
-            <Input
-              placeholder="Search pins"
-              onChangeText={ (search) => this.handleSearch(search)}
+      <Container>
+      <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
+        <Item>
+          <Icon name="ios-search" />
+          <Input
+            placeholder="Search pins"
+            onChangeText={ (search) => this.handleSearch(search)}
+          />
+        </Item>
+      </Header>
+      <StatusBar hidden/>
+      <ScrollView
+        refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
             />
-          </Item>
-          <Button transparent>
-            <Text>Search</Text>
-          </Button>
-        </Header>
+          }
+      >
+
 
         <Content padder>
-          {store.state.markers.filter(marker => marker.placedBy === store.state.currentUser)
-            .filter(marker => marker.name.toLowerCase()
-            .includes(this.state.searchText.toLowerCase())).map((marker, index) => (
+          {this.state.markers.map((marker, index) => (
               <Card
                 key={marker.key}
               >
@@ -150,7 +195,7 @@ export default class MyPinsScreen extends Component {
                     onPress={() => {
                       Alert.alert(
                         `Deleting Pin`,
-                        `Are you sure you want to delete pin ${marker.name}?`,
+                        `Are you sure you want to delete the pin '${marker.name}?'`,
                         [
                           {text: 'OK', onPress: () => this.deletePin(marker.key)},
                           {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
@@ -164,6 +209,7 @@ export default class MyPinsScreen extends Component {
           ))}
         </Content>
       </ScrollView>
+      </Container>
     );
   }
 }

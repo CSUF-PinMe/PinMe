@@ -1,0 +1,9 @@
+{
+    "Migration": {
+        "V1": {
+            "Resources": [
+                "PinTable"
+            ]
+        }
+    }
+}

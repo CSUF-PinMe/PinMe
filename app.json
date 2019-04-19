@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "PinMe",
-    "description": "This project is really great.",
+    "description": "Map-based social media mobile app made with React Native and AWS.",
     "slug": "PinMe",
     "privacy": "public",
     "sdkVersion": "30.0.0",
@@ -21,7 +21,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.pinme.core",
+      "supportsTablet": true,
     },
     "android": {
       "package": "com.pinme.core",

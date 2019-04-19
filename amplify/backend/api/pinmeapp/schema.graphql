@@ -1,6 +1,8 @@
 type Pin @model {
   id: ID!
   userId: String!
+  userCognitoId: String!
+  hasImage: Boolean!
   eventName: String!
   eventType: String
   startTime: String

@@ -1,33 +1,43 @@
-import React from 'react';
-import { Button, View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
-import { createStackNavigator, createDrawerNavigator, DrawerItems } from 'react-navigation'; // Version can be specified in package.json
-import { fadeIn, zoomIn } from 'react-navigation-transitions';
-import { Container, Icon, Content, Header, Body} from 'native-base'
-
-import MapScreen from './src/components/map/map.component';
-import AddPinMap from './src/components/addpinmap/addpinmap.component';
-import PinInfo from './src/components/pininfo/pininfo.component';
-import SearchScreen from './src/components/search/search.component';
-import MyPinsScreen from './src/components/mypins/mypins.component';
-
+import React, { Component } from 'react';
+import { Platform, ActivityIndicator, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, KeyboardAvoidingView } from 'react-native';
+import { Container, Header, Button, Item, Input, Label} from 'native-base';
+import { StackActions, NavigationActions } from 'react-navigation';
+import {createStackNavigator, createAppContainer} from 'react-navigation';
+import { fadeIn, fromLeft, fromBottom, fromTop, fromRight } from 'react-navigation-transitions';
+import * as Animatable from 'react-native-animatable';
+import { Col, Row, Grid } from 'react-native-easy-grid';
 import Expo, { Constants, Location, Permissions } from 'expo';
+import Font from 'expo';
+import MapView from 'react-native-maps';
+import {authInfo} from './App.js'
+import { Auth, Cache } from 'aws-amplify';
+import Amplify from '@aws-amplify/core'
+import awsmobile from './aws-exports'
+Amplify.configure(awsmobile)
+
 import createStore from 'pure-store';
 
-import { withAuthenticator } from 'aws-amplify-react-native';
-import {Auth} from 'aws-amplify'
-import Amplify from '@aws-amplify/core'
-import config from './aws-exports'
+import ConfirmCode from './src/components/confirmcode/confirmcode.component';
+import ForgotPassword from './src/components/forgotpassword/forgotpassword.component';
+import SignUp from './src/components/signup/signup.component';
+import ChangePassword from './src/components/changepassword/changepassword.component';
+// import TestMain from './testmain.component';
+import SignIn from './src/components/signin/signin.component';
+import MapNav from './router';
 
-
-Amplify.configure(config)
+var {width, height} = Dimensions.get('window');
+AnimatedLoading = Animatable.createAnimatableComponent(ActivityIndicator);
+AnimatedItem = Animatable.createAnimatableComponent(Item);
 
 export const store = createStore({
   initialMarkers: [],
   markers: [],
   currentUser: '',
+  currentUserId: '',
+  myMarkers: undefined,
   region: {
-    latitude: 36.812617,
-    longitude: -119.745802,
+    latitude: 36.811998,
+    longitude: -119.748398,
     latitudeDelta: 0.0422,
     longitudeDelta: 0.0221,
   },
@@ -48,30 +58,18 @@ export const store = createStore({
   }
 })
 
-class App extends React.Component {
+class Loading extends Component {
   constructor(props){
     super(props);
 
     this.state = {
-      location: null,
-      errorMessage: null,
-      loading: true
-    }
+        loading: true,
+    };
   }
 
-  async componentDidMount() {
-    this._getLocationAsync();
-    await Expo.Font.loadAsync({
-      MaterialIcons: require('react-native-vector-icons/Fonts/MaterialIcons.ttf'),
-      Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
-      Entypo: require("native-base/Fonts/Entypo.ttf"),
-    });
-    Auth.currentUserInfo().then(res => store.update({currentUser: res.username}));
-    this.setState({
-      loading: false
-     });
+  static navigationOptions = {
+    header: null
   }
-
 
   _getLocationAsync = async () => {
     let { status } = await Permissions.askAsync(Permissions.LOCATION);
@@ -79,110 +77,144 @@ class App extends React.Component {
       this.setState({
         errorMessage: 'Permission to access location was denied',
       });
-    } else {
-      console.log('Permission to access location was granted!');
     }
 
     let location = await Location.getCurrentPositionAsync({});
-    this.setState({ location });
+    // console.log('User location: ', location.coords);
+    store.update({
+      userLocation: location.coords,
+      region: {
+        ...store.state.region,
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      }
+    });
   };
+
+  // Needed for Native-Base Buttons
+  async componentDidMount() {
+    this._getLocationAsync();
+    await Expo.Font.loadAsync({
+      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+      Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf")
+    });
+    await Auth.currentCredentials().then((response) => {
+      console.log(response.data.IdentityId);
+      store.update({currentUserId: response.data.IdentityId});
+    });
+    const session = Auth.currentAuthenticatedUser({
+        bypassCache: false  // Optional, By default is false. If set to true, this call will send a request to Cognito to get the latest user data
+    }).then((user) => {
+      console.log('User is logged in:', user.username);
+      // console.log('User Cognito Information: ',user);
+      store.update({currentUser: user.username});
+      setTimeout(() => {this.refs.title.bounceOutLeft();}, 500);
+      setTimeout(() => {this.refs.loading.bounceOutLeft();}, 500);
+      setTimeout(() => {
+        const resetAction = StackActions.reset({
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: 'Map' }),
+          ],
+        });
+        this.props.navigation.dispatch(resetAction);
+      }, 1000);
+    })
+    .catch((err) => {
+      console.log('Error:',err);
+      setTimeout(() => {this.refs.title.bounceOutRight();}, 500);
+      setTimeout(() => {this.refs.loading.bounceOutRight();}, 500);
+      setTimeout(() => {this.props.navigation.navigate('SignIn');}, 1000);
+    });
+    this.setState({ loading: false });
+
+  }
+
+
   render() {
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
-    return <MyApp />;
+    return (
+      <Container>
+      <StatusBar hidden/>
+
+        <Grid>
+          <Col size={10.5} style={{ backgroundColor: '#03a9f4', justifyContent: 'center', alignItems: 'center'}}>
+            <Animatable.Text ref="title" style={styles.title}>Loading</Animatable.Text>
+            <AnimatedLoading ref="loading" style={{bottom: 50, backgroundColor: '#03a9f4'}} size="large" color="white"/>
+          </Col>
+        </Grid>
+      </Container>
+    );
   }
 }
 
-export default withAuthenticator(App , /*{ includeGreetings: true }*/)
+const handleCustomTransition = ({ scenes }) => {
+  const prevScene = scenes[scenes.length - 2];
+  const nextScene = scenes[scenes.length - 1];
 
-const RootStack = createStackNavigator(
+  // Custom transitions go there
+  if (prevScene
+    && prevScene.route.routeName === 'SignUp'
+    && nextScene.route.routeName === 'ConfirmCode') {
+    return fromTop();
+  } else if (prevScene
+    && prevScene.route.routeName === 'SignIn'
+    && nextScene.route.routeName === 'ForgotPassword') {
+    return fromTop();
+  } else if (prevScene
+    && prevScene.route.routeName === 'ForgotPassword'
+    && nextScene.route.routeName === 'ChangePassword') {
+    return fromRight();
+  } else if (prevScene
+    && prevScene.route.routeName === 'Loading'
+    && nextScene.route.routeName === 'SignIn') {
+    return fromLeft();
+  } else if (prevScene
+    && prevScene.route.routeName === 'Loading'
+    && nextScene.route.routeName === 'Map') {
+    return fromRight();
+  } else if (prevScene
+    && prevScene.route.routeName === 'SignIn'
+    && nextScene.route.routeName === 'Map') {
+    return fromRight();
+  }
+
+  return fromLeft();
+}
+
+const MainNavigator = createStackNavigator(
   {
-    Map: MapScreen,
-    AddPin: AddPinMap,
-    PinInfo: PinInfo,
-    Search: SearchScreen
+    Loading: {screen: Loading},
+    // Test: {screen: TestMain},
+    SignIn: {screen: SignIn},
+    SignUp: {screen: SignUp},
+    ConfirmCode: {screen: ConfirmCode},
+    ForgotPassword: {screen: ForgotPassword},
+    ChangePassword: {screen: ChangePassword},
+    Map: MapNav,
+  },
+  {
+    initialRoute: 'Loading',
+    transitionConfig: (nav) => handleCustomTransition(nav),
+    navigationOptions: {
+      headerVisible: false,
+    }
   },
 );
 
-const CustomDrawerContentComponent = (props) => (
-
-  <SafeAreaView style = {{flex:1}}>
-    <Header style={styles.drawerHeader}>
-      <Body>
-        <Image
-          style={styles.drawerImage}
-          source={require('./assets/icon.png')} />
-      </Body>
-    </Header>
-    <Content>
-      <DrawerItems {...props} />
-    </Content>
-  </SafeAreaView>
-
-);
-
-const MyApp = createDrawerNavigator({
-    Search: {
-      screen: SearchScreen,
-      navigationOptions: {
-      drawerIcon: <Icon name = "search" style = {{fontSize: 24, color:'red'}} />
-      }
-    },
-
-    Map: {
-      screen: MapScreen,
-      navigationOptions: {
-      drawerIcon: <Icon name = "home" style = {{fontSize: 24, color: 'red'}} />
-      }
-    },
-
-    MyPins: {
-      screen: MyPinsScreen,
-      navigationOptions: {
-      drawerIcon: <Icon active type='Entypo' name='location-pin' style = {{color:'red'}} />
-      }
-    },
-    AddPin:{
-      screen: AddPinMap,
-      navigationOptions: {
-      drawerLabel: ()=>null
-      }
-    },
-    PinInfo: {
-      screen: PinInfo,
-      navigationOptions: {
-      drawerLabel: ()=>null
-      }
-    }
-},
-{
-  initialRouteName: 'Map',
-  transitionConfig: () => fadeIn(),
-  drawerPosition: 'left',
-  headerMode: 'screen',
-  contentComponent: CustomDrawerContentComponent,
-  contentOptions: {
-    activeTintColor: '#03a9f4',
-    inactiveTintColor: '#03a9f4',
-  }
-}, {});
+const AppContainer = createAppContainer(MainNavigator);
+export default AppContainer;
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    drawerHeader: {
-      height: 200,
-      backgroundColor: 'white',
-      alignItems: 'center'
-    },
-    drawerImage: {
-      height: 150,
-      width: 150,
-      borderRadius: 75,
-      alignSelf: 'center'
-    }
+  title: {
+    color: 'white',
+    fontSize: 60,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-thin',
+    fontWeight: Platform.OS === 'ios' ? "100" : 'normal',
+    bottom: 70
+  },
+
 });

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import {ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar } from 'react-native';
+import {ScrollView, AppRegistry, FlatList, StyleSheet, Text, View, Dimensions, TouchableOpacity, StatusBar, RefreshControl } from 'react-native';
 import { Card, CardItem, Body, Container, Header, Content, Form, Icon, Item, Input, Button, Right, Left } from 'native-base';
 import Expo, { Constants, Location, Permissions } from 'expo';
+import * as queries from '../../graphql/queries';
+import * as mutations from '../../graphql/mutations';
+import API, { graphqlOperation } from '@aws-amplify/api'
 import MapView from 'react-native-maps';
 import {store} from '../../../App'
 
@@ -13,6 +16,7 @@ export default class SearchScreen extends Component {
 
     this.state = {
         loading: true,
+        refreshing: false,
         searchText: ""
     }
   }
@@ -37,6 +41,11 @@ export default class SearchScreen extends Component {
      });
   }
 
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    this.loadPins();
+  }
+
   _getLocationAsync = async () => {
     let userLocation = {
       latitude: store.getState().latitude,
@@ -46,11 +55,40 @@ export default class SearchScreen extends Component {
     _mapView.animateToCoordinate(userLocation, 1000);
   };
 
-  iconImage (marker) {
-    console.log(marker.type);
+  loadPins = async () => {
+    store.update({markers: []});
+    const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
+    allPins.data.listPins.items.map(pin => (
+      // console.log()
+      store.update({
+        markers: [
+          ...store.state.markers,
+          {
+            name: pin.eventName,
+            description: pin.description,
+            key: pin.id,
+            placedBy: pin.userId,
+            type: pin.eventType,
+            startTime: pin.startTime,
+            endTime: pin.endTime,
+            coordinate: {
+              latitude: Number(pin.latitude),
+              longitude: Number(pin.longitude)
+            },
+          }
+        ]
+      })
+    ))
+    this.setState({loading: false});
+    this.setState({refreshing: false});
+    console.log('All pins loaded!');
+  }
+
+  iconImage(marker){
+    // console.log(marker.type);
     switch (marker.type) {
       case "Accident":{
-      return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>; 
+      return <Icon  style={{color: '#eddd2d', position: 'absolute', right: 65,transform: [{scale: .75}]}} active type='FontAwesome' name='warning'/>;
       }
         break;
       case "Food":{
@@ -58,11 +96,11 @@ export default class SearchScreen extends Component {
       }
         break;
       case "Social":{
-      return <Icon style={{color: '#ca30f4',position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>; 
+      return <Icon style={{color: '#ca30f4',position: 'absolute', right: 50, transform: [{scale: .75}]}} active type='FontAwesome' name='group'/>;
       }
         break;
       case "Study":{
-      return <Icon style={{color: '#03a9f4',position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>; 
+      return <Icon style={{color: '#03a9f4',position: 'absolute', right: 45, transform: [{scale: .75}]}} active type='MaterialCommunityIcons' name='book-open-variant'/>;
       }
         break;
     }
@@ -79,7 +117,14 @@ export default class SearchScreen extends Component {
       return <Expo.AppLoading />;
     }
     return (
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+            <RefreshControl
+              refreshing={this.state.refreshing}
+              onRefresh={this._onRefresh}
+            />
+          }
+      >
         <StatusBar hidden/>
 
         <Header searchBar rounded style = {{backgroundColor: '#03a9f4'}}>
