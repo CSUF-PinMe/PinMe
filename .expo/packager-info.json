@@ -1,9 +1,9 @@
 {
   "expoServerPort": 19000,
-  "packagerPort": 19003,
-  "packagerPid": 65741,
+  "packagerPort": 19001,
+  "packagerPid": 2968,
   "expoServerNgrokUrl": "https://eb-h8i.ecast96.pinme.exp.direct",
   "packagerNgrokUrl": "https://packager.eb-h8i.ecast96.pinme.exp.direct",
-  "ngrokPid": 65763,
+  "ngrokPid": 2991,
   "devToolsPort": 19002
 }

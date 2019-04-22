@@ -231,15 +231,15 @@ export default class MapScreen extends Component {
     this._map.animateToRegion(newRegion, 300) ;
   };
 
-  getImage(name, id){
-    Storage.get(name+'.jpg', {
+  getImage(pinId, id){
+    Storage.get(pinId+'.jpg', {
         level: 'protected',
         identityId: id // the identityId of that user
     })
     .then(result => {
       let imageList = [];
       imageList.push({url: result});
-      // console.log('Got image: ', result);
+      console.log('Got image: ', result);
       this.setState({
         currMarkerImage: result,
         imageList
@@ -295,7 +295,7 @@ export default class MapScreen extends Component {
             image={redPin}
             onCalloutPress={async () => {
               this.setState({currMarker: marker});
-              this.getImage(marker.name, marker.cognitoId);
+              this.getImage(marker.key, marker.cognitoId);
               this.openModal();
             }} // change isVisible to modalMaker to allow modal
             onPress={e => {
@@ -359,7 +359,6 @@ export default class MapScreen extends Component {
                 <TouchableHighlight
                   style={{top: 15}}
                 onPress={() => {
-                  console.log("Opening image viewer");
                   this.setState({imageViewer: true});
                 }}
                 >
