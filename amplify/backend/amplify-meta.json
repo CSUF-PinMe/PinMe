@@ -19,7 +19,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ine-20181103124101-deployment/amplify-cfn-templates/auth/cognito5796e323-cloudformation-template.yml",
 				"logicalId": "authcognito5796e323"
 			},
-			"lastPushTimeStamp": "2019-03-25T05:41:25.371Z",
+			"lastPushTimeStamp": "2019-04-20T23:54:33.276Z",
 			"output": {
 				"AppClientSecret": "1mpol5595n9lq8f9g73vd59nfinnqlccl7j3kdiaehslg1bphas7",
 				"UserPoolId": "us-west-2_6k6em5zLJ",
@@ -49,8 +49,8 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ine-20181103124101-deployment/amplify-cfn-templates/api/cloudformation-template.json",
 				"logicalId": "apipinmeapp"
 			},
-			"lastPushTimeStamp": "2019-03-25T05:41:26.063Z",
-			"lastPushDirHash": "WjHKiAp3NveubrA6LsICzA/SG1M="
+			"lastPushTimeStamp": "2019-04-20T23:54:34.317Z",
+			"lastPushDirHash": "VLCEx+cwpCBi7/UYq6FKTG0OXEo="
 		}
 	},
 	"storage": {
@@ -61,7 +61,7 @@
 				"s3TemplateURL": "https://s3.amazonaws.com/ine-20181103124101-deployment/amplify-cfn-templates/storage/s3-cloudformation-template.json",
 				"logicalId": "storagepinmestorage"
 			},
-			"lastPushTimeStamp": "2019-03-25T05:41:25.375Z",
+			"lastPushTimeStamp": "2019-04-20T23:54:33.279Z",
 			"output": {
 				"BucketName": "pinme-pin-media",
 				"Region": "us-west-2"

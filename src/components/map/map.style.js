@@ -66,4 +66,40 @@ export default StyleSheet.create({
     height: Dimensions.get('window').height,
     width: 10,
   },
+  pinModal: {
+    height: height*.70,
+    width: width*.80,
+    borderRadius: 10,
+    borderColor: "white",
+    borderWidth: 2,
+  },
+  pinModalTitle: {
+    marginLeft: 30,
+    marginRight: 45,
+    fontSize: 30,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light',
+    color: '#03a9f4'
+  },
+  pinModalLabel: {
+    marginLeft: 10,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light',
+    fontSize: 20,
+    fontWeight: '300',
+    color: '#03a9f4'
+  },
+  pinModalDescription: {
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 10,
+    fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'
+  },
+  pinModalImage: {
+    width: width*.70,
+    height: width*.70,
+    left: 15
+  },
+  pinModalTrash: {
+    color: '#9e9e9e',
+    left: 10
+  }
   });

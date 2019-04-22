@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
-import { View, Dimensions, ActivityIndicator, StatusBar, Alert, Platform, ScrollView, Image, Modal as ImageModal} from 'react-native';
-import { Container, Text, Icon, Fab, Label} from 'native-base';
+import { View, Dimensions, ActivityIndicator, StatusBar, Alert, Platform, ScrollView, Image, Modal as ImageModal, Picker, PickerIOS} from 'react-native';
+import { Container, Text, Icon, Fab, Label, Button} from 'native-base';
+import TimeAgo from 'react-native-timeago';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
 import ActionButton from 'react-native-action-button';
 import { Popup } from 'react-native-map-link';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
-import Expo, { Location } from 'expo';
+import Expo, {Location, Calendar, Permissions} from 'expo';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { TouchableHighlight } from 'react-native';
 
@@ -34,11 +35,14 @@ export default class MapScreen extends Component {
       imageList: [],
       currMarker: {},
       myMarkers: [],
+      myCalendars: [{id: '123', name: 'Test calendar'}],
       bottom: 1,
       loading: true,
       active: false,
       active1: false,
       margin_onClick: false,
+      calendarModalVisible: false,
+      calendarModalLoading: false
     };
 
     this.getInitialState.bind(this);
@@ -58,6 +62,50 @@ export default class MapScreen extends Component {
 
   async componentWillMount(){
     this.loadPins();
+  }
+
+  async addEventToCalendar(){
+    let id = 'E0E5FDBB-16EB-478F-88D3-4BC1C545EBF4';
+    await Calendar.createEventAsync(id, {
+      title: this.state.currMarker.name,
+      startDate: this.state.currMarker.startTime,
+      endDate: this.state.currMarker.endTime,
+      notes: `${this.state.currMarker.description} \n\nEvent created by ${this.state.currMarker.placedBy}. \nProvided by PinMe.`,
+    }).then(response => {
+      Alert.alert(`Event Saved`, `Added '${this.state.currMarker.name}' to 'Home' calendar: `);
+      console.log(`Added '${this.state.currMarker.name}' to 'Home' calendar: `, response);
+    }).catch(err => {
+      Alert.alert('Event Saving Error', err);
+      console.log("Couldn't create event: ", err);
+    })
+  }
+
+  async getCalendars(){
+
+    // this.setState({
+    //   calendarModalVisible: true,
+    //   calendarModalLoading: true
+    // });
+
+    let { status } = await Permissions.askAsync(Permissions.CALENDAR);
+    console.log("Calendar permissions status: "+status);
+
+    let calendarList = [];
+    let myCalendars = await Calendar.getCalendarsAsync(Calendar.EntityTypes.EVENT);
+
+    myCalendars.forEach(calendar => {
+      calendarList.push({
+        id: calendar.id,
+        name: calendar.title
+      })
+    });
+
+    console.log("Got calendars: ", calendarList);
+
+    // this.setState({
+    //   myCalendars: calendarList,
+    //   calendarModalLoading: false
+    // })
   }
 
   getInitialState() {
@@ -83,13 +131,14 @@ export default class MapScreen extends Component {
   loadPins = async () => {
     store.update({markers: []});
     const allPins = await API.graphql(graphqlOperation(queries.listPins, {limit: 100}));
-    console.log(allPins.data.listPins.items)
+    // console.log(allPins.data.listPins.items)
     allPins.data.listPins.items.map(pin => (
       // console.log()
       store.update({
         markers: [
           ...store.state.markers,
           {
+            createdAt: pin.createdAt,
             name: pin.eventName,
             hasImage: pin.hasImage,
             cognitoId: pin.userCognitoId,
@@ -97,8 +146,8 @@ export default class MapScreen extends Component {
             key: pin.id,
             placedBy: pin.userId,
             type: pin.eventType,
-            startTime: pin.startTime,
-            endTime: pin.endTime,
+            startTime: new Date(pin.startTime),
+            endTime: new Date(pin.endTime),
             coordinate: {
               latitude: Number(pin.latitude),
               longitude: Number(pin.longitude)
@@ -142,6 +191,8 @@ export default class MapScreen extends Component {
 
   openModal = () => this.setState({ visible: true });
   closeModal = () => this.setState({ visible: false });
+
+  closeCalendarModal = () => this.setState({calendarModalVisible: false});
 
   iconImage () {
     switch (this.state.currMarker.type) {
@@ -188,7 +239,7 @@ export default class MapScreen extends Component {
     .then(result => {
       let imageList = [];
       imageList.push({url: result});
-      console.log('Got image: ', result);
+      // console.log('Got image: ', result);
       this.setState({
         currMarkerImage: result,
         imageList
@@ -242,7 +293,7 @@ export default class MapScreen extends Component {
             description={marker.placedBy}
             coordinate={marker.coordinate}
             image={redPin}
-            onCalloutPress={() => {
+            onCalloutPress={async () => {
               this.setState({currMarker: marker});
               this.getImage(marker.name, marker.cognitoId);
               this.openModal();
@@ -263,7 +314,7 @@ export default class MapScreen extends Component {
 
         </MapView>
 
-        <Icon style={{fontSize: 35, color: '#03a9f4', position: 'absolute', top: 60, right: 20}} onPress={() => this.animateMapToUser()} name="compass" type="Entypo" />
+        {Platform.OS === 'ios' ? <Icon style={{fontSize: 35, color: '#03a9f4', position: 'absolute', top: 60, right: 20}} onPress={() => this.animateMapToUser()} name="compass" type="Entypo" /> : null}
 
         <Popup
           isVisible={this.state.isVisible}
@@ -281,7 +332,7 @@ export default class MapScreen extends Component {
         />
 
         <Modal
-          style={{ height: height*.70, width: width*.80, borderRadius: 10, borderColor: "white", borderWidth: 2,}}
+          style={styles.pinModal}
           swipeToClose={true}
           swipeArea={20} // The height in pixels of the swipeable area, window height by default
           swipeThreshold={50} // The threshold to reach in pixels to close the modal
@@ -292,23 +343,27 @@ export default class MapScreen extends Component {
             <Grid>
             <Row size={2} style={{alignItems: 'center'}}>
               {this.iconImage()}
-              <Text numberOfLines={2} style={{marginLeft: 30, marginRight: 45, fontSize: 30, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}>
+              <Text numberOfLines={2} style={styles.pinModalTitle}>
                 {this.state.currMarker.name}
               </Text>
             </Row>
             <Col size={7}>
             <ScrollView scrollEnabled={true}>
-              <Label style={{marginLeft: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light', fontSize: 20, fontWeight: '300'}}>Description</Label>
-              <Text style={{marginLeft: 10, marginRight: 10, marginTop: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}> {this.state.currMarker.description} </Text>
-              {this.state.currMarker.hasImage === true ? <Label style={{marginLeft: 10, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light', fontSize: 20, fontWeight: '300'}}>Image</Label> : null}
+              <Label style={styles.pinModalLabel}>Time Posted: <TimeAgo time={this.state.currMarker.createdAt} style={{fontSize: 16, color: 'black'}}/></Label>
+              <Label style={styles.pinModalLabel}>Start Time: <Text style={{fontSize: 16, color: 'black'}}>{this.state.currMarker.startTime ? this.state.currMarker.startTime.toLocaleString() : null}</Text></Label>
+              <Label style={styles.pinModalLabel}>End Time: <Text style={{fontSize: 16, color: 'black'}}>{this.state.currMarker.endTime ? this.state.currMarker.endTime.toLocaleString() : null}</Text></Label>
+              <Label style={styles.pinModalLabel}>Description</Label>
+              <Text style={styles.pinModalDescription}> {this.state.currMarker.description} </Text>
+              {this.state.currMarker.hasImage === true ? <Label style={styles.pinModalLabel}>Image</Label> : null}
               {this.state.currMarkerImage !== undefined ?
                 <TouchableHighlight
+                  style={{top: 15}}
                 onPress={() => {
                   console.log("Opening image viewer");
                   this.setState({imageViewer: true});
                 }}
                 >
-                  <Image source={{uri: this.state.currMarkerImage}} style={{width: width*.70, height: width*.70, left: 15}}/>
+                  <Image source={{uri: this.state.currMarkerImage}} style={styles.pinModalImage}/>
                 </TouchableHighlight>
                 :
                 null}
@@ -329,9 +384,21 @@ export default class MapScreen extends Component {
                       ]
                     );
                   }}
-                  style={{color: '#9e9e9e', left: 10}} name="trash-o" type="FontAwesome"/> :
+                  style={styles.pinModalTrash} name="trash-o" type="FontAwesome"/> :
                   <Label style={{left: 15, fontFamily: Platform.OS === 'ios' ? 'HelveticaNeue-Light' : 'sans-serif-light'}}>{this.state.currMarker.placedBy} </Label>
                 }
+                <Icon name="calendar-plus-o" type="FontAwesome" style={{fontSize: 30, color: "#03a9f4", left: 10}} onPress={() => {
+                  Alert.alert(
+                    'Saving Event',
+                    'Do you want to save this event?',
+                    [
+                      {text: 'OK', onPress: () => {
+                          this.addEventToCalendar();
+                        }},
+                      {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
+                    ]
+                  );
+                }}/>
                 <Icon style={{fontSize: 40, color: "#03a9f4", right: 10}} name="ios-navigate" type="Ionicons" onPress={() => {
                     this.closeModal();
                     setTimeout(() => {this.setState({isVisible: true});}, 400);
@@ -360,6 +427,9 @@ export default class MapScreen extends Component {
         offsetX={15}
         offsetY={15}
         >
+          <ActionButton.Item size={40} buttonColor='white' title="Get Events" onPress={this.getCalendarEvents}>
+            <Icon name="ios-add" style={styles.actionButtonIcon} />
+          </ActionButton.Item>
           <ActionButton.Item size={40} buttonColor='white' title="Sign Out" onPress={() => {
             Auth.signOut();
             const resetAction = StackActions.reset({
@@ -387,6 +457,19 @@ export default class MapScreen extends Component {
             imageUrls={this.state.imageList}
           />
         </ImageModal>
+
+        <Modal
+          style={styles.pinModal}
+          swipeToClose={true}
+          swipeArea={20} // The height in pixels of the swipeable area, window height by default
+          swipeThreshold={50} // The threshold to reach in pixels to close the modal
+          isOpen={this.state.calendarModalVisible}
+          onClosed={this.closeCalendarModal}
+          backdropOpacity={0.3}
+        >
+          <Button k/>
+        </Modal>
+
       </View>
     </Container>
     );

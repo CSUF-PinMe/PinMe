@@ -8,6 +8,7 @@ export const createPin = `mutation CreatePin($input: CreatePinInput!) {
     userCognitoId
     hasImage
     eventName
+    createdAt
     eventType
     startTime
     endTime
@@ -24,6 +25,7 @@ export const updatePin = `mutation UpdatePin($input: UpdatePinInput!) {
     userCognitoId
     hasImage
     eventName
+    createdAt
     eventType
     startTime
     endTime
@@ -40,6 +42,7 @@ export const deletePin = `mutation DeletePin($input: DeletePinInput!) {
     userCognitoId
     hasImage
     eventName
+    createdAt
     eventType
     startTime
     endTime

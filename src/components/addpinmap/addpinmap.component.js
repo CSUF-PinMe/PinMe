@@ -1,11 +1,13 @@
 import { Button, Text, Icon, Item, Label, Input, Picker, Textarea} from 'native-base';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
+import DateTimePicker from "react-native-modal-datetime-picker";
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
-import { Platform, TouchableHighlight, Alert } from 'react-native';
-import {Modal as ImageModal} from 'react-native';
+import { Platform, TouchableHighlight, Alert, ActivityIndicator } from 'react-native';
+import uuid from 'react-native-uuid'
+import {Modal as ImageModal, AlertIOS} from 'react-native';
 import ActionButton from 'react-native-action-button';
 import styles from './addpinmap.style.js';
 import myMapStyle from '../map/mapstyle';
@@ -18,6 +20,7 @@ import grayPin from '../../../assets/pin_gray.png'
 import React, { Component } from 'react';
 import {store} from '../../../App'
 import { View, StatusBar, Dimensions, Image } from 'react-native';
+import moment from 'moment'
 
 var {height, width} = Dimensions.get('window');
 
@@ -26,21 +29,26 @@ export default class AddPinMap extends Component {
     super(props);
 
     this.state ={
+      isDateTimePickerVisible: false,
+      pickerType: "date",
       loading: true,
       visible: false,
       imageViewer: false,
       mapHeight: height,
       selected2: undefined,
       image: undefined,
+      startTimeButtonText: 'Start',
+      endTimeButtonText: 'End',
       pinInfo: {
+        id: undefined,
         userId: store.state.currentUser,
         userCognitoId: store.state.currentUserId,
         hasImage: false,
         eventName: '',
         eventType: 'General',
         description: '',
-        startTime: '',
-        endTime: '',
+        startTime: undefined,
+        endTime: undefined,
         latitude: undefined,
         longitude: undefined
       }
@@ -57,6 +65,7 @@ export default class AddPinMap extends Component {
     await Expo.Font.loadAsync({
       Roboto: require("native-base/Fonts/Roboto.ttf"),
       Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+      EvilIcons: require("native-base/Fonts/EvilIcons.ttf"),
       Ionicons: require("@expo/vector-icons/fonts/Ionicons.ttf"),
       Feather: require("@expo/vector-icons/fonts/Feather.ttf"),
       FontAwesome: require('react-native-vector-icons/Fonts/FontAwesome.ttf'),
@@ -133,27 +142,27 @@ export default class AddPinMap extends Component {
       return true;
 
     if (this.state.pinInfo.eventName.trim() === "") {
-      this.setState(() => ({ nameError: "Pin name required." }));
+      this.setState(() => ({ nameError: "Pin name required" }));
       error = true;
     } else {
       this.setState(() => ({ nameError: null }));
     }
 
     if (this.state.pinInfo.description.trim() === "") {
-      this.setState(() => ({ descError: "Description required." }));
+      this.setState(() => ({ descError: "Description required" }));
       error = true;
     } else {
       this.setState(() => ({ descError: null }));
     }
 
-    if (this.state.pinInfo.startTime.trim() === "") {
-      this.setState(() => ({ sTimeError: "Start time required." }));
+    if (!this.state.pinInfo.startTime) {
+      this.setState(() => ({ sTimeError: "Start time required" }));
       error = true;
     } else {
       this.setState(() => ({ sTimeError: null }));
     }
-    if (this.state.pinInfo.endTime.trim() === "") {
-      this.setState(() => ({ eTimeError: "End time required." }));
+    if (!this.state.pinInfo.endTime) {
+      this.setState(() => ({ eTimeError: "End time required" }));
       error = true;
     } else {
       this.setState(() => ({ eTimeError: null }));
@@ -162,22 +171,31 @@ export default class AddPinMap extends Component {
     return error;
   }
 
-  addPin() {
+  async addPin() {
     console.log('Pin Info: ', this.state.pinInfo);
+
+    let pin = this.state.pinInfo;
+    pin.id = 'pin-'+uuid.v1();
+    pin.createdAt = moment().format();
+
+    console.log("Creating pin:", pin);
     if(this.state.image === undefined){
       console.log('No picture was taken.')
     } else {
-      this.uploadImage(this.state.pinInfo.eventName);
+      this.uploadImage(pin.id);
     }
-    const newPin = API.graphql(graphqlOperation(mutations.createPin,
+
+    await API.graphql(graphqlOperation(mutations.createPin,
       {
-        input: this.state.pinInfo
+        input: pin
       }
     ));
+
     this.setState({
       ...this.state,
       image: undefined,
       pinInfo: {
+        id: undefined,
         userId: store.state.currentUser,
         userCognitoId: store.state.currentUserId,
         hasImage: false,
@@ -190,21 +208,33 @@ export default class AddPinMap extends Component {
         longitude: undefined
       }
     });
-    this.closeModal();
-    this.props.navigation.navigate('Map');
+
+    AlertIOS.alert(
+      'Pin Created!',
+      'Your new pin has been successfully created!',
+      [
+        {
+          text: 'Ok',
+          onPress: () => {
+            this.closeModal();
+            this.props.navigation.navigate('Map');
+          }
+        }
+        ]
+    );
   }
 
-  async uploadImage(eventName){
+  uploadImage(pinId){
     var image = this.state.image;
-    const imageName = eventName+'.jpg';
+    const imageName = pinId+'.jpg';
     console.log('Uploading image: '+imageName);
     const fileType = 'image/jpg';
 
     const access = { level: "protected", contentType: fileType };
     fetch(image).then(response => {
       response.blob()
-        .then(blob => {
-          Storage.put(imageName, blob, access)
+        .then(async blob => {
+          await Storage.put(imageName, blob, access)
             .then(succ => {
               console.log('Image upload success: ', succ);
               this.removeImage();
@@ -225,7 +255,7 @@ export default class AddPinMap extends Component {
         let imageList = [];
         imageList.push({
           url: result.uri
-        })
+        });
         this.setState({
           image: result.uri,
           imageList,
@@ -255,6 +285,35 @@ export default class AddPinMap extends Component {
       imageViewer: false
     })
   }
+
+  handleDatePicked = date => {
+
+    if(this.state.currentTime === 'start'){
+      console.log("Setting startTime to:", date.toLocaleString());
+      this.setState({
+        startTimeButtonText: date.toLocaleString(),
+        sTimeError: null,
+        pinInfo: {
+            ...this.state.pinInfo,
+            startTime: date
+          }
+      });
+    } else if(this.state.currentTime === 'end'){
+      console.log("Setting endTime to:", date.toLocaleString());
+      this.setState({
+        endTimeButtonText: date.toLocaleString(),
+        eTimeError: null,
+        pinInfo: {
+          ...this.state.pinInfo,
+          endTime: date
+        }
+      });
+    }
+    this.hideDateTimePicker();
+  };
+
+  showDateTimePicker = (time) => this.setState({ isDateTimePickerVisible: true, currentTime: time });
+  hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   render() {
     if (this.state.loading) {
@@ -328,6 +387,7 @@ export default class AddPinMap extends Component {
                 resetScrollToCoords={{ x: 0, y: 0 }}
                 contentContainerStyle={{backgroundColor: '#03a9f4'}}
                 scrollEnabled={true}
+                extraScrollHeight={100}
                 >
                   <Item style={{borderColor: 'transparent'}}>
                     <Label style={styles.label}>Pin Name: </Label>
@@ -340,17 +400,17 @@ export default class AddPinMap extends Component {
                       placeholderTextColor='#017BB0' placeholder="name of pin"/>
                   </Item>
                   {!!this.state.nameError && (
-                    <Label style={[styles.label, {fontSize: 18, top: 0, left: 12}]}>{this.state.nameError}</Label>
+                    <Label style={[styles.label, {fontSize: 18, top: 0, left: 12, color: 'red'}]}>{this.state.nameError}</Label>
                   )}
                   <Item style={{borderColor: 'transparent'}}>
                     <Label style={styles.label}>Description: </Label>
                   </Item>
                   {!!this.state.descError && (
-                    <Label style={[styles.label, {fontSize: 18, top: 5, left: 12}]}>{this.state.descError}</Label>
+                    <Label style={[styles.label, {fontSize: 18, top: 5, left: 12, color: 'red'}]}>{this.state.descError}</Label>
                   )}
                   <Item style={{borderColor: 'transparent'}}>
                   <Textarea
-                    rowSpan={3}
+                    rowSpan={2}
                     onChangeText={(e) => {
                       this.handleChange('description', e);
                       if(e.trim() !== "") {this.setState(() => ({ descError: null }));}
@@ -380,57 +440,76 @@ export default class AddPinMap extends Component {
                     </Item>
                   </Item>
                   <Item style={{borderColor: 'transparent'}}>
-                    <Label style={styles.label}>Start Time: </Label>
-                    <Input
-                      style={styles.input}
-                      onChangeText={(e) => {
-                        this.handleChange('startTime', e);
-                        if(e.trim() !== "") {this.setState(() => ({ sTimeError: null }));}
-                      }}
-                      placeholderTextColor='#017BB0'
-                      placeholder="start time"/>
+                    <Label style={styles.label}>Date and Time</Label>
+                  </Item>
+                  <Item style={{borderColor: 'transparent', top: 15, justifyContent: 'center'}}>
+                    <Button
+                      iconLeft
+                      style={{backgroundColor: 'white'}}
+                      onPress={() => {
+                        this.showDateTimePicker("start")
+                      }}>
+                      <Icon name="calendar" type="EvilIcons" style={{ color: '#03a9f4', fontSize: 32}}/>
+                      <Text style={styles.buttonText}>{this.state.startTimeButtonText}</Text>
+                    </Button>
                   </Item>
                   {!!this.state.sTimeError && (
-                    <Label style={[styles.label, {fontSize: 18, top: 0, left: 12}]}>{this.state.sTimeError}</Label>
+                    <Label style={[styles.label, {fontSize: 18, top: 15, alignSelf: 'center', color: 'red'}]}>{this.state.sTimeError}</Label>
                   )}
-                  <Item style={{borderColor: 'transparent'}}>
-                    <Label style={styles.label}>End Time: </Label>
-                    <Input
-                      style={styles.input}
-                      onChangeText={(e) => {
-                        this.handleChange('endTime', e);
-                        if(e.trim() !== "") {this.setState(() => ({ eTimeError: null }));}
-                      }}
-                      placeholderTextColor='#017BB0'
-                      placeholder="end time"/>
+                  <Item style={{borderColor: 'transparent', top: 25, justifyContent: 'center'}}>
+                    <Text style={{color: 'white', fontFamily: 'HelveticaNeue-Light'}}>To</Text>
+                  </Item>
+                  <Item style={{borderColor: 'transparent', top: 35, justifyContent: 'center'}}>
+                    <Button
+                      iconLeft
+                      style={{backgroundColor: 'white'}}
+                      onPress={() => {
+                        this.showDateTimePicker("end")
+                      }}>
+                      <Icon name="calendar" type="EvilIcons" style={{ color: '#03a9f4', fontSize: 32}}/>
+                      <Text style={styles.buttonText}>{this.state.endTimeButtonText}</Text>
+                    </Button>
                   </Item>
                   {!!this.state.eTimeError && (
-                    <Label style={[styles.label, {fontSize: 18, top: 0, left: 12}]}>{this.state.eTimeError}</Label>
+                    <Label style={[styles.label, {fontSize: 18, top: 40, alignSelf: 'center', color: 'red'}]}>{this.state.eTimeError}</Label>
                   )}
+                  <Item style={{borderColor: 'transparent', top: 35}}>
+                    <Label style={styles.label}>Image</Label>
+                  </Item>
                   {this.state.image === undefined ?
-                    <Item style={{borderColor: 'transparent'}}>
-                      <Icon style={{color: 'white', top: 10, left: 15, fontWeight: '100'}}  name="camera" type="Feather" />
-                      <Label style={[styles.label, {paddingLeft: 10}]} onPress={() => this.takeImage()}>Take Image </Label>
-                    </Item>
+                    <Grid>
+                      <Col>
+                        <Row style={{justifyContent: 'center'}}>
+                          <View style={{paddingTop: 50}}>
+                            <Button iconLeft onPress={() => this.takeImage()} style={{backgroundColor: 'white'}}>
+                              <Icon name="camera" type="EvilIcons" style={{color: '#03a9f4'}}/>
+                              <Text style={styles.buttonText}>Take Image</Text>
+                            </Button>
+                          </View>
+                        </Row>
+                      </Col>
+                    </Grid>
                     :
-                    <Item style={{borderColor: 'transparent'}}>
+                    <Item style={{borderColor: 'transparent', top: 50}}>
                       <Grid>
                         <Col>
-                          <Row>
-                            <Icon style={{color: 'white', top: 10, left: 15, fontWeight: '100'}} name="camera-off" type="Feather" />
-                            <Label
-                              style={[styles.label, {paddingLeft: 10}]}
+                          <Row style={{justifyContent: 'center'}}>
+                            <Button iconLeft
+                              style={{backgroundColor: 'white', minWidth: 100}}
                               onPress={() => Alert.alert(
                                 'Removing Image',
                                 'Are you sure you want to remove the image?',
                                 [
                                   {text: 'OK', onPress: () => {
-                                    this.removeImage();
-                                  }},
+                                      this.removeImage();
+                                    }},
                                   {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
                                 ]
                               )}
-                              >Remove Image </Label>
+                            >
+                              <Icon style={{color: '#03a9f4', fontSize: 32}} name="close-o" type="EvilIcons"/>
+                              <Text style={styles.buttonText}>Remove Image</Text>
+                            </Button>
                           </Row>
                           <Row style={{justifyContent: 'center'}}>
                             <TouchableHighlight
@@ -449,15 +528,22 @@ export default class AddPinMap extends Component {
                       </Grid>
                     </Item>
                   }
-                  <Item style={{borderColor: 'transparent', paddingTop: 50}}>
+                  <Item style={{borderColor: 'transparent', paddingTop: 100}}>
                     <Grid>
                       <Row style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
                         <Button large
                           ref="leftbutton"
-                          onPress={() => {
-                            this.closeModal();
-                            this.props.navigation.navigate('Map');
-                          }}
+                                onPress={() => Alert.alert(
+                                  'Canceling Pin',
+                                  'Are you sure you want to cancel this pin?',
+                                  [
+                                    {text: 'OK', onPress: () => {
+                                        this.closeModal();
+                                        this.props.navigation.navigate('Map');
+                                      }},
+                                    {text: 'Cancel', onPress: () => {return null}, style: 'cancel'},
+                                  ]
+                                )}
                           style={styles.leftButton}
                           >
                           <Text style={styles.buttonText}>Cancel</Text>
@@ -491,6 +577,13 @@ export default class AddPinMap extends Component {
               imageUrls={this.state.imageList}
             />
           </ImageModal>
+
+          <DateTimePicker
+            isVisible={this.state.isDateTimePickerVisible}
+            onConfirm={this.handleDatePicked}
+            onCancel={this.hideDateTimePicker}
+            mode="datetime"
+          />
 
       </View>
     );

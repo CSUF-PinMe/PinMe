@@ -8,6 +8,7 @@ export const onCreatePin = `subscription OnCreatePin {
     userCognitoId
     hasImage
     eventName
+    createdAt
     eventType
     startTime
     endTime
@@ -24,6 +25,7 @@ export const onUpdatePin = `subscription OnUpdatePin {
     userCognitoId
     hasImage
     eventName
+    createdAt
     eventType
     startTime
     endTime
@@ -40,6 +42,7 @@ export const onDeletePin = `subscription OnDeletePin {
     userCognitoId
     hasImage
     eventName
+    createdAt
     eventType
     startTime
     endTime

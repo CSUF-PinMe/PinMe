@@ -8,6 +8,7 @@ export const getPin = `query GetPin($id: ID!) {
     userCognitoId
     hasImage
     eventName
+    createdAt
     eventType
     startTime
     endTime
@@ -25,6 +26,7 @@ export const listPins = `query ListPins($filter: ModelPinFilterInput, $limit: In
       userCognitoId
       hasImage
       eventName
+      createdAt
       eventType
       startTime
       endTime

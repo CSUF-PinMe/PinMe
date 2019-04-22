@@ -4,6 +4,7 @@ type Pin @model {
   userCognitoId: String!
   hasImage: Boolean!
   eventName: String!
+  createdAt: String
   eventType: String
   startTime: String
   endTime: String
