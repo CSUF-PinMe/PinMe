@@ -427,9 +427,6 @@ export default class MapScreen extends Component {
         offsetX={15}
         offsetY={15}
         >
-          <ActionButton.Item size={40} buttonColor='white' title="Get Events" onPress={this.getCalendarEvents}>
-            <Icon name="ios-add" style={styles.actionButtonIcon} />
-          </ActionButton.Item>
           <ActionButton.Item size={40} buttonColor='white' title="Sign Out" onPress={() => {
             Auth.signOut();
             const resetAction = StackActions.reset({
