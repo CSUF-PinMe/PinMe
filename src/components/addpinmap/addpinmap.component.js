@@ -30,6 +30,8 @@ export default class AddPinMap extends Component {
 
     this.state ={
       isDateTimePickerVisible: false,
+      createButtonDisabled: false,
+      createPinLoading: false,
       pickerType: "date",
       loading: true,
       visible: false,
@@ -78,22 +80,6 @@ export default class AddPinMap extends Component {
   static navigationOptions = {
     header: null
   };
-
-  // takeSnapshot () {
-  //   // 'takeSnapshot' takes a config object with the
-  //   // following options
-  //   const snapshot = this.map.takeSnapshot({
-  //     width: 300,      // optional, when omitted the view-width is used
-  //     height: 300,     // optional, when omitted the view-height is used
-  //     region: store.state.region,    // iOS only, optional region to render
-  //     format: 'png',   // image formats: 'png', 'jpg' (default: 'png')
-  //     quality: 0.8,    // image quality: 0..1 (only relevant for jpg, default: 1)
-  //     result: 'file'   // result types: 'file', 'base64' (default: 'file')
-  //   });
-  //   snapshot.then((uri) => {
-  //     this.props.navigation.navigate('PinInfo', {snapshot: uri});
-  //   });
-  // }
 
   openModal = () => {
     this.setRegion();
@@ -171,75 +157,93 @@ export default class AddPinMap extends Component {
     return error;
   }
 
-  async addPin() {
-    console.log('Pin Info: ', this.state.pinInfo);
-
-    let pin = this.state.pinInfo;
-    pin.id = 'pin-'+uuid.v1();
-    pin.createdAt = moment().format();
-
-    console.log("Creating pin:", pin);
-    if(this.state.image === undefined){
-      console.log('No picture was taken.')
-    } else {
-      this.uploadImage(pin.id);
-    }
-
-    await API.graphql(graphqlOperation(mutations.createPin,
-      {
-        input: pin
-      }
-    ));
+  resetPinInfo(){
+    let blankPinInfo = {
+      id: undefined,
+      userId: store.state.currentUser,
+      userCognitoId: store.state.currentUserId,
+      hasImage: false,
+      eventName: '',
+      eventType: 'General',
+      description: '',
+      startTime: undefined,
+      endTime: undefined,
+      latitude: undefined,
+      longitude: undefined
+    };
 
     this.setState({
-      ...this.state,
       image: undefined,
-      pinInfo: {
-        id: undefined,
-        userId: store.state.currentUser,
-        userCognitoId: store.state.currentUserId,
-        hasImage: false,
-        eventName: '',
-        eventType: 'General',
-        description: '',
-        startTime: '',
-        endTime: '',
-        latitude: undefined,
-        longitude: undefined
-      }
+      startTimeButtonText: 'Start',
+      endTimeButtonText: 'End',
+      pinInfo: blankPinInfo
+    });
+  }
+
+  async addPin(){
+    this.setState({
+      createButtonDisabled: true,
+      createPinLoading: true
     });
 
-    AlertIOS.alert(
-      'Pin Created!',
-      'Your new pin has been successfully created!',
-      [
-        {
-          text: 'Ok',
-          onPress: () => {
-            this.closeModal();
-            this.props.navigation.navigate('Map');
-          }
-        }
-        ]
-    );
+      let pin = this.state.pinInfo;
+      pin.id = 'pin-'+uuid.v1();
+      pin.createdAt = moment().format();
+
+    await API.graphql(graphqlOperation(mutations.createPin, { input: pin }))
+      .then(res => {
+        if(this.state.image !== undefined)
+          this.uploadImage(pin.id);
+
+        this.setState({
+          createButtonDisabled: false,
+          createPinLoading: false,
+        });
+
+        AlertIOS.alert(
+          'Pin Created!',
+          'Your new pin has been successfully created!',
+          [
+            {
+              text: 'Ok',
+              onPress: () => {
+                this.resetPinInfo();
+                if(this.state.image !== undefined)
+                  this.removeImage();
+                this.closeModal();
+                this.props.navigation.navigate('Map');
+              }
+            }
+          ]
+        );
+    })
+      .catch(err => {
+        console.log("Create Pin Error: ", err);
+        this.setState({
+          createButtonDisabled: false,
+          createPinLoading: false
+        });
+      })
   }
 
   uploadImage(pinId){
     var image = this.state.image;
     const imageName = pinId+'.jpg';
     console.log('Uploading image: '+imageName);
-    const fileType = 'image/jpg';
 
+    const fileType = 'image/jpg';
     const access = { level: "protected", contentType: fileType };
+
     fetch(image).then(response => {
       response.blob()
         .then(async blob => {
           await Storage.put(imageName, blob, access)
             .then(succ => {
-              console.log('Image upload success: ', succ);
-              this.removeImage();
+              console.log("Image upload success: ", succ);
             })
-            .catch(err => console.log('Image upload encountered an error: ', err));
+            .catch(err => {
+              console.log("Image upload encountered an error: ", err);
+            });
         });
     });
   }
@@ -550,6 +554,7 @@ export default class AddPinMap extends Component {
                         </Button>
 
                         <Button large
+                          disabled={this.state.createButtonDisabled}
                           style={styles.rightButton}
                           onPress={() => {
                             if(this.checkInput()){
@@ -559,7 +564,7 @@ export default class AddPinMap extends Component {
                               this.addPin();
                             }
                           }}>
-                          <Text style={styles.buttonText}>Create Pin</Text>
+                          {this.state.createPinLoading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Create Pin</Text>}
                         </Button>
                       </Row>
                     </Grid>
@@ -592,4 +597,4 @@ export default class AddPinMap extends Component {
 
 AddPinMap.propTypes = {
   provider: ProviderPropType,
-}
+};

@@ -11,7 +11,7 @@ import {authInfo} from './App.js'
 import { Auth } from 'aws-amplify';
 import Amplify from '@aws-amplify/core'
 import awsmobile from './aws-exports'
-Amplify.configure(awsmobile)
+Amplify.configure(awsmobile);
 
 import createStore from 'pure-store';
 

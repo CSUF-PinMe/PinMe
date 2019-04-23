@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Dimensions, ActivityIndicator, StatusBar, Alert, Platform, ScrollView, Image, Modal as ImageModal, Picker, PickerIOS} from 'react-native';
 import { Container, Text, Icon, Fab, Label, Button} from 'native-base';
+import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
 import TimeAgo from 'react-native-timeago';
 import ImageViewer from 'react-native-image-zoom-viewer';
 import { Col, Row, Grid } from 'react-native-easy-grid';
@@ -11,11 +12,19 @@ import MapView, { Marker, ProviderPropType } from 'react-native-maps';
 import Expo, {Location, Calendar, Permissions} from 'expo';
 import { StackActions, NavigationActions } from 'react-navigation';
 import { TouchableHighlight } from 'react-native';
+import geolib from 'geolib'
 
+import AWSAppSyncClient, { AUTH_TYPE } from 'aws-appsync';
+import Amplify from '@aws-amplify/core'
 import API, { graphqlOperation } from '@aws-amplify/api'
-import {Auth, Storage} from 'aws-amplify'
+import { Auth, Storage } from 'aws-amplify'
 import * as queries from '../../graphql/queries';
 import * as mutations from '../../graphql/mutations';
+import {onCreatePin, onDeletePin} from '../../graphql/subscriptions';
+import aws_config from '../../../aws-exports'
+Amplify.configure(aws_config);
+import gql from 'graphql-tag';
+
 import styles from './map.style.js';
 import myMapStyle from './mapstyle';
 import redPin from '../../../assets/pin_red.png'
@@ -24,6 +33,8 @@ import {store} from '../../../App'
 const { width, height } = Dimensions.get('window');
 
 var _mapView: MapView;
+let onCreateSubscription;
+let onDeleteSubscription;
 
 export default class MapScreen extends Component {
   constructor(props){
@@ -58,10 +69,77 @@ export default class MapScreen extends Component {
       Entypo: require("@expo/vector-icons/fonts/Entypo.ttf"),
       FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
     });
+
+    this.client = new AWSAppSyncClient({
+      url: aws_config.aws_appsync_graphqlEndpoint,
+      region: aws_config.aws_appsync_region,
+      auth: {
+        type: aws_config.aws_appsync_authenticationType,
+        jwtToken: async () => {
+          return (await Auth.currentSession()).getAccessToken().getJwtToken();
+        }
+      }
+    });
+
+    this.trySubscription();
+    this.tryDeleteSubscription();
+  }
+
+  async trySubscription(){
+    onCreateSubscription = this.client.subscribe({ query: gql(onCreatePin) }).subscribe({
+      next: async data => {
+        // console.log('Subscription - New Pin Created: ', data.data.onCreatePin);
+        let pin = data.data.onCreatePin;
+        if (store.state.currentUser === pin.userId) {
+          this.loadPins();
+        } else {
+          let pinDistance = geolib.getDistance(
+            {latitude: pin.latitude, longitude: pin.longitude},
+            {latitude: store.state.userLocation.latitude, longitude: store.state.userLocation.longitude}
+          );
+          console.log('New Pin Distance:', pinDistance);
+          if(pinDistance <= 1609){
+            showMessage({
+              message: "New Pin Created Near You!",
+              description: `${pin.eventName} by ${pin.userId}`,
+              type: "default",
+              duration: "8000",
+              backgroundColor: "#03a9f4", // background color
+              color: "white", // text color
+              onPress: () => {
+                hideMessage();
+              },
+            });
+          }
+          this.loadPins();
+        }
+      },
+      error: error => {
+        console.warn('Subscription Error: ', error);
+      }
+    });
+  }
+
+  async tryDeleteSubscription(){
+    onDeleteSubscription = this.client.subscribe({ query: gql(onDeletePin) }).subscribe({
+      next: async data => {
+        // console.log('Subscription - Pin Deleted: ', data.data.onDeletePin);
+        let pin = data.data.onDeletePin;
+        this.loadPins();
+      },
+      error: error => {
+        console.log('Subscription - onDeletePin Error: ', error);
+      }
+    });
   }
 
   async componentWillMount(){
     this.loadPins();
+  }
+
+  componentWillUnmount() {
+    onCreateSubscription.unsubscribe();
+    onDeleteSubscription.unsubscribe();
   }
 
   async addEventToCalendar(){
@@ -160,14 +238,24 @@ export default class MapScreen extends Component {
     console.log('All pins loaded!');
   }
 
-  deletePin = (id) => {
-    const result = API.graphql(graphqlOperation(mutations.deletePin, {input: {id: id}}));
-    console.log(result.data);
-    var removeIndex = store.getState().markers.map(function(item) { return item.key; }).indexOf(id);
-    store.update(s => {
-      s.markers.splice(removeIndex, 1);
-    });
-    this.forceUpdate();
+  deletePin = async (id, image) => {
+    await API.graphql(graphqlOperation(mutations.deletePin, {input: {id}}))
+      .then(res => {
+        if(image){
+          Storage.remove(id+'.jpg', {level: 'protected'})
+            .then(result => console.log("Deleting pin image: ", result))
+            .catch(err => console.log("Deleting pin image encountered an error: ", err));
+        }
+        var removeIndex = store.getState().markers.map(function(item) { return item.key; }).indexOf(id);
+        store.update(s => {
+          s.markers.splice(removeIndex, 1);
+        });
+        this.forceUpdate();
+      })
+      .catch(err => {
+        console.log("Deleting Pin encountered an error: ", err);
+      });
+
   };
 
   static navigationOptions = {
@@ -239,7 +327,7 @@ export default class MapScreen extends Component {
     .then(result => {
       let imageList = [];
       imageList.push({url: result});
-      console.log('Got image: ', result);
+      // console.log('Got image: ', result);
       this.setState({
         currMarkerImage: result,
         imageList
@@ -307,7 +395,6 @@ export default class MapScreen extends Component {
                 margin_onClick: true
               });
               this.toolbarHack();
-              console.log(this.state);
             }}
           />
         ))}
@@ -376,7 +463,7 @@ export default class MapScreen extends Component {
                       `Are you sure you want to delete the pin '${this.state.currMarker.name}?'`,
                       [
                         {text: 'OK', onPress: () => {
-                          this.deletePin(this.state.currMarker.key);
+                          this.deletePin(this.state.currMarker.key, this.state.currMarker.hasImage);
                           this.closeModal();
                         }},
                         {text: 'Cancel', onPress: () => {return}, style: 'cancel'},
@@ -465,6 +552,8 @@ export default class MapScreen extends Component {
         >
           <Button k/>
         </Modal>
+
+        <FlashMessage ref="newPinMessage" />
 
       </View>
     </Container>

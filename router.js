@@ -1,15 +1,8 @@
-import {
-  createDrawerNavigator,
-  createStackNavigator,
-  StackActions,
-  NavigationActions,
-  DrawerItems
-} from 'react-navigation';
+import { createDrawerNavigator, DrawerItems } from 'react-navigation';
 import React from 'react';
-import { Button, View, Text, StyleSheet, Image, SafeAreaView } from 'react-native';
-import { fadeIn, zoomIn } from 'react-navigation-transitions';
-import { Container, Icon, Content, Header, Body} from 'native-base'
-import Expo, { Constants, Location, Permissions } from 'expo';
+import { StyleSheet, Image, SafeAreaView } from 'react-native';
+import { fadeIn } from 'react-navigation-transitions';
+import { Icon, Content, Header, Body} from 'native-base'
 
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
