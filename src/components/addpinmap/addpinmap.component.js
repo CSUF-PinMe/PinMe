@@ -6,7 +6,7 @@ import ImageViewer from 'react-native-image-zoom-viewer';
 import { Col, Row, Grid } from 'react-native-easy-grid';
 import Modal from "react-native-modalbox";
 import { Platform, TouchableHighlight, Alert, ActivityIndicator } from 'react-native';
-import uuid from 'react-native-uuid'
+import uuidv1 from 'uuid/v1';
 import {Modal as ImageModal, AlertIOS} from 'react-native';
 import ActionButton from 'react-native-action-button';
 import styles from './addpinmap.style.js';
@@ -74,7 +74,7 @@ export default class AddPinMap extends Component {
       Entypo: require('react-native-vector-icons/Fonts/Entypo.ttf'),
     });
     this.setState({ loading: false });
-    console.log(store.state.region)
+    // console.log(store.state.region)
   }
 
   static navigationOptions = {
@@ -187,7 +187,7 @@ export default class AddPinMap extends Component {
     });
 
       let pin = this.state.pinInfo;
-      pin.id = 'pin-'+uuid.v1();
+      pin.id = 'pin-'+uuidv1();
       pin.createdAt = moment().format();
 
     await API.graphql(graphqlOperation(mutations.createPin, { input: pin }))
