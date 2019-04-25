@@ -1,7 +1,7 @@
 import {Dimensions, Platform, StyleSheet} from "react-native";
 var {width, height} = Dimensions.get('window');
 
-const styles = StyleSheet.create({
+export default StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'flex-end',

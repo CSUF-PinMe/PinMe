@@ -1,8 +1,10 @@
-import { createDrawerNavigator, DrawerItems } from 'react-navigation';
-import React from 'react';
-import { StyleSheet, Image, SafeAreaView } from 'react-native';
+import { createDrawerNavigator, DrawerItems, SafeAreaView } from 'react-navigation';
+import React, { Component } from 'react';
+import 'react-native-gesture-handler';
+import {StyleSheet, Image, View, Dimensions} from 'react-native';
+import Expo from "expo";
 import { fadeIn } from 'react-navigation-transitions';
-import { Icon, Content, Header, Body} from 'native-base'
+import { Icon, Content, Header, Body, Footer, Button, Text} from 'native-base'
 
 import MapScreen from './src/components/map/map.component';
 import AddPinMap from './src/components/addpinmap/addpinmap.component';
@@ -10,22 +12,42 @@ import PinInfo from './src/components/pininfo/pininfo.component';
 import SearchScreen from './src/components/search/search.component';
 import MyPinsScreen from './src/components/mypins/mypins.component';
 
-const CustomDrawerContentComponent = (props) => (
+const { width, height } = Dimensions.get('window');
 
-  <SafeAreaView style = {{flex:1}}>
-    <Header style={styles.drawerHeader}>
-      <Body>
+class CustomDrawerContentComponent extends Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      loading: true
+    }
+
+  }
+
+  async componentDidMount(){
+    await Expo.Font.loadAsync({
+      Roboto: require("native-base/Fonts/Roboto.ttf"),
+      Roboto_medium: require("native-base/Fonts/Roboto_medium.ttf"),
+      FontAwesome: require("native-base/Fonts/FontAwesome.ttf"),
+      EvilIcons: require("native-base/Fonts/EvilIcons.ttf"),
+    });
+    this.setState({loading: false});
+  }
+
+  render() {
+    if (this.state.loading) {
+      return <Expo.AppLoading />;
+    }
+    return (
+      <SafeAreaView style = {{flex:1}} forceInset={{ top: 'always', horizontal: 'never' }}>
         <Image
           style={styles.drawerImage}
           source={require('./assets/icon.png')} />
-      </Body>
-    </Header>
-    <Content>
-      <DrawerItems {...props} />
-    </Content>
-  </SafeAreaView>
-
-);
+        <DrawerItems {...this.props} style={{flex: 9}}/>
+      </SafeAreaView>
+    );
+  }
+}
 
 const MapNav = createDrawerNavigator({
     Search: {
@@ -60,13 +82,29 @@ const MapNav = createDrawerNavigator({
       navigationOptions: {
       drawerLabel: ()=>null
       }
+    },
+    SignOut: {
+      screen: MapScreen,
+      navigationOptions: {
+        title: "Sign Out",
+      },
+      contentOptions: {
+        onItemPress: (route) => {
+          console.log("Sign out Button was pressed!")
+        },
+        itemStyle: {
+          bottom: 0
+        }
+      }
     }
 },
 {
   initialRouteName: 'Map',
   transitionConfig: () => fadeIn(),
   drawerPosition: 'left',
+  drawerWidth: width*.6,
   headerMode: 'screen',
+  useNativeAnimations: true,
   contentComponent: CustomDrawerContentComponent,
   contentOptions: {
     activeTintColor: '#03a9f4',

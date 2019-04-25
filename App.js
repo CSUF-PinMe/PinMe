@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Platform, ActivityIndicator, StyleSheet, StatusBar } from 'react-native';
 import { Container, Item } from 'native-base';
 import { StackActions, NavigationActions } from 'react-navigation';
+import 'react-native-gesture-handler';
 import {createStackNavigator, createAppContainer} from 'react-navigation';
 import { fromLeft, fromTop, fromRight } from 'react-navigation-transitions';
 import * as Animatable from 'react-native-animatable';

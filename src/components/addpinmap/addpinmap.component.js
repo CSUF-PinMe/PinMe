@@ -186,9 +186,11 @@ export default class AddPinMap extends Component {
       createPinLoading: true
     });
 
-      let pin = this.state.pinInfo;
-      pin.id = 'pin-'+uuidv1();
-      pin.createdAt = moment().format();
+    let pin = this.state.pinInfo;
+    pin.id = 'pin-'+uuidv1();
+    pin.createdAt = moment().format();
+
+    console.log("Creating pin:", pin);
 
     await API.graphql(graphqlOperation(mutations.createPin, { input: pin }))
       .then(res => {
@@ -248,13 +250,14 @@ export default class AddPinMap extends Component {
     });
   }
 
-  async takeImage() {
-    await ImagePicker.launchCameraAsync({
-      allowsEditing: false,
+  async selectImage(){
+    await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: "Images",
+      allowsEditing: true,
       aspect: [4, 3]
     }).then(result => {
       if(result.cancelled){
-        console.log('User cancelled taking a picture.')
+        console.log("User cancelled selecting an image.")
       } else {
         let imageList = [];
         imageList.push({
@@ -268,7 +271,34 @@ export default class AddPinMap extends Component {
             hasImage: true
           }
         });
-        console.log('Took picture and saved to:',result.uri);
+        console.log('Selected image and saved to:',result.uri);
+      }
+    }).catch(e => {
+      console.log("Encountered an error when trying to select an image.", e);
+    })
+  }
+
+  async takeImage() {
+    await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3]
+    }).then(result => {
+      if(result.cancelled){
+        console.log('User cancelled taking an image.')
+      } else {
+        let imageList = [];
+        imageList.push({
+          url: result.uri
+        });
+        this.setState({
+          image: result.uri,
+          imageList,
+          pinInfo: {
+            ...this.state.pinInfo,
+            hasImage: true
+          }
+        });
+        console.log('Took image and saved to:',result.uri);
       }
     })
     .catch(err => {
@@ -320,6 +350,7 @@ export default class AddPinMap extends Component {
   hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   render() {
+
     if (this.state.loading) {
       return <Expo.AppLoading />;
     }
@@ -483,11 +514,17 @@ export default class AddPinMap extends Component {
                   {this.state.image === undefined ?
                     <Grid>
                       <Col>
-                        <Row style={{justifyContent: 'center'}}>
+                        <Row style={{justifyContent: 'space-around'}}>
                           <View style={{paddingTop: 50}}>
                             <Button iconLeft onPress={() => this.takeImage()} style={{backgroundColor: 'white'}}>
-                              <Icon name="camera" type="EvilIcons" style={{color: '#03a9f4'}}/>
+                              <Icon name="camera" type="EvilIcons" style={{color: '#03a9f4', fontSize: 32}}/>
                               <Text style={styles.buttonText}>Take Image</Text>
+                            </Button>
+                          </View>
+                          <View style={{paddingTop: 50}}>
+                            <Button iconLeft onPress={() => this.selectImage()} style={{backgroundColor: 'white'}}>
+                              <Icon name="image" type="EvilIcons" style={{color: '#03a9f4', fontSize: 32}}/>
+                              <Text style={styles.buttonText}>Select Image</Text>
                             </Button>
                           </View>
                         </Row>
@@ -535,7 +572,7 @@ export default class AddPinMap extends Component {
                   <Item style={{borderColor: 'transparent', paddingTop: 100}}>
                     <Grid>
                       <Row style={{ backgroundColor: '#03a9f4', justifyContent: 'space-around'}}>
-                        <Button large
+                        <Button iconLeft large
                           ref="leftbutton"
                                 onPress={() => Alert.alert(
                                   'Canceling Pin',
@@ -550,10 +587,11 @@ export default class AddPinMap extends Component {
                                 )}
                           style={styles.leftButton}
                           >
+                          <Icon name="close-o" type="EvilIcons" style={{color: '#03a9f4', fontSize: 32}}/>
                           <Text style={styles.buttonText}>Cancel</Text>
                         </Button>
 
-                        <Button large
+                        <Button iconLeft large
                           disabled={this.state.createButtonDisabled}
                           style={styles.rightButton}
                           onPress={() => {
@@ -564,7 +602,12 @@ export default class AddPinMap extends Component {
                               this.addPin();
                             }
                           }}>
-                          {this.state.createPinLoading ? <ActivityIndicator /> : <Text style={styles.buttonText}>Create Pin</Text>}
+                          {this.state.createPinLoading ? null : <Icon name="check" type="EvilIcons" style={{color: '#03a9f4', fontSize: 32}}/>}
+                          {this.state.createPinLoading ?
+                            <ActivityIndicator />
+                            :
+                            <Text style={styles.buttonText}>Create Pin</Text>
+                            }
                         </Button>
                       </Row>
                     </Grid>

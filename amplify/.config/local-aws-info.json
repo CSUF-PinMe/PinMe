@@ -1,0 +1,7 @@
+{
+    "NONE": {
+        "useProfile": true,
+        "profileName": "pinme-dev",
+        "configLevel": "project"
+    }
+}

@@ -1,0 +1,13 @@
+{
+    "bucketName": "pinme-pin-media",
+    "authPolicyName": "s3_amplify_cb9dc4f1",
+    "unauthPolicyName": "s3_amplify_cb9dc4f1",
+    "authRoleName": {
+        "Ref": "AuthRoleName"
+    },
+    "unauthRoleName": {
+        "Ref": "UnauthRoleName"
+    },
+    "authPermissions": "rw",
+    "unauthPermissions": ""
+}

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import 'react-native-gesture-handler';
 import { View, Dimensions, ActivityIndicator, StatusBar, Alert, Platform, ScrollView, Image, Modal as ImageModal, Picker, PickerIOS} from 'react-native';
 import { Container, Text, Icon, Fab, Label, Button} from 'native-base';
 import FlashMessage, { showMessage, hideMessage } from "react-native-flash-message";
@@ -11,6 +12,7 @@ import { Popup } from 'react-native-map-link';
 import MapView, { Marker, ProviderPropType } from 'react-native-maps';
 import Expo, {Location, Calendar, Permissions} from 'expo';
 import { StackActions, NavigationActions } from 'react-navigation';
+import GestureHandler from 'react-native-gesture-handler';
 import { TouchableHighlight } from 'react-native';
 import geolib from 'geolib'
 
